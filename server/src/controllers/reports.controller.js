@@ -1,5 +1,6 @@
 import { query } from "../config/db.js";
-import { findDuplicates } from '../services/duplicate.service.js';
+import { findDuplicates } from "../services/duplicate.service.js";
+import { computePriority } from "../services/priority.service.js";
 
 // POST /api/reports  (protected)
 export async function createReport(req, res) {
@@ -7,7 +8,6 @@ export async function createReport(req, res) {
     const { title, description, category_id, latitude, longitude, severity } =
       req.body;
 
-    // Validation
     if (
       !title ||
       !description ||
@@ -39,14 +39,14 @@ export async function createReport(req, res) {
         .json({ error: "Severity must be between 1 and 5" });
     }
 
-    // Category must exist
-    const catCheck = await query("SELECT id FROM categories WHERE id = $1", [category_id,]);
+    const catCheck = await query("SELECT id FROM categories WHERE id = $1", [
+      category_id,
+    ]);
     if (catCheck.rows.length === 0) {
       return res.status(400).json({ error: "Invalid category_id" });
     }
 
-    // Duplicate check (skipped if ?force=true)
-    if (req.query.force !== 'true') {
+    if (req.query.force !== "true") {
       const duplicates = await findDuplicates({
         title,
         description,
@@ -57,22 +57,26 @@ export async function createReport(req, res) {
 
       if (duplicates.length > 0) {
         return res.status(409).json({
-          message: 'Similar reports found nearby. Support an existing one or resubmit with ?force=true',
+          message:
+            "Similar reports found nearby. Support an existing one or resubmit with ?force=true",
           duplicates,
         });
       }
     }
 
-    // Insert — user_id comes from req.user (set by requireAuth)
     const { rows } = await query(
       `INSERT INTO reports
          (user_id, category_id, title, description, latitude, longitude, severity)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [req.user.id, category_id, title, description, latitude, longitude, sev],
+      [req.user.id, category_id, title, description, latitude, longitude, sev]
     );
 
-    res.status(201).json({ report: rows[0] });
+    const report = rows[0];
+    const score = await computePriority(report.id);
+    report.priority_score = score;
+
+    res.status(201).json({ report });
   } catch (err) {
     console.error("createReport error:", err);
     res.status(500).json({ error: "Failed to create report" });
@@ -113,7 +117,7 @@ export async function listReports(req, res) {
        ${whereClause}
        ORDER BY r.priority_score DESC, r.created_at DESC
        LIMIT 500`,
-      params,
+      params
     );
 
     res.json({ reports: rows });
@@ -138,7 +142,7 @@ export async function getReport(req, res) {
        JOIN categories c ON c.id = r.category_id
        JOIN users u      ON u.id = r.user_id
        WHERE r.id = $1`,
-      [id],
+      [id]
     );
 
     if (rows.length === 0) {
@@ -147,7 +151,7 @@ export async function getReport(req, res) {
 
     const images = await query(
       "SELECT id, url FROM report_images WHERE report_id = $1 ORDER BY id",
-      [id],
+      [id]
     );
 
     res.json({ report: rows[0], images: images.rows });
@@ -169,14 +173,14 @@ export async function toggleSupport(req, res) {
 
     const existing = await query(
       "SELECT 1 FROM supports WHERE user_id = $1 AND report_id = $2",
-      [req.user.id, id],
+      [req.user.id, id]
     );
 
     let supported;
     if (existing.rows.length > 0) {
       await query(
         "DELETE FROM supports WHERE user_id = $1 AND report_id = $2",
-        [req.user.id, id],
+        [req.user.id, id]
       );
       supported = false;
     } else {
@@ -187,9 +191,11 @@ export async function toggleSupport(req, res) {
       supported = true;
     }
 
+    await computePriority(id);
+
     const count = await query(
       "SELECT COUNT(*)::int AS n FROM supports WHERE report_id = $1",
-      [id],
+      [id]
     );
 
     res.json({ supported, support_count: count.rows[0].n });
