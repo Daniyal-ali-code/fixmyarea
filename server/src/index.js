@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import { query } from "./config/db.js";
 import authRoutes from "./routes/auth.routes.js";
 import reportsRoutes from "./routes/reports.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
+import statsRoutes from "./routes/stats.routes.js";
 
 dotenv.config();
 
@@ -47,6 +49,8 @@ app.get("/api/db-test", async (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/reports", reportsRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/stats", statsRoutes);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
