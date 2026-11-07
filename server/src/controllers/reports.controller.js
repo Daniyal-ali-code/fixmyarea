@@ -1,4 +1,5 @@
 import { query } from "../config/db.js";
+import { findDuplicates } from '../services/duplicate.service.js';
 
 // POST /api/reports  (protected)
 export async function createReport(req, res) {
@@ -39,11 +40,27 @@ export async function createReport(req, res) {
     }
 
     // Category must exist
-    const catCheck = await query("SELECT id FROM categories WHERE id = $1", [
-      category_id,
-    ]);
+    const catCheck = await query("SELECT id FROM categories WHERE id = $1", [category_id,]);
     if (catCheck.rows.length === 0) {
       return res.status(400).json({ error: "Invalid category_id" });
+    }
+
+    // Duplicate check (skipped if ?force=true)
+    if (req.query.force !== 'true') {
+      const duplicates = await findDuplicates({
+        title,
+        description,
+        latitude,
+        longitude,
+        category_id,
+      });
+
+      if (duplicates.length > 0) {
+        return res.status(409).json({
+          message: 'Similar reports found nearby. Support an existing one or resubmit with ?force=true',
+          duplicates,
+        });
+      }
     }
 
     // Insert — user_id comes from req.user (set by requireAuth)
