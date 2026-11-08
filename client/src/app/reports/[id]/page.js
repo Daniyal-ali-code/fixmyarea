@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
+import SupportButton from "@/components/SupportButton";
 import { query } from "@/lib/db";
 
 const statusLabels = {
@@ -95,13 +96,8 @@ export default async function ReportDetailPage({ params }) {
 
   const history = await getStatusHistory(id);
 
-  // Build full timeline: initial "reported" from created_at, plus history entries
   const timeline = [
-    {
-      status: "reported",
-      at: report.created_at,
-      label: "Reported",
-    },
+    { status: "reported", at: report.created_at, label: "Reported" },
     ...history.map((h) => ({
       status: h.new_status,
       at: h.created_at,
@@ -117,7 +113,6 @@ export default async function ReportDetailPage({ params }) {
 
       <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
         <div className="max-w-4xl mx-auto px-4 py-8">
-          {/* Back link */}
           <Link
             href="/reports"
             className="font-serif italic text-sm text-slate-800 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 inline-block mb-6"
@@ -125,7 +120,6 @@ export default async function ReportDetailPage({ params }) {
             ← Back to reports
           </Link>
 
-          {/* Header section */}
           <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-6 md:p-8 mb-6">
             <div className="flex items-start justify-between gap-4 mb-4 flex-wrap">
               <span className="font-serif italic text-xs uppercase tracking-[0.2em] text-stone-600 dark:text-stone-400">
@@ -181,7 +175,6 @@ export default async function ReportDetailPage({ params }) {
             </div>
           </div>
 
-          {/* Location section */}
           <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-6 md:p-8 mb-6">
             <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50 mb-4 pb-2 border-b-2 border-amber-600">
               Location
@@ -199,7 +192,6 @@ export default async function ReportDetailPage({ params }) {
             </div>
           </div>
 
-          {/* Status timeline */}
           <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-6 md:p-8 mb-6">
             <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50 mb-6 pb-2 border-b-2 border-amber-600">
               Status Timeline
@@ -209,9 +201,7 @@ export default async function ReportDetailPage({ params }) {
                 const reached = idx <= currentStatusIndex;
                 const isCurrent = idx === currentStatusIndex;
                 const timelineEntry = timeline.find((t) => t.status === step);
-                const date = timelineEntry
-                  ? formatDate(timelineEntry.at)
-                  : null;
+                const date = timelineEntry ? formatDate(timelineEntry.at) : null;
 
                 return (
                   <div key={step} className="flex items-start gap-3">
@@ -244,21 +234,14 @@ export default async function ReportDetailPage({ params }) {
             </div>
           </div>
 
-          {/* Support section (placeholder — will be wired in Phase 6d) */}
           <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-6 md:p-8 text-center">
             <p className="font-serif italic text-sm text-stone-600 dark:text-stone-400 mb-4">
               Does this issue affect you too?
             </p>
-            <button
-              type="button"
-              disabled
-              className="inline-block px-8 py-3 text-xs font-semibold uppercase tracking-wider text-stone-900 bg-amber-600 rounded-sm opacity-50 cursor-not-allowed border border-amber-700"
-            >
-              👍 Support this report ({report.support_count})
-            </button>
-            <p className="font-serif italic text-xs text-stone-500 dark:text-stone-500 mt-3">
-              Support button activates in Phase 6d
-            </p>
+            <SupportButton
+              reportId={report.id}
+              initialCount={report.support_count}
+            />
           </div>
         </div>
       </main>
