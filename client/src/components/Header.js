@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
   return (
@@ -12,6 +13,7 @@ export default function Header() {
         </Link>
 
         <nav className="flex items-center gap-4">
+          <ThemeToggle />
           <Link
             href="/login"
             className="font-serif italic text-sm text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-100 transition"
