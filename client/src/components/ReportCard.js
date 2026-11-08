@@ -39,7 +39,7 @@ export default function ReportCard({ report }) {
   return (
     <Link
       href={`/reports/${report.id}`}
-      className="block bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-5 hover:shadow-md hover:border-stone-400 dark:hover:border-stone-500 transition"
+      className="block bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-5 hover:shadow-md hover:border-amber-600 dark:hover:border-amber-500 transition"
     >
       <div className="flex items-start justify-between gap-2 mb-3">
         <span className="font-serif italic text-xs uppercase tracking-wider text-stone-600 dark:text-stone-400">

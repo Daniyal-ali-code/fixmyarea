@@ -66,10 +66,10 @@ export default function HomePage() {
       <Header />
 
       <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
-        <section className="bg-amber-50 dark:bg-stone-900 border-b border-stone-400 dark:border-stone-700">
+        <section className="bg-gradient-to-br from-[#fef3c7] via-amber-50 to-amber-50 dark:from-stone-800 dark:via-stone-900 dark:to-stone-900 border-b border-stone-400 dark:border-stone-700">
           <div className="max-w-4xl mx-auto px-4 py-20 text-center">
             <div className="inline-block mb-6">
-              <span className="font-serif italic text-xs uppercase tracking-[0.3em] text-stone-600 dark:text-stone-400 border-b border-stone-400 dark:border-stone-600 pb-1">
+              <span className="font-serif italic text-xs uppercase tracking-[0.3em] text-stone-600 dark:text-stone-400 border-b-2 border-amber-600 pb-1">
                 Established for the Community
               </span>
             </div>
@@ -86,13 +86,13 @@ export default function HomePage() {
             <div className="flex items-center justify-center gap-4 flex-wrap">
               <Link
                 href="/reports/new"
-                className="inline-block px-6 py-3 text-xs font-semibold uppercase tracking-wider text-amber-50 bg-slate-800 dark:bg-slate-700 rounded-sm hover:bg-slate-900 dark:hover:bg-slate-600 transition border border-slate-900 dark:border-slate-500"
+                className="inline-block px-8 py-3 text-xs font-semibold uppercase tracking-wider text-stone-900 bg-amber-600 rounded-sm hover:bg-amber-500 shadow-md shadow-amber-600/30 hover:shadow-lg hover:shadow-amber-600/40 transition-all border border-amber-700"
               >
                 + Report an Issue
               </Link>
               <Link
                 href="/reports"
-                className="inline-block px-6 py-3 text-xs font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-800 rounded-sm hover:bg-amber-100 dark:hover:bg-stone-700 transition border border-stone-400 dark:border-stone-600"
+                className="inline-block px-8 py-3 text-xs font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-800 rounded-sm hover:bg-amber-100 dark:hover:bg-stone-700 transition border border-stone-400 dark:border-stone-600"
               >
                 Browse Reports
               </Link>
@@ -101,13 +101,13 @@ export default function HomePage() {
         </section>
 
         <section className="max-w-6xl mx-auto px-4 py-12">
-          <div className="flex items-baseline justify-between mb-8 pb-2 border-b border-stone-400 dark:border-stone-700">
+          <div className="flex items-baseline justify-between mb-8 pb-2 border-b-2 border-amber-600">
             <h2 className="font-serif text-3xl font-bold text-stone-900 dark:text-stone-50">
               Recent Reports
             </h2>
             <Link
               href="/reports"
-              className="font-serif italic text-sm text-slate-800 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-300"
+              className="font-serif italic text-sm text-slate-800 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-500 transition"
             >
               View all →
             </Link>
