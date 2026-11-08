@@ -60,6 +60,18 @@ async function getStatusHistory(reportId) {
   }
 }
 
+async function getImages(reportId) {
+  try {
+    const { rows } = await query(
+      "SELECT id, url FROM report_images WHERE report_id = $1 ORDER BY id",
+      [reportId]
+    );
+    return rows;
+  } catch (err) {
+    return [];
+  }
+}
+
 function formatDate(dateString) {
   const date = new Date(dateString);
   return date.toLocaleDateString("en-US", {
@@ -95,6 +107,7 @@ export default async function ReportDetailPage({ params }) {
   }
 
   const history = await getStatusHistory(id);
+  const images = await getImages(id);
 
   const timeline = [
     { status: "reported", at: report.created_at, label: "Reported" },
@@ -154,6 +167,32 @@ export default async function ReportDetailPage({ params }) {
             <p className="text-base text-stone-700 dark:text-stone-300 leading-relaxed mb-6 whitespace-pre-wrap">
               {report.description}
             </p>
+
+            {images.length > 0 && (
+              <div className="mb-6">
+                <p className="text-xs uppercase tracking-wider text-stone-500 dark:text-stone-500 font-semibold mb-2">
+                  Photos ({images.length})
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {images.map((img) => (
+                    <a
+                      key={img.id}
+                      href={img.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block aspect-square bg-stone-100 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-sm overflow-hidden hover:border-amber-600 dark:hover:border-amber-500 transition"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={img.url}
+                        alt="Report photo"
+                        className="w-full h-full object-cover"
+                      />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="pt-4 border-t border-stone-300 dark:border-stone-700 flex items-center justify-between flex-wrap gap-4">
               <div>

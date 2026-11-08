@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
@@ -29,6 +29,8 @@ export default function NewReportPage() {
   const [submitting, setSubmitting] = useState(false);
   const [locating, setLocating] = useState(false);
   const [duplicates, setDuplicates] = useState(null);
+  const [photos, setPhotos] = useState([]);
+  const [photoPreviews, setPhotoPreviews] = useState([]);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -115,12 +117,54 @@ export default function NewReportPage() {
         return;
       }
 
-      router.push(`/reports/${data.report.id}`);
+      // Report created — now upload photos if any
+      const newReportId = data.report.id;
+
+      if (photos.length > 0) {
+        try {
+          const imgForm = new FormData();
+          photos.forEach((p) => imgForm.append("images", p));
+
+          await fetch(`/api/reports/${newReportId}/images`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+            body: imgForm,
+          });
+        } catch (imgErr) {
+          console.error("Image upload error:", imgErr);
+          // Non-fatal — report is created, photos failed
+        }
+      }
+
+      router.push(`/reports/${newReportId}`);
     } catch (err) {
       console.error("Submit error:", err);
       setError("Something went wrong. Please try again.");
       setSubmitting(false);
     }
+  }
+
+  function handlePhotosChange(e) {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    // Limit to 3 total
+    const combined = [...photos, ...files].slice(0, 3);
+    setPhotos(combined);
+
+    // Generate previews
+    const previews = combined.map((f) => URL.createObjectURL(f));
+    // Revoke old previews to avoid memory leaks
+    photoPreviews.forEach((p) => URL.revokeObjectURL(p));
+    setPhotoPreviews(previews);
+  }
+
+  function removePhoto(index) {
+    const newPhotos = photos.filter((_, i) => i !== index);
+    const newPreviews = photoPreviews.filter((_, i) => i !== index);
+    URL.revokeObjectURL(photoPreviews[index]);
+    setPhotos(newPhotos);
+    setPhotoPreviews(newPreviews);
   }
 
   async function handleSubmit(e) {
@@ -364,6 +408,57 @@ export default function NewReportPage() {
               </div>
               <p className="text-xs text-stone-500 dark:text-stone-500 mt-2">
                 Interactive map picker coming in Phase 6e
+              </p>
+            </div>
+
+            {/* Photos */}
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2">
+                Photos (optional, up to 3)
+              </label>
+
+              {photoPreviews.length > 0 && (
+                <div className="grid grid-cols-3 gap-3 mb-3">
+                  {photoPreviews.map((preview, idx) => (
+                    <div
+                      key={idx}
+                      className="relative aspect-square bg-stone-100 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-sm overflow-hidden"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={preview}
+                        alt={`Photo ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removePhoto(idx)}
+                        className="absolute top-1 right-1 h-6 w-6 flex items-center justify-center bg-stone-900/80 text-white text-xs rounded-full hover:bg-red-600 transition"
+                        aria-label="Remove photo"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {photos.length < 3 && (
+                <label className="inline-block px-4 py-2 text-xs font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-800 rounded-sm hover:bg-amber-100 dark:hover:bg-stone-700 border border-stone-400 dark:border-stone-600 transition cursor-pointer">
+                  📷 Add Photo {photos.length > 0 && `(${photos.length}/3)`}
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    capture="environment"
+                    multiple
+                    onChange={handlePhotosChange}
+                    className="hidden"
+                  />
+                </label>
+              )}
+
+              <p className="text-xs text-stone-500 dark:text-stone-500 mt-2">
+                On mobile, tap to open your camera or choose from gallery. Max 3 photos, 5 MB each.
               </p>
             </div>
 

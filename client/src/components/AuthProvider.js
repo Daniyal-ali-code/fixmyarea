@@ -24,9 +24,15 @@ export function AuthProvider({ children }) {
           return;
         }
 
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
         const res = await fetch("/api/auth/me", {
           headers: { Authorization: `Bearer ${storedToken}` },
+          signal: controller.signal,
         });
+
+        clearTimeout(timeoutId);
 
         if (res.ok) {
           const data = await res.json();
@@ -36,7 +42,9 @@ export function AuthProvider({ children }) {
           localStorage.removeItem("token");
         }
       } catch (err) {
-        console.error("Auth restore failed:", err);
+        if (err.name !== "AbortError") {
+          console.error("Auth restore failed:", err);
+        }
         localStorage.removeItem("token");
       } finally {
         setLoading(false);
