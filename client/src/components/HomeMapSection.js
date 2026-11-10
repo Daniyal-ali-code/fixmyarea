@@ -52,5 +52,23 @@ export default function HomeMapSection() {
     );
   }
 
+    if (reports.length === 0) {
+    return (
+      <div
+        className="rounded-sm border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 flex items-center justify-center p-8 text-center"
+        style={{ minHeight: 320 }}
+      >
+        <div>
+          <p className="font-serif italic text-stone-600 dark:text-stone-400 mb-2">
+            No issues reported yet in your area.
+          </p>
+          <p className="font-serif italic text-sm text-stone-500 dark:text-stone-500">
+            Be the first to report something nearby.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return <ReportsMap reports={reports} />;
 }

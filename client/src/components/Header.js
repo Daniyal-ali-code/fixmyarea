@@ -60,6 +60,7 @@ export default function Header() {
                     Report an Issue
                   </NavLink>
                   <NavLink href="/reports">Reports</NavLink>
+                  <NavLink href="/dashboard">My Reports</NavLink>
                 </>
               )}
 

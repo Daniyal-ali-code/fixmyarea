@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
 import SupportButton from "@/components/SupportButton";
+import ReportDetailMapWrapper from "@/components/ReportDetailMapWrapper";
 import { query } from "@/lib/db";
 
 const statusLabels = {
@@ -224,24 +225,15 @@ export default async function ReportDetailPage({ params }) {
             <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50 mb-4 pb-2 border-b-2 border-amber-600">
               Location
             </h2>
-            <div className="bg-amber-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-sm p-6 text-center">
-              {report.address && (
-                <>
-                  <p className="font-serif italic text-sm text-stone-600 dark:text-stone-400 mb-2">
-                    Address
-                  </p>
-                  <p className="font-serif text-base text-stone-900 dark:text-stone-50 mb-4">
-                    📍 {report.address}
-                  </p>
-                </>
-              )}
-              <p className="font-serif italic text-sm text-stone-600 dark:text-stone-400 mb-2">
-                Coordinates
+            {report.address && (
+              <p className="font-serif italic text-base text-stone-900 dark:text-stone-50 mb-4">
+                📍 {report.address}
               </p>
-              <p className="font-mono text-base text-stone-900 dark:text-stone-50">
-                {report.latitude}, {report.longitude}
-              </p>
-            </div>
+            )}
+            <ReportDetailMapWrapper report={report} />
+            <p className="font-mono text-xs text-stone-600 dark:text-stone-400 mt-3 text-center">
+              {report.latitude}, {report.longitude}
+            </p>
           </div>
 
           {hasResolutionProof && (
