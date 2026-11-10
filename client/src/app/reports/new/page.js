@@ -3,8 +3,22 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import Header from "@/components/Header";
 import { useAuth } from "@/components/AuthProvider";
+
+const LocationPicker = dynamic(
+  () => import("@/components/LocationPicker"),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="rounded-sm border border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 animate-pulse"
+        style={{ height: 320 }}
+      />
+    ),
+  }
+);
 
 const CATEGORIES = [
   { id: 1, name: "Road" },
@@ -36,6 +50,8 @@ export default function NewReportPage() {
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
+    } else if (!loading && user && user.role === "admin") {
+      router.push("/admin");
     }
   }, [loading, user, router]);
 
@@ -56,11 +72,16 @@ export default function NewReportPage() {
       },
       (err) => {
         console.error("Geolocation error:", err);
-        setError("Could not get your location. Please enter coordinates manually.");
+        setError("Could not get your location. Click on the map or enter coordinates manually.");
         setLocating(false);
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
+  }
+
+  function handleMapPick(lat, lng) {
+    setLatitude(lat.toFixed(6));
+    setLongitude(lng.toFixed(6));
   }
 
   async function submitReport(force = false) {
@@ -78,7 +99,7 @@ export default function NewReportPage() {
     const lng = parseFloat(longitude);
 
     if (isNaN(lat) || isNaN(lng)) {
-      setError("Please enter valid coordinates or use your location.");
+      setError("Please select a location on the map or use your current location.");
       setSubmitting(false);
       return;
     }
@@ -349,52 +370,74 @@ export default function NewReportPage() {
               <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2">
                 Location *
               </label>
-              <button
-                type="button"
-                onClick={handleUseLocation}
-                disabled={locating}
-                className="mb-3 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-800 rounded-sm hover:bg-amber-100 dark:hover:bg-stone-700 border border-stone-400 dark:border-stone-600 transition disabled:opacity-50"
-              >
-                {locating ? "Locating..." : "📍 Use my current location"}
-              </button>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label
-                    htmlFor="latitude"
-                    className="block text-xs text-stone-600 dark:text-stone-400 mb-1"
-                  >
-                    Latitude
-                  </label>
-                  <input
-                    id="latitude"
-                    type="number"
-                    step="any"
-                    value={latitude}
-                    onChange={(e) => setLatitude(e.target.value)}
-                    required
-                    className="w-full px-3 py-2 text-sm font-mono bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition"
-                    placeholder="24.8607"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="longitude"
-                    className="block text-xs text-stone-600 dark:text-stone-400 mb-1"
-                  >
-                    Longitude
-                  </label>
-                  <input
-                    id="longitude"
-                    type="number"
-                    step="any"
-                    value={longitude}
-                    onChange={(e) => setLongitude(e.target.value)}
-                    required
-                    className="w-full px-3 py-2 text-sm font-mono bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition"
-                    placeholder="67.0011"
-                  />
-                </div>
+              <p className="text-xs text-stone-600 dark:text-stone-400 mb-3 font-serif italic">
+                Click anywhere on the map to place a pin, or drag the pin to adjust. You can also use your device&apos;s GPS below.
+              </p>
+
+              <LocationPicker
+                latitude={latitude}
+                longitude={longitude}
+                onPick={handleMapPick}
+              />
+
+              <div className="flex flex-wrap items-center gap-3 mt-3">
+                <button
+                  type="button"
+                  onClick={handleUseLocation}
+                  disabled={locating}
+                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-800 rounded-sm hover:bg-amber-100 dark:hover:bg-stone-700 border border-stone-400 dark:border-stone-600 transition disabled:opacity-50"
+                >
+                  {locating ? "Locating..." : "📍 Use my current location"}
+                </button>
+
+                {latitude && longitude && (
+                  <span className="text-xs font-mono text-stone-600 dark:text-stone-400">
+                    {latitude}, {longitude}
+                  </span>
+                )}
               </div>
+
+              <details className="mt-3">
+                <summary className="text-xs text-stone-500 dark:text-stone-500 cursor-pointer font-serif italic">
+                  Enter coordinates manually
+                </summary>
+                <div className="grid grid-cols-2 gap-3 mt-2">
+                  <div>
+                    <label
+                      htmlFor="latitude"
+                      className="block text-xs text-stone-600 dark:text-stone-400 mb-1"
+                    >
+                      Latitude
+                    </label>
+                    <input
+                      id="latitude"
+                      type="number"
+                      step="any"
+                      value={latitude}
+                      onChange={(e) => setLatitude(e.target.value)}
+                      className="w-full px-3 py-2 text-sm font-mono bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition"
+                      placeholder="24.8607"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="longitude"
+                      className="block text-xs text-stone-600 dark:text-stone-400 mb-1"
+                    >
+                      Longitude
+                    </label>
+                    <input
+                      id="longitude"
+                      type="number"
+                      step="any"
+                      value={longitude}
+                      onChange={(e) => setLongitude(e.target.value)}
+                      className="w-full px-3 py-2 text-sm font-mono bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition"
+                      placeholder="67.0011"
+                    />
+                  </div>
+                </div>
+              </details>
             </div>
 
             <div>

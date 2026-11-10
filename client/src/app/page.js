@@ -3,6 +3,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import ReportCard from "@/components/ReportCard";
 import AdminRedirectGuard from "@/components/AdminRedirectGuard";
+import HomeMapSection from "@/components/HomeMapSection";
 import { query } from "@/lib/db";
 
 async function RecentReports() {
@@ -99,6 +100,31 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
+        </section>
+
+        <section className="max-w-6xl mx-auto px-4 py-12">
+          <div className="flex items-baseline justify-between mb-6 pb-2 border-b-2 border-amber-600">
+            <h2 className="font-serif text-3xl font-bold text-stone-900 dark:text-stone-50">
+              Issues Near You
+            </h2>
+            <Link
+              href="/reports"
+              className="font-serif italic text-sm text-slate-800 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-500 transition"
+            >
+              View all →
+            </Link>
+          </div>
+          <HomeMapSection />
+          <p className="mt-3 text-xs font-serif italic text-stone-500 dark:text-stone-500 text-center">
+            Pin colors:{" "}
+            <span className="text-blue-600 dark:text-blue-400">● Reported</span>
+            {" · "}
+            <span className="text-amber-600 dark:text-amber-500">● Under Review</span>
+            {" · "}
+            <span className="text-orange-600 dark:text-orange-500">● In Progress</span>
+            {" · "}
+            <span className="text-slate-600 dark:text-slate-400">● Resolved</span>
+          </p>
         </section>
 
         <section className="max-w-6xl mx-auto px-4 py-12">

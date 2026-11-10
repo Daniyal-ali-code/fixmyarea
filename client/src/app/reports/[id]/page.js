@@ -31,10 +31,12 @@ async function getReport(id) {
          r.*,
          c.name AS category_name, c.icon AS category_icon,
          u.name AS reporter_name,
+         resolver.name AS resolver_name,
          (SELECT COUNT(*)::int FROM supports s WHERE s.report_id = r.id) AS support_count
        FROM reports r
        JOIN categories c ON c.id = r.category_id
        JOIN users u      ON u.id = r.user_id
+       LEFT JOIN users resolver ON resolver.id = r.resolved_by
        WHERE r.id = $1`,
       [id]
     );
@@ -119,6 +121,9 @@ export default async function ReportDetailPage({ params }) {
   ];
 
   const currentStatusIndex = STATUS_ORDER.indexOf(report.status);
+  const isResolved = report.status === "resolved";
+  const hasResolutionProof =
+    isResolved && (report.resolution_note || report.resolution_image_url);
 
   return (
     <>
@@ -160,7 +165,8 @@ export default async function ReportDetailPage({ params }) {
               </div>
               <span className="text-stone-400 dark:text-stone-600">·</span>
               <span className="text-xs text-stone-600 dark:text-stone-400 font-medium uppercase tracking-wider">
-                {report.support_count} {report.support_count === 1 ? "support" : "supports"}
+                {report.support_count}{" "}
+                {report.support_count === 1 ? "support" : "supports"}
               </span>
             </div>
 
@@ -238,6 +244,52 @@ export default async function ReportDetailPage({ params }) {
             </div>
           </div>
 
+          {hasResolutionProof && (
+            <div className="bg-stone-50 dark:bg-stone-800 border-2 border-emerald-600 dark:border-emerald-500 rounded-sm p-6 md:p-8 mb-6">
+              <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50 mb-4 pb-2 border-b-2 border-emerald-600">
+                ✅ Resolution Proof
+              </h2>
+
+              {report.resolution_image_url && (
+                <a
+                  href={report.resolution_image_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block bg-stone-100 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-sm overflow-hidden mb-4 hover:border-emerald-600 dark:hover:border-emerald-500 transition"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={report.resolution_image_url}
+                    alt="Proof of fix"
+                    className="w-full max-h-96 object-contain"
+                  />
+                </a>
+              )}
+
+              {report.resolution_note && (
+                <blockquote className="font-serif italic text-base text-stone-800 dark:text-stone-200 leading-relaxed mb-4 pl-4 border-l-4 border-emerald-600 dark:border-emerald-500 whitespace-pre-wrap">
+                  &ldquo;{report.resolution_note}&rdquo;
+                </blockquote>
+              )}
+
+              <div className="pt-3 border-t border-stone-300 dark:border-stone-700 flex items-center justify-between flex-wrap gap-2 text-xs text-stone-600 dark:text-stone-400">
+                {report.resolver_name && (
+                  <span className="font-serif italic">
+                    Fixed by{" "}
+                    <strong className="not-italic text-stone-900 dark:text-stone-100">
+                      {report.resolver_name}
+                    </strong>
+                  </span>
+                )}
+                {report.resolved_at && (
+                  <span className="font-serif italic">
+                    Resolved on {formatDate(report.resolved_at)}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
           <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-6 md:p-8 mb-6">
             <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50 mb-6 pb-2 border-b-2 border-amber-600">
               Status Timeline
@@ -280,15 +332,23 @@ export default async function ReportDetailPage({ params }) {
             </div>
           </div>
 
-          <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-6 md:p-8 text-center">
-            <p className="font-serif italic text-sm text-stone-600 dark:text-stone-400 mb-4">
-              Does this issue affect you too?
-            </p>
-            <SupportButton
-              reportId={report.id}
-              initialCount={report.support_count}
-            />
-          </div>
+          {!isResolved ? (
+            <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-6 md:p-8 text-center">
+              <p className="font-serif italic text-sm text-stone-600 dark:text-stone-400 mb-4">
+                Does this issue affect you too?
+              </p>
+              <SupportButton
+                reportId={report.id}
+                initialCount={report.support_count}
+              />
+            </div>
+          ) : (
+            <div className="bg-emerald-50 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-800 rounded-sm p-6 md:p-8 text-center">
+              <p className="font-serif italic text-sm text-emerald-800 dark:text-emerald-200">
+                This issue has been resolved. Thank you for your support.
+              </p>
+            </div>
+          )}
         </div>
       </main>
 
