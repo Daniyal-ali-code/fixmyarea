@@ -34,7 +34,13 @@ export default function LoginPage() {
       }
 
       login(data.user, data.token);
-      router.push("/");
+
+      // Role-based landing
+      if (data.user.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/");
+      }
     } catch (err) {
       console.error("Login error:", err);
       setError("Something went wrong. Try again.");

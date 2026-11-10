@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
 import ReportCard from "@/components/ReportCard";
+import AdminRedirectGuard from "@/components/AdminRedirectGuard";
 import { query } from "@/lib/db";
 
 async function RecentReports() {
@@ -62,7 +63,7 @@ function ReportsSkeleton() {
 
 export default function HomePage() {
   return (
-    <>
+    <AdminRedirectGuard>
       <Header />
 
       <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
@@ -126,6 +127,6 @@ export default function HomePage() {
           </p>
         </div>
       </footer>
-    </>
+    </AdminRedirectGuard>
   );
 }
