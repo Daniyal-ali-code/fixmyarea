@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
@@ -26,7 +26,6 @@ const STATUS_STYLES = {
     "bg-slate-50 text-slate-900 border-slate-300 dark:bg-slate-950 dark:text-slate-200 dark:border-slate-700",
 };
 
-// Sortable column definitions
 const SORT_COLUMNS = [
   { key: "id", label: "ID", get: (r) => r.id },
   { key: "created_at", label: "Time", get: (r) => new Date(r.created_at).getTime() },
@@ -36,11 +35,7 @@ const SORT_COLUMNS = [
   { key: "severity", label: "Severity", get: (r) => r.severity },
   { key: "support_count", label: "Support", get: (r) => r.support_count },
   { key: "priority_score", label: "Priority", get: (r) => Number(r.priority_score) },
-  {
-    key: "status",
-    label: "Status",
-    get: (r) => STATUS_OPTIONS.indexOf(r.status),
-  },
+  { key: "status", label: "Status", get: (r) => STATUS_OPTIONS.indexOf(r.status) },
 ];
 
 export default function AdminPage() {
@@ -53,10 +48,15 @@ export default function AdminPage() {
   const [error, setError] = useState("");
   const [busyId, setBusyId] = useState(null);
 
-  // Sorting: [{ key, dir: "asc"|"desc" }, ...]
-  const [sortStack, setSortStack] = useState([
-    { key: "created_at", dir: "desc" },
-  ]);
+  const [sortStack, setSortStack] = useState([{ key: "created_at", dir: "desc" }]);
+
+  const [resolveTarget, setResolveTarget] = useState(null);
+  const [resolutionNote, setResolutionNote] = useState("");
+  const [resolutionImage, setResolutionImage] = useState(null);
+  const [resolutionImagePreview, setResolutionImagePreview] = useState(null);
+  const [resolutionSubmitting, setResolutionSubmitting] = useState(false);
+  const [resolutionError, setResolutionError] = useState("");
+  const previewRef = useRef(null);
 
   useEffect(() => {
     if (authLoading) return;
@@ -110,6 +110,12 @@ export default function AdminPage() {
   }, [token, user]);
 
   async function changeStatus(id, status) {
+    if (status === "resolved") {
+      const target = reports.find((r) => r.id === id);
+      openResolveModal(target);
+      return;
+    }
+
     setBusyId(id);
     setError("");
     try {
@@ -133,6 +139,97 @@ export default function AdminPage() {
     }
   }
 
+  function openResolveModal(report) {
+    if (!report) return;
+    setResolveTarget(report);
+    setResolutionNote("");
+    setResolutionImage(null);
+    if (previewRef.current) {
+      URL.revokeObjectURL(previewRef.current);
+      previewRef.current = null;
+    }
+    setResolutionImagePreview(null);
+    setResolutionError("");
+  }
+
+  function closeResolveModal() {
+    if (previewRef.current) {
+      URL.revokeObjectURL(previewRef.current);
+      previewRef.current = null;
+    }
+    setResolveTarget(null);
+    setResolutionNote("");
+    setResolutionImage(null);
+    setResolutionImagePreview(null);
+    setResolutionError("");
+  }
+
+  function handleResolutionImageChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setResolutionError("Image must be JPEG, PNG, or WEBP");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setResolutionError("Image must be 5 MB or smaller");
+      return;
+    }
+    setResolutionError("");
+    if (previewRef.current) {
+      URL.revokeObjectURL(previewRef.current);
+    }
+    const url = URL.createObjectURL(file);
+    previewRef.current = url;
+    setResolutionImage(file);
+    setResolutionImagePreview(url);
+  }
+
+  async function submitResolution(e) {
+    e.preventDefault();
+    if (!resolveTarget) return;
+    setResolutionError("");
+
+    if (!resolutionNote.trim() || resolutionNote.trim().length < 5) {
+      setResolutionError("Please write a note (at least 5 characters) describing the fix.");
+      return;
+    }
+    if (!resolutionImage) {
+      setResolutionError("Please upload a photo showing the fixed issue.");
+      return;
+    }
+
+    setResolutionSubmitting(true);
+    setBusyId(resolveTarget.id);
+
+    try {
+      const form = new FormData();
+      form.append("status", "resolved");
+      form.append("resolution_note", resolutionNote.trim());
+      form.append("resolution_image", resolutionImage);
+
+      const res = await fetch(`/api/admin/reports/${resolveTarget.id}/status`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+        body: form,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to mark as resolved");
+
+      setReports((prev) =>
+        prev.map((r) =>
+          r.id === resolveTarget.id ? { ...r, ...data.report } : r
+        )
+      );
+      closeResolveModal();
+    } catch (err) {
+      setResolutionError(err.message);
+    } finally {
+      setResolutionSubmitting(false);
+      setBusyId(null);
+    }
+  }
+
   async function deleteReport(id, title) {
     if (!confirm(`Delete report "${title}"? This cannot be undone.`)) return;
     setBusyId(id);
@@ -152,13 +249,10 @@ export default function AdminPage() {
     }
   }
 
-  // Multi-column sort: click column to add/replace as primary
-  // Shift+click adds as secondary, third, etc.
   function handleSort(key, shiftKey) {
     setSortStack((prev) => {
       const existingIdx = prev.findIndex((s) => s.key === key);
 
-      // Click same column again → flip direction
       if (existingIdx !== -1 && prev.length === 1) {
         const next = [...prev];
         next[0] = { key, dir: next[0].dir === "asc" ? "desc" : "asc" };
@@ -168,15 +262,12 @@ export default function AdminPage() {
       const newEntry = { key, dir: "asc" };
 
       if (!shiftKey) {
-        // Non-shift click: replace entire stack with just this column
-        // But if the same column was already primary and clicked again → flip
         if (prev[0]?.key === key) {
           return [{ key, dir: prev[0].dir === "asc" ? "desc" : "asc" }];
         }
         return [newEntry];
       }
 
-      // Shift+click: add or replace this column in the stack
       const without = prev.filter((s) => s.key !== key);
       return [...without, newEntry];
     });
@@ -219,7 +310,6 @@ export default function AdminPage() {
     <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
       <Header />
       <div className="max-w-7xl mx-auto px-4 py-12">
-        {/* Title bar */}
         <div className="flex items-baseline justify-between mb-8 pb-2 border-b-2 border-amber-600">
           <div>
             <h1 className="font-serif text-4xl font-bold text-stone-900 dark:text-stone-50">
@@ -252,21 +342,10 @@ export default function AdminPage() {
         {stats && (
           <>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <StatCard
-                label="Total Reports"
-                value={stats.totals.total_reports}
-              />
+              <StatCard label="Total Reports" value={stats.totals.total_reports} />
               <StatCard label="Resolved" value={stats.totals.resolved_reports} />
-              <StatCard
-                label="Resolution Rate"
-                value={`${stats.totals.resolution_rate}%`}
-              />
-              <StatCard
-                label="Pending"
-                value={
-                  stats.totals.total_reports - stats.totals.resolved_reports
-                }
-              />
+              <StatCard label="Resolution Rate" value={`${stats.totals.resolution_rate}%`} />
+              <StatCard label="Pending" value={stats.totals.total_reports - stats.totals.resolved_reports} />
             </div>
 
             {stats.by_category?.length > 0 && (
@@ -289,7 +368,6 @@ export default function AdminPage() {
           </>
         )}
 
-        {/* Sort bar */}
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <span className="font-sans text-xs uppercase tracking-wider text-stone-600 dark:text-stone-400">
             Sort by:
@@ -331,11 +409,9 @@ export default function AdminPage() {
           )}
         </div>
         <p className="mb-4 text-xs font-serif italic text-stone-500 dark:text-stone-500">
-          Click to sort by one column. Shift+click another column to add a
-          secondary sort. Click the same column again to flip direction.
+          Click to sort by one column. Shift+click another column to add a secondary sort. Click the same column again to flip direction.
         </p>
 
-        {/* Report table */}
         <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -425,6 +501,131 @@ export default function AdminPage() {
           </div>
         </div>
       </div>
+
+      {resolveTarget && (
+        <div
+          className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center px-4 py-8 overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) closeResolveModal();
+          }}
+        >
+          <div className="bg-amber-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-sm max-w-lg w-full p-6 my-auto">
+            <div className="flex items-start justify-between mb-4 pb-2 border-b-2 border-amber-600">
+              <div>
+                <h2 className="font-serif text-2xl font-bold text-stone-900 dark:text-stone-50">
+                  Mark as Resolved
+                </h2>
+                <p className="font-serif italic text-sm text-stone-600 dark:text-stone-400 mt-1">
+                  {resolveTarget.title}
+                </p>
+              </div>
+              <button
+                onClick={closeResolveModal}
+                className="text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 text-2xl leading-none"
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+
+            <p className="font-serif italic text-sm text-stone-700 dark:text-stone-300 mb-4">
+              Upload a photo showing the fixed issue and write a short note. This proof will be visible to the community.
+            </p>
+
+            {resolutionError && (
+              <div className="mb-4 bg-red-50 dark:bg-red-950 border border-red-300 dark:border-red-800 text-red-800 dark:text-red-200 text-sm p-3 rounded-sm">
+                {resolutionError}
+              </div>
+            )}
+
+            <form onSubmit={submitResolution} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2">
+                  Proof Photo *
+                </label>
+
+                {resolutionImagePreview ? (
+                  <div className="relative aspect-video bg-stone-100 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={resolutionImagePreview}
+                      alt="Resolution preview"
+                      className="w-full h-full object-contain"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (previewRef.current) {
+                          URL.revokeObjectURL(previewRef.current);
+                          previewRef.current = null;
+                        }
+                        setResolutionImage(null);
+                        setResolutionImagePreview(null);
+                      }}
+                      className="absolute top-2 right-2 h-7 w-7 flex items-center justify-center bg-stone-900/80 text-white text-sm rounded-full hover:bg-red-600 transition"
+                      aria-label="Remove photo"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ) : (
+                  <label className="block px-4 py-6 text-center text-xs font-semibold uppercase tracking-wider bg-stone-100 dark:bg-stone-800 border-2 border-dashed border-stone-400 dark:border-stone-600 rounded-sm hover:border-amber-600 dark:hover:border-amber-500 transition cursor-pointer">
+                    📷 Click to upload proof photo
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={handleResolutionImageChange}
+                      className="hidden"
+                    />
+                  </label>
+                )}
+                <p className="text-xs text-stone-500 dark:text-stone-500 mt-1">
+                  JPEG, PNG, or WEBP · max 5 MB
+                </p>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="resolutionNote"
+                  className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2"
+                >
+                  What was fixed? *
+                </label>
+                <textarea
+                  id="resolutionNote"
+                  value={resolutionNote}
+                  onChange={(e) => setResolutionNote(e.target.value)}
+                  rows={3}
+                  maxLength={500}
+                  className="w-full px-3 py-2 bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition resize-y"
+                  placeholder="e.g. Pothole filled and asphalt leveled by the municipal team."
+                />
+                <p className="text-xs text-stone-500 dark:text-stone-500 mt-1">
+                  {resolutionNote.length}/500 characters
+                </p>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={closeResolveModal}
+                  disabled={resolutionSubmitting}
+                  className="flex-1 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 bg-amber-50 dark:bg-stone-800 rounded-sm hover:bg-amber-100 dark:hover:bg-stone-700 border border-stone-400 dark:border-stone-600 transition disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={resolutionSubmitting}
+                  className="flex-1 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-stone-900 bg-amber-600 rounded-sm hover:bg-amber-500 shadow-md shadow-amber-600/30 transition border border-amber-700 disabled:opacity-50"
+                >
+                  {resolutionSubmitting ? "Marking…" : "Mark Resolved"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
