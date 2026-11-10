@@ -219,14 +219,21 @@ export default async function ReportDetailPage({ params }) {
               Location
             </h2>
             <div className="bg-amber-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-sm p-6 text-center">
+              {report.address && (
+                <>
+                  <p className="font-serif italic text-sm text-stone-600 dark:text-stone-400 mb-2">
+                    Address
+                  </p>
+                  <p className="font-serif text-base text-stone-900 dark:text-stone-50 mb-4">
+                    📍 {report.address}
+                  </p>
+                </>
+              )}
               <p className="font-serif italic text-sm text-stone-600 dark:text-stone-400 mb-2">
                 Coordinates
               </p>
               <p className="font-mono text-base text-stone-900 dark:text-stone-50">
                 {report.latitude}, {report.longitude}
-              </p>
-              <p className="font-serif italic text-xs text-stone-500 dark:text-stone-500 mt-3">
-                Interactive map coming in Phase 6e
               </p>
             </div>
           </div>

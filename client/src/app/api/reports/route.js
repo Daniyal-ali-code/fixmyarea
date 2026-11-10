@@ -26,7 +26,7 @@ export async function GET(request) {
 
     const { rows } = await query(
       `SELECT
-         r.id, r.title, r.description, r.latitude, r.longitude,
+         r.id, r.title, r.description, r.address, r.latitude, r.longitude,
          r.severity, r.status, r.priority_score, r.created_at,
          r.category_id, c.name AS category_name, c.icon AS category_icon,
          u.name AS reporter_name,
@@ -55,7 +55,7 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { title, description, category_id, latitude, longitude, severity } = body;
+    const { title, description, category_id, latitude, longitude, severity, address } = body;
 
     if (!title || !description || !category_id || latitude == null || longitude == null) {
       return NextResponse.json(
@@ -101,10 +101,10 @@ export async function POST(request) {
 
     const { rows } = await query(
       `INSERT INTO reports
-         (user_id, category_id, title, description, latitude, longitude, severity)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+         (user_id, category_id, title, description, latitude, longitude, severity, address)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
-      [user.id, category_id, title, description, latitude, longitude, sev]
+      [user.id, category_id, title, description, latitude, longitude, sev, address || null]
     );
 
     const report = rows[0];

@@ -61,6 +61,12 @@ export default function ReportCard({ report }) {
         {report.description}
       </p>
 
+      {report.address && (
+        <p className="text-xs text-stone-600 dark:text-stone-400 mb-3 font-serif italic">
+          📍 {report.address}
+        </p>
+      )}
+
       <div className="flex items-center justify-between mb-3">
         <SeverityDots severity={report.severity} />
         <span className="text-xs text-stone-600 dark:text-stone-400 font-medium uppercase tracking-wider">

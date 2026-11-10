@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
@@ -26,6 +26,23 @@ const STATUS_STYLES = {
     "bg-slate-50 text-slate-900 border-slate-300 dark:bg-slate-950 dark:text-slate-200 dark:border-slate-700",
 };
 
+// Sortable column definitions
+const SORT_COLUMNS = [
+  { key: "id", label: "ID", get: (r) => r.id },
+  { key: "created_at", label: "Time", get: (r) => new Date(r.created_at).getTime() },
+  { key: "title", label: "Title", get: (r) => (r.title || "").toLowerCase() },
+  { key: "category_name", label: "Category", get: (r) => (r.category_name || "").toLowerCase() },
+  { key: "reporter_name", label: "Reporter", get: (r) => (r.reporter_name || "").toLowerCase() },
+  { key: "severity", label: "Severity", get: (r) => r.severity },
+  { key: "support_count", label: "Support", get: (r) => r.support_count },
+  { key: "priority_score", label: "Priority", get: (r) => Number(r.priority_score) },
+  {
+    key: "status",
+    label: "Status",
+    get: (r) => STATUS_OPTIONS.indexOf(r.status),
+  },
+];
+
 export default function AdminPage() {
   const router = useRouter();
   const { user, token, loading: authLoading } = useAuth();
@@ -35,6 +52,11 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [busyId, setBusyId] = useState(null);
+
+  // Sorting: [{ key, dir: "asc"|"desc" }, ...]
+  const [sortStack, setSortStack] = useState([
+    { key: "created_at", dir: "desc" },
+  ]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -130,6 +152,54 @@ export default function AdminPage() {
     }
   }
 
+  // Multi-column sort: click column to add/replace as primary
+  // Shift+click adds as secondary, third, etc.
+  function handleSort(key, shiftKey) {
+    setSortStack((prev) => {
+      const existingIdx = prev.findIndex((s) => s.key === key);
+
+      // Click same column again → flip direction
+      if (existingIdx !== -1 && prev.length === 1) {
+        const next = [...prev];
+        next[0] = { key, dir: next[0].dir === "asc" ? "desc" : "asc" };
+        return next;
+      }
+
+      const newEntry = { key, dir: "asc" };
+
+      if (!shiftKey) {
+        // Non-shift click: replace entire stack with just this column
+        // But if the same column was already primary and clicked again → flip
+        if (prev[0]?.key === key) {
+          return [{ key, dir: prev[0].dir === "asc" ? "desc" : "asc" }];
+        }
+        return [newEntry];
+      }
+
+      // Shift+click: add or replace this column in the stack
+      const without = prev.filter((s) => s.key !== key);
+      return [...without, newEntry];
+    });
+  }
+
+  const sortedReports = useMemo(() => {
+    if (sortStack.length === 0) return reports;
+    const copy = [...reports];
+    copy.sort((a, b) => {
+      for (const { key, dir } of sortStack) {
+        const col = SORT_COLUMNS.find((c) => c.key === key);
+        if (!col) continue;
+        const av = col.get(a);
+        const bv = col.get(b);
+        if (av === bv) continue;
+        const cmp = av < bv ? -1 : 1;
+        return dir === "asc" ? cmp : -cmp;
+      }
+      return 0;
+    });
+    return copy;
+  }, [reports, sortStack]);
+
   if (authLoading) {
     return (
       <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
@@ -148,7 +218,7 @@ export default function AdminPage() {
   return (
     <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
       <Header />
-      <div className="max-w-6xl mx-auto px-4 py-12">
+      <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Title bar */}
         <div className="flex items-baseline justify-between mb-8 pb-2 border-b-2 border-amber-600">
           <div>
@@ -181,7 +251,6 @@ export default function AdminPage() {
 
         {stats && (
           <>
-            {/* Stat cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <StatCard
                 label="Total Reports"
@@ -200,7 +269,6 @@ export default function AdminPage() {
               />
             </div>
 
-            {/* Category breakdown */}
             {stats.by_category?.length > 0 && (
               <div className="mb-8 bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-5">
                 <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50 mb-3">
@@ -221,6 +289,52 @@ export default function AdminPage() {
           </>
         )}
 
+        {/* Sort bar */}
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <span className="font-sans text-xs uppercase tracking-wider text-stone-600 dark:text-stone-400">
+            Sort by:
+          </span>
+          {SORT_COLUMNS.map((col) => {
+            const idx = sortStack.findIndex((s) => s.key === col.key);
+            const active = idx !== -1;
+            const sortEntry = active ? sortStack[idx] : null;
+            return (
+              <button
+                key={col.key}
+                onClick={(e) => handleSort(col.key, e.shiftKey)}
+                className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-sm border transition ${
+                  active
+                    ? "bg-amber-600 text-stone-900 border-amber-700"
+                    : "bg-amber-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-400 dark:border-stone-600 hover:border-amber-600"
+                }`}
+                title="Click to sort · Shift+click to add as secondary sort"
+              >
+                {col.label}
+                {active && (
+                  <span className="ml-1">
+                    {sortEntry.dir === "asc" ? "↑" : "↓"}
+                    {sortStack.length > 1 && (
+                      <sup className="ml-0.5 text-[10px]">{idx + 1}</sup>
+                    )}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+          {sortStack.length > 1 && (
+            <button
+              onClick={() => setSortStack([{ key: "created_at", dir: "desc" }])}
+              className="ml-2 text-xs font-serif italic text-stone-600 dark:text-stone-400 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2"
+            >
+              reset
+            </button>
+          )}
+        </div>
+        <p className="mb-4 text-xs font-serif italic text-stone-500 dark:text-stone-500">
+          Click to sort by one column. Shift+click another column to add a
+          secondary sort. Click the same column again to flip direction.
+        </p>
+
         {/* Report table */}
         <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm overflow-hidden">
           <div className="overflow-x-auto">
@@ -230,6 +344,7 @@ export default function AdminPage() {
                   <Th>ID</Th>
                   <Th>Title</Th>
                   <Th>Category</Th>
+                  <Th>Address</Th>
                   <Th>Reporter</Th>
                   <Th>Sev</Th>
                   <Th>Support</Th>
@@ -239,17 +354,17 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {reports.length === 0 && (
+                {sortedReports.length === 0 && (
                   <tr>
                     <td
-                      colSpan={9}
+                      colSpan={10}
                       className="p-12 text-center font-serif italic text-stone-600 dark:text-stone-400"
                     >
                       No reports yet.
                     </td>
                   </tr>
                 )}
-                {reports.map((r) => (
+                {sortedReports.map((r) => (
                   <tr
                     key={r.id}
                     className="border-b border-stone-200 dark:border-stone-700 hover:bg-amber-50/50 dark:hover:bg-stone-900/50"
@@ -264,6 +379,11 @@ export default function AdminPage() {
                       </Link>
                     </Td>
                     <Td>{r.category_name}</Td>
+                    <Td>
+                      <span className="text-xs text-stone-600 dark:text-stone-400">
+                        {r.address || "—"}
+                      </span>
+                    </Td>
                     <Td>{r.reporter_name}</Td>
                     <Td>{r.severity}/5</Td>
                     <Td>{r.support_count}</Td>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
@@ -24,6 +24,7 @@ export default function NewReportPage() {
   const [severity, setSeverity] = useState(3);
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
+  const [address, setAddress] = useState("");
 
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -32,7 +33,6 @@ export default function NewReportPage() {
   const [photos, setPhotos] = useState([]);
   const [photoPreviews, setPhotoPreviews] = useState([]);
 
-  // Redirect to login if not authenticated
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
@@ -100,6 +100,7 @@ export default function NewReportPage() {
           latitude: lat,
           longitude: lng,
           severity,
+          address: address.trim() || null,
         }),
       });
 
@@ -117,7 +118,6 @@ export default function NewReportPage() {
         return;
       }
 
-      // Report created — now upload photos if any
       const newReportId = data.report.id;
 
       if (photos.length > 0) {
@@ -132,7 +132,6 @@ export default function NewReportPage() {
           });
         } catch (imgErr) {
           console.error("Image upload error:", imgErr);
-          // Non-fatal — report is created, photos failed
         }
       }
 
@@ -148,13 +147,10 @@ export default function NewReportPage() {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
-    // Limit to 3 total
     const combined = [...photos, ...files].slice(0, 3);
     setPhotos(combined);
 
-    // Generate previews
     const previews = combined.map((f) => URL.createObjectURL(f));
-    // Revoke old previews to avoid memory leaks
     photoPreviews.forEach((p) => URL.revokeObjectURL(p));
     setPhotoPreviews(previews);
   }
@@ -172,7 +168,6 @@ export default function NewReportPage() {
     await submitReport(false);
   }
 
-  // If loading auth or redirecting
   if (loading || !user) {
     return (
       <>
@@ -212,7 +207,6 @@ export default function NewReportPage() {
             </p>
           </div>
 
-          {/* Duplicate warning */}
           {duplicates && duplicates.length > 0 && (
             <div className="bg-amber-50 dark:bg-amber-950 border-2 border-amber-600 dark:border-amber-700 rounded-sm p-5 mb-6">
               <p className="font-serif text-lg font-bold text-stone-900 dark:text-stone-50 mb-2">
@@ -264,7 +258,6 @@ export default function NewReportPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Title */}
             <div>
               <label
                 htmlFor="title"
@@ -287,7 +280,6 @@ export default function NewReportPage() {
               </p>
             </div>
 
-            {/* Category */}
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2">
                 Category *
@@ -310,7 +302,6 @@ export default function NewReportPage() {
               </div>
             </div>
 
-            {/* Description */}
             <div>
               <label
                 htmlFor="description"
@@ -329,7 +320,6 @@ export default function NewReportPage() {
               />
             </div>
 
-            {/* Severity */}
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2">
                 Severity: {severity}/5
@@ -355,7 +345,6 @@ export default function NewReportPage() {
               </p>
             </div>
 
-            {/* Location */}
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2">
                 Location *
@@ -406,12 +395,29 @@ export default function NewReportPage() {
                   />
                 </div>
               </div>
-              <p className="text-xs text-stone-500 dark:text-stone-500 mt-2">
-                Interactive map picker coming in Phase 6e
+            </div>
+
+            <div>
+              <label
+                htmlFor="address"
+                className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2"
+              >
+                Address (optional)
+              </label>
+              <input
+                id="address"
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                maxLength={250}
+                className="w-full px-4 py-3 text-base bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition"
+                placeholder="e.g. Street 5, Block B, Korangi"
+              />
+              <p className="text-xs text-stone-500 dark:text-stone-500 mt-1">
+                Helps others find the exact spot.
               </p>
             </div>
 
-            {/* Photos */}
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2">
                 Photos (optional, up to 3)
@@ -462,7 +468,6 @@ export default function NewReportPage() {
               </p>
             </div>
 
-            {/* Submit */}
             <div className="pt-4 border-t border-stone-300 dark:border-stone-700">
               <button
                 type="submit"

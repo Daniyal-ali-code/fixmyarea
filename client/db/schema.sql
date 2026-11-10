@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS reports (
   description    TEXT NOT NULL,
   latitude       DOUBLE PRECISION NOT NULL,
   longitude      DOUBLE PRECISION NOT NULL,
+  address	 TEXT,
   severity       SMALLINT NOT NULL DEFAULT 2 CHECK (severity BETWEEN 1 AND 5),
   status         VARCHAR(20) NOT NULL DEFAULT 'reported'
                  CHECK (status IN ('reported', 'under_review', 'in_progress', 'resolved')),

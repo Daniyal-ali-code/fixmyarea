@@ -14,7 +14,7 @@ export async function GET(request) {
 
     const { rows } = await query(
       `SELECT
-         r.id, r.title, r.description, r.latitude, r.longitude,
+         r.id, r.title, r.description, r.address, r.latitude, r.longitude,
          r.severity, r.status, r.priority_score, r.created_at, r.updated_at,
          r.category_id, c.name AS category_name,
          u.id AS user_id, u.name AS reporter_name, u.email AS reporter_email,
