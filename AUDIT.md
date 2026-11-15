@@ -241,3 +241,99 @@ was not exercised here — that is covered by the Supabase phase.
   with a clear error.
 - **Env vars needed to run:** `DATABASE_URL`, `JWT_SECRET` (≥ 32 chars),
   and `ADMIN_PASSWORD` for the seed script only. See `client/README.md`.
+
+## Supabase migration (2026-11-15)
+
+Project creation via the Management API was NOT possible in this
+session: the stored Supabase Personal Access Token is rejected with
+`{"message":"Invalid access token"}` (HTTP 401) on both the
+Management API (`GET /v1/organizations`) and the database query
+endpoint (`sb_curl.py`, project `qjhflkjgybyqbvlnvkwu`). No new
+project exists yet, so no project ref, URL, or keys exist to report,
+and no database password was generated — the user creates the
+project himself (see below) and chooses its database password there.
+
+What was done anyway (code + single-file setup, ready to run once
+the project exists):
+
+- **Setup SQL:** `~/workspace/your_files/fixmyarea-supabase-setup.sql`
+  — the full schema from `client/db/schema.sql` (table portion
+  verified byte-identical after whitespace normalisation), plus a
+  public `report-images` Storage bucket and four storage policies
+  (public read; upload/update/delete scoped to the bucket). The file
+  parses cleanly with PostgreSQL's own parser (pglast/libpg_query,
+  14 statements) and is idempotent — safe to re-run. Run it once in
+  the Supabase SQL Editor. The app uses its own JWT, NOT Supabase
+  Auth, so the bucket works with the service-role key from the
+  server; no `auth.uid()` policies are needed.
+- **Data layer (`client/src/lib/db.js`):** `pg` Pool kept; when
+  `DATABASE_URL` carries `?sslmode=require` (the Supabase pooler
+  URL, port 6543) the pool now passes `ssl: { rejectUnauthorized:
+  false }` explicitly, because node-postgres only honours sslmode
+  for direct connections. Plain local Postgres URLs are unchanged.
+- **Storage (`client/src/lib/storage.js`, new):** `@supabase/supabase-js`
+  (2.119.0, the only new dependency) used for Storage only —
+  `uploadToBucket` / `deleteFromBucket` / `deleteByUrl`, server-only,
+  service-role key, no session persistence. Report photos go to
+  `reports/<reportId>-<uuid>.<ext>`, resolution photos to
+  `resolutions/<reportId>-<uuid>.<ext>`; the public Storage URL is
+  what lands in `report_images.url` /
+  `reports.resolution_image_url`.
+- **Image upload route** (`api/reports/[id]/images/route.js`):
+  local-disk writes replaced by Storage uploads. Type/size/
+  magic-byte validation (`lib/upload.js`) and the 3-file cap are
+  unchanged; rollback now deletes the uploaded Storage objects as
+  well as the DB rows.
+- **Resolution upload** (`api/admin/reports/[id]/status/route.js`):
+  same move, under the `resolutions/` prefix; rollback deletes the
+  uploaded object on transaction failure / concurrent change.
+- **Admin delete** (`api/admin/reports/[id]/route.js`): cleanup now
+  goes through `deleteByUrl`, which deletes Storage objects for
+  Supabase URLs and still removes legacy pre-migration
+  `/uploads/...` local files, so deleting old reports still cleans up.
+- **`client/.env.example` (new):** `DATABASE_URL` (pooler),
+  `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
+  `SUPABASE_SERVICE_ROLE_KEY`, `JWT_SECRET` — placeholders only.
+  `.gitignore` now whitelists `.env.example` for commit (it was
+  covered by `.env*`); `.env.local` stays ignored and was never created.
+- **`client/db/seed-admin.mjs`:** same SSL rule as `db.js` for pooler
+  URLs. The admin was NOT created: the seed needs `ADMIN_PASSWORD`
+  from the environment and no password was (or will be) invented.
+  The user runs, from `client/` with their own password:
+  `ADMIN_PASSWORD='<chosen-password>' node db/seed-admin.mjs`
+
+Verified: `cd client && pnpm install && pnpm lint && pnpm build`
+all pass (18 routes). The setup SQL's table portion parses via
+pglast and matches `schema.sql`. NOT verified live — no Supabase
+project/keys exist in this session, so the setup SQL was never run
+against Supabase, the 5 categories were never confirmed landed,
+and no end-to-end check (register/login/report/support/image
+upload, rows + Storage object in Supabase) was possible. No local
+Postgres exists on this machine either, so there was no local-DB
+substitute. These steps are still owed after the project is created.
+
+Steps for the user (once the project exists):
+1. Create the project in the Supabase Dashboard ("fixmyarea",
+   region ap-south-1 if offered, else eu-central-1) and note the
+   database password chosen there.
+2. SQL Editor > paste `fixmyarea-supabase-setup.sql` > Run. Verify
+   with: `select tablename from pg_tables where schemaname =
+   'public';` (expect users, categories, reports, report_images,
+   supports, status_history) and `select * from categories;`
+   (expect the 5 rows), and Storage > `report-images` bucket listed.
+3. Copy `client/.env.example` to `client/.env.local`, fill in
+   `DATABASE_URL` (Settings > Database > Transaction pooler),
+   project URL + anon key + service-role key (Settings > API),
+   and `JWT_SECRET`.
+4. `ADMIN_PASSWORD='<chosen-password>' node db/seed-admin.mjs`
+   from `client/` (admin: admin@fixmyarea.pk).
+5. `pnpm dev`, then exercise register/login/create-report/list/
+   support/image-upload and confirm rows + the Storage object land
+   in the Supabase Dashboard. Also fix the stored Supabase token
+   (Dashboard > Account > Access Tokens > new token, then reconnect
+   the `custom.supabase` connector) so future API work is possible.
+
+Future option (not done, out of scope): move auth to Supabase Auth
+and drop the custom JWT + bcrypt login. That would change the login/
+register routes, the cookie session, and the admin seed; the Storage
+policies could then use `auth.uid()` instead of the service-role key.
