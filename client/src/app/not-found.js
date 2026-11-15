@@ -1,10 +1,8 @@
 import Link from "next/link";
-import Header from "@/components/Header";
 
 export default function NotFound() {
   return (
     <>
-      <Header />
       <main className="min-h-screen bg-amber-50 dark:bg-stone-900 flex items-center justify-center px-4 py-16">
         <div className="max-w-md text-center">
           <p className="font-serif italic text-xs uppercase tracking-[0.3em] text-stone-600 dark:text-stone-400 mb-2 border-b-2 border-amber-600 pb-1 inline-block">

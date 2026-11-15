@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Header from "@/components/Header";
 import SupportButton from "@/components/SupportButton";
 import ReportImage from "@/components/ReportImage";
 import ReportDetailMapWrapper from "@/components/ReportDetailMapWrapper";
@@ -129,7 +128,6 @@ export default async function ReportDetailPage({ params }) {
 
   return (
     <>
-      <Header />
 
       <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
         <div className="max-w-4xl mx-auto px-4 py-8">

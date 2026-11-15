@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import Header from "@/components/Header";
 import { useAuth } from "@/components/AuthProvider";
 
 const LocationPicker = dynamic(
@@ -253,7 +252,6 @@ export default function NewReportPage() {
   if (loading || !user) {
     return (
       <>
-        <Header />
         <main className="min-h-screen bg-amber-50 dark:bg-stone-900 flex items-center justify-center">
           <p className="font-serif italic text-stone-600 dark:text-stone-400">
             Loading...
@@ -265,7 +263,6 @@ export default function NewReportPage() {
 
   return (
     <>
-      <Header />
 
       <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
         <div className="max-w-2xl mx-auto px-4 py-8">

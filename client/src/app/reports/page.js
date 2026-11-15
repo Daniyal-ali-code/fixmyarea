@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import Header from "@/components/Header";
 import ReportCard from "@/components/ReportCard";
 import { query } from "@/lib/db";
 
@@ -161,7 +160,6 @@ export default async function ReportsPage({ searchParams }) {
 
   return (
     <>
-      <Header />
 
       <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
         <section className="bg-gradient-to-br from-[#fef3c7] via-amber-50 to-amber-50 dark:from-stone-800 dark:via-stone-900 dark:to-stone-900 border-b border-stone-400 dark:border-stone-700">

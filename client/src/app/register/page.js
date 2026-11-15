@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Header from "@/components/Header";
 import { useAuth } from "@/components/AuthProvider";
 
 export default function RegisterPage() {
@@ -53,7 +52,6 @@ export default function RegisterPage() {
 
   return (
     <>
-      <Header />
       <main className="min-h-screen bg-amber-50 dark:bg-stone-900 flex items-center justify-center px-4 py-12">
         <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-8 max-w-md w-full">
           <div className="mb-8">

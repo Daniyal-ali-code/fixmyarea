@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Header from "@/components/Header";
 import { useAuth } from "@/components/AuthProvider";
 
 const STATUS_OPTIONS = ["reported", "under_review", "in_progress", "resolved"];
@@ -308,7 +307,6 @@ export default function AdminPage() {
   if (authLoading) {
     return (
       <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
-        <Header />
         <div className="max-w-6xl mx-auto px-4 py-20 text-center">
           <p className="font-serif italic text-stone-600 dark:text-stone-400">
             Loading…
@@ -322,7 +320,6 @@ export default function AdminPage() {
 
   return (
     <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
-      <Header />
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex items-baseline justify-between mb-8 pb-2 border-b-2 border-amber-600">
           <div>
