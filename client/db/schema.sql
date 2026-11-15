@@ -83,16 +83,18 @@ CREATE TABLE IF NOT EXISTS status_history (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- PASSWORD RESETS (forgot-password tokens: only the SHA-256 hash of the
--- token is stored, never the token itself; tokens are single-use and
--- expire after 1 hour)
-CREATE TABLE IF NOT EXISTS password_resets (
+-- PASSWORD RESET OTPS (forgot-password 6-digit codes: only the SHA-256
+-- hash of the code is stored, never the code itself; codes are
+-- single-use, expire after 10 minutes, and allow at most 5 verify
+-- attempts)
+CREATE TABLE IF NOT EXISTS password_reset_otps (
   id         SERIAL PRIMARY KEY,
   user_id    INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  token_hash TEXT NOT NULL UNIQUE,
+  otp_hash   TEXT NOT NULL,
   expires_at TIMESTAMPTZ NOT NULL,
+  attempts   INT NOT NULL DEFAULT 0,
   used_at    TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_password_resets_user ON password_resets (user_id);
+CREATE INDEX IF NOT EXISTS idx_password_reset_otps_user ON password_reset_otps (user_id);
