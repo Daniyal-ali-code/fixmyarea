@@ -22,36 +22,47 @@ export function textSimilarity(a, b) {
     new Set((s || '').toLowerCase().match(/[a-z0-9]+/g) || []);
   const A = tokens(a);
   const B = tokens(b);
-  if (A.size === 0 && B.size === 0) return 1;
+  // An empty token set (e.g. non-Latin text) must never match: two empty
+  // sets are not "identical" reports.
+  if (A.size === 0 || B.size === 0) return 0;
   const intersection = [...A].filter((t) => B.has(t)).length;
   const union = new Set([...A, ...B]).size;
   return union === 0 ? 0 : intersection / union;
 }
 
-// Find reports near a location with similar text
-export async function findDuplicates({
-  title,
-  description,
-  latitude,
-  longitude,
-  category_id,
-}) {
+// Find reports near a location with similar text.
+// queryFn defaults to the pool query; pass a transaction client's query
+// to run the candidate lookup inside a transaction.
+export async function findDuplicates(
+  {
+    title,
+    description,
+    latitude,
+    longitude,
+    category_id,
+  },
+  queryFn = query
+) {
   // 1. Bounding box filter — index-friendly, ~200m around the point
-  // 1 degree latitude ≈ 111km, so 0.002° ≈ 220m
+  // 1 degree latitude ≈ 111km, so 0.002° ≈ 220m. The longitude
+  // half-width is widened by 1/cos(lat) because a degree of longitude
+  // shrinks as latitude grows.
   const delta = 0.002;
-  const { rows: candidates } = await query(
+  const lonDelta = delta / Math.cos((latitude * Math.PI) / 180);
+  const { rows: candidates } = await queryFn(
     `SELECT id, title, description, latitude, longitude, status, created_at
      FROM reports
      WHERE category_id = $1
        AND status <> 'resolved'
        AND latitude  BETWEEN $2 AND $3
-       AND longitude BETWEEN $4 AND $5`,
+       AND longitude BETWEEN $4 AND $5
+     LIMIT 50`,
     [
       category_id,
       latitude - delta,
       latitude + delta,
-      longitude - delta,
-      longitude + delta,
+      longitude - lonDelta,
+      longitude + lonDelta,
     ]
   );
 
