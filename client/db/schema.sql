@@ -42,11 +42,16 @@ CREATE TABLE IF NOT EXISTS reports (
                  CHECK (status IN ('reported', 'under_review', 'in_progress', 'resolved')),
   priority_score DOUBLE PRECISION NOT NULL DEFAULT 0,
   duplicate_of   INT REFERENCES reports(id) ON DELETE SET NULL,
+  resolution_image_url TEXT,
+  resolution_note      TEXT,
+  resolved_by          INT REFERENCES users(id),
+  resolved_at          TIMESTAMPTZ,
   created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_reports_location ON reports (latitude, longitude);
+CREATE INDEX IF NOT EXISTS idx_reports_category_location ON reports (category_id, latitude, longitude);
 CREATE INDEX IF NOT EXISTS idx_reports_status   ON reports (status);
 CREATE INDEX IF NOT EXISTS idx_reports_user     ON reports (user_id);
 CREATE INDEX IF NOT EXISTS idx_reports_category ON reports (category_id);
