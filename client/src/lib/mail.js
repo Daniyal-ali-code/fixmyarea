@@ -37,31 +37,29 @@ export function isMailConfigured() {
   return smtpConfigured();
 }
 
-function appUrl() {
-  return process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-}
-
-// Send the password-reset email. `token` is the raw token (never
-// stored); the link carries it in the query string.
-export async function sendResetEmail({ to, token }) {
+// Send the password-reset OTP email. `otp` is the raw 6-digit code
+// (never stored); it is valid for 10 minutes, one time only.
+export async function sendOtpEmail({ to, otp }) {
   const transport = getTransporter();
   if (!transport) {
     throw new Error('SMTP is not configured');
   }
-  const resetUrl = `${appUrl()}/reset-password?token=${encodeURIComponent(token)}`;
   const from = process.env.SMTP_FROM || process.env.SMTP_USER;
   await transport.sendMail({
     from,
     to,
-    subject: 'Reset your FixMyArea password',
+    subject: 'Your FixMyArea password reset code',
     text:
       'You asked to reset your FixMyArea password.\n\n' +
-      `Reset it here (the link works for 1 hour, one time only):\n${resetUrl}\n\n` +
+      `Your 6-digit reset code is: ${otp}\n\n` +
+      'The code is valid for 10 minutes and can be used once. ' +
+      'Never share it with anyone.\n\n' +
       'If you did not ask for this, you can ignore this email — ' +
       'your password will not change.',
     html:
       '<p>You asked to reset your FixMyArea password.</p>' +
-      `<p><a href="${resetUrl}">Reset your password</a> (the link works for 1 hour, one time only).</p>` +
+      `<p>Your 6-digit reset code is: <strong style="font-size: 24px; letter-spacing: 4px;">${otp}</strong></p>` +
+      '<p>The code is valid for 10 minutes and can be used once. Never share it with anyone.</p>' +
       '<p>If you did not ask for this, you can ignore this email — your password will not change.</p>',
   });
 }
