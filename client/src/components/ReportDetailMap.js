@@ -32,6 +32,14 @@ export default function ReportDetailMap({ report }) {
   const lng = Number(report.longitude);
   const color = STATUS_COLORS[report.status] || STATUS_COLORS.reported;
 
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    return (
+      <div className="rounded-sm border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 p-8 text-center font-serif italic text-stone-600 dark:text-stone-400">
+        Location unavailable for this report.
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-sm overflow-hidden border border-stone-300 dark:border-stone-700">
       <MapContainer

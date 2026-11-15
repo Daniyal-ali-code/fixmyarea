@@ -9,6 +9,7 @@ export default function ThemeToggle() {
     return (
       <button
         aria-label="Toggle theme"
+        disabled
         className="h-9 w-9 border border-stone-400 dark:border-stone-600 rounded-sm"
       />
     );

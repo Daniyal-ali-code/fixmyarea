@@ -50,7 +50,11 @@ function FitToMarkers({ reports }) {
 
 export default function ReportsMap({ reports = [] }) {
   const valid = reports.filter(
-    (r) => r.latitude != null && r.longitude != null
+    (r) =>
+      r.latitude != null &&
+      r.longitude != null &&
+      Number.isFinite(Number(r.latitude)) &&
+      Number.isFinite(Number(r.longitude))
   );
 
   return (

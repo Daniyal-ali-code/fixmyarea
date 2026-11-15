@@ -18,7 +18,7 @@ export default function HomeMapSection() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch("/api/reports");
+        const res = await fetch("/api/reports", { credentials: "include" });
         if (!res.ok) throw new Error("Failed to load reports");
         const data = await res.json();
         if (!cancelled) setReports(data.reports || []);

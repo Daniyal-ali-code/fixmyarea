@@ -16,8 +16,11 @@ export function ThemeProvider({ children }) {
     const current = document.documentElement.classList.contains("dark")
       ? "dark"
       : "light";
-    setTheme(current);
-    setMounted(true);
+    // Defer so the mount-time sync does not trigger a cascading render.
+    queueMicrotask(() => {
+      setTheme(current);
+      setMounted(true);
+    });
   }, []);
 
   const toggle = () => {
