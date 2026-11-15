@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import { parseIdParam } from '@/lib/http';
 
 export async function GET(request, { params }) {
   try {
     const { id } = await params;
+    const reportId = parseIdParam(id);
+    if (reportId === null) {
+      return NextResponse.json({ error: 'Invalid report id' }, { status: 400 });
+    }
 
     const { rows } = await query(
       `SELECT
@@ -15,7 +20,7 @@ export async function GET(request, { params }) {
        JOIN categories c ON c.id = r.category_id
        JOIN users u      ON u.id = r.user_id
        WHERE r.id = $1`,
-      [id]
+      [reportId]
     );
 
     if (rows.length === 0) {
@@ -24,7 +29,7 @@ export async function GET(request, { params }) {
 
     const images = await query(
       'SELECT id, url FROM report_images WHERE report_id = $1 ORDER BY id',
-      [id]
+      [reportId]
     );
 
     return NextResponse.json({ report: rows[0], images: images.rows });
