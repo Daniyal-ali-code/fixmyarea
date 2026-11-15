@@ -2,6 +2,8 @@ import { Inter, Lora } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/components/AuthProvider";
+import Header from "@/components/Header";
+import BottomNav from "@/components/BottomNav";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -37,7 +39,13 @@ export default function RootLayout({ children }) {
       </head>
       <body className={`${inter.variable} ${lora.variable} antialiased`}>
         <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <Header />
+            <div className="pb-[calc(7rem+env(safe-area-inset-bottom))]">
+              {children}
+            </div>
+            <BottomNav />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
