@@ -3,11 +3,19 @@ import bcrypt from 'bcrypt';
 import { query, withTransaction } from '@/lib/db';
 import { parseJsonBody } from '@/lib/http';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
-import { hashResetToken, hashesEqual, isWellFormedToken } from '@/lib/password-reset';
+import {
+  hashOtp,
+  hashesEqual,
+  isWellFormedOtp,
+  OTP_MAX_ATTEMPTS,
+} from '@/lib/otp';
 
-// One generic error for every bad token, so the response never says
-// whether a token exists, expired, or was already used.
-const INVALID_TOKEN = 'Invalid or expired reset link';
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// One generic error for every bad code, so the response never says
+// whether a code exists, expired, was already used, or ran out of
+// attempts — or whether the email belongs to an account at all.
+const INVALID_CODE = 'Invalid or expired code';
 
 export async function POST(request) {
   try {
@@ -27,9 +35,17 @@ export async function POST(request) {
       return NextResponse.json({ error }, { status: 400 });
     }
 
-    const { token, password } = body;
-    if (typeof token !== 'string' || typeof password !== 'string') {
-      return NextResponse.json({ error: 'token and password are required' }, { status: 400 });
+    const { email, otp, password } = body;
+    if (
+      typeof email !== 'string' ||
+      typeof otp !== 'string' ||
+      typeof password !== 'string'
+    ) {
+      return NextResponse.json({ error: 'email, code and password are required' }, { status: 400 });
+    }
+    const cleanEmail = email.trim().toLowerCase();
+    if (!EMAIL_RE.test(cleanEmail) || cleanEmail.length > 150) {
+      return NextResponse.json({ error: 'Invalid email' }, { status: 400 });
     }
     // Same password rule as register (8–72 chars; bcrypt truncates
     // past 72 bytes). Checked before any database work.
@@ -39,37 +55,59 @@ export async function POST(request) {
         { status: 400 }
       );
     }
-    // Malformed tokens cannot match a stored hash; reject them
+    // Malformed codes cannot match a stored hash; reject them
     // without touching the database.
-    if (!isWellFormedToken(token)) {
-      return NextResponse.json({ error: INVALID_TOKEN }, { status: 400 });
+    if (!isWellFormedOtp(otp)) {
+      return NextResponse.json({ error: INVALID_CODE }, { status: 400 });
     }
 
-    const tokenHash = hashResetToken(token);
-    const { rows } = await query(
-      `SELECT id, user_id, token_hash FROM password_resets
-       WHERE token_hash = $1 AND used_at IS NULL AND expires_at > NOW()`,
-      [tokenHash]
-    );
-    if (rows.length === 0) {
-      return NextResponse.json({ error: INVALID_TOKEN }, { status: 400 });
+    const { rows: users } = await query('SELECT id FROM users WHERE email = $1', [
+      cleanEmail,
+    ]);
+    if (users.length === 0) {
+      return NextResponse.json({ error: INVALID_CODE }, { status: 400 });
     }
+    const userId = users[0].id;
 
-    const reset = rows[0];
-    if (!hashesEqual(reset.token_hash, tokenHash)) {
-      return NextResponse.json({ error: INVALID_TOKEN }, { status: 400 });
-    }
-
+    // Hash the new password before opening the transaction, so the
+    // (slow) bcrypt work does not hold a pooled connection.
     const passwordHash = await bcrypt.hash(password, 10);
-    await withTransaction(async (client) => {
+
+    // The whole verify-and-reset runs in one transaction with the
+    // code row locked, so concurrent guesses cannot race the
+    // attempt counter or reuse a code.
+    const outcome = await withTransaction(async (client) => {
+      const { rows } = await client.query(
+        `SELECT id, otp_hash, expires_at, attempts FROM password_reset_otps
+         WHERE user_id = $1 AND used_at IS NULL
+         ORDER BY created_at DESC LIMIT 1 FOR UPDATE`,
+        [userId]
+      );
+      if (rows.length === 0) return 'invalid';
+      const code = rows[0];
+      if (new Date(code.expires_at) <= new Date() || code.attempts >= OTP_MAX_ATTEMPTS) {
+        return 'invalid';
+      }
+      if (!hashesEqual(code.otp_hash, hashOtp(otp))) {
+        await client.query(
+          'UPDATE password_reset_otps SET attempts = attempts + 1 WHERE id = $1',
+          [code.id]
+        );
+        return 'invalid';
+      }
       await client.query('UPDATE users SET password_hash = $1 WHERE id = $2', [
         passwordHash,
-        reset.user_id,
+        userId,
       ]);
-      await client.query('UPDATE password_resets SET used_at = NOW() WHERE id = $1', [
-        reset.id,
+      await client.query('UPDATE password_reset_otps SET used_at = NOW() WHERE id = $1', [
+        code.id,
       ]);
+      return 'ok';
     });
+
+    if (outcome !== 'ok') {
+      return NextResponse.json({ error: INVALID_CODE }, { status: 400 });
+    }
 
     return NextResponse.json({ message: 'Password reset successfully' });
   } catch (err) {

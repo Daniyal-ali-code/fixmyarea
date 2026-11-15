@@ -2,15 +2,17 @@ import { NextResponse } from 'next/server';
 import { query, withTransaction } from '@/lib/db';
 import { parseJsonBody } from '@/lib/http';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
-import { generateResetToken } from '@/lib/password-reset';
-import { isMailConfigured, sendResetEmail } from '@/lib/mail';
+import { generateOtp, OTP_RESEND_COOLDOWN_MS } from '@/lib/otp';
+import { isMailConfigured, sendOtpEmail } from '@/lib/mail';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // The same message is returned whether or not the email belongs to an
 // account, so the response never reveals if an address is registered.
+// It is also returned when a fresh code was requested inside the
+// resend cooldown, so the cooldown itself never leaks either.
 const GENERIC_MESSAGE =
-  'If an account exists for that email, a password reset link has been sent.';
+  'If an account exists for that email, a 6-digit reset code has been sent.';
 
 export async function POST(request) {
   try {
@@ -51,26 +53,42 @@ export async function POST(request) {
     const { rows } = await query('SELECT id FROM users WHERE email = $1', [email]);
 
     if (rows.length > 0) {
-      const { token, tokenHash } = generateResetToken();
+      const userId = rows[0].id;
+
+      // Per-email resend cooldown: at most one code per 60 seconds.
+      // Inside the cooldown, answer with the generic message and
+      // send nothing — no new code, no leak.
+      const { rows: recent } = await query(
+        `SELECT id FROM password_reset_otps
+         WHERE user_id = $1 AND used_at IS NULL
+           AND created_at > NOW() - ($2 || ' milliseconds')::interval
+         ORDER BY created_at DESC LIMIT 1`,
+        [userId, String(OTP_RESEND_COOLDOWN_MS)]
+      );
+      if (recent.length > 0) {
+        return NextResponse.json({ message: GENERIC_MESSAGE });
+      }
+
+      const { otp, otpHash } = generateOtp();
       await withTransaction(async (client) => {
-        // Invalidate any earlier unused tokens for this user; only the
-        // newest link works.
+        // Invalidate any earlier unused codes for this user; only the
+        // newest code works.
         await client.query(
-          "UPDATE password_resets SET used_at = NOW() WHERE user_id = $1 AND used_at IS NULL",
-          [rows[0].id]
+          'UPDATE password_reset_otps SET used_at = NOW() WHERE user_id = $1 AND used_at IS NULL',
+          [userId]
         );
         await client.query(
-          `INSERT INTO password_resets (user_id, token_hash, expires_at)
-           VALUES ($1, $2, NOW() + INTERVAL '1 hour')`,
-          [rows[0].id, tokenHash]
+          `INSERT INTO password_reset_otps (user_id, otp_hash, expires_at)
+           VALUES ($1, $2, NOW() + INTERVAL '10 minutes')`,
+          [userId, otpHash]
         );
       });
       try {
-        await sendResetEmail({ to: email, token });
+        await sendOtpEmail({ to: email, otp });
       } catch (sendErr) {
-        console.error('reset email send error:', sendErr);
+        console.error('reset OTP email send error:', sendErr);
         return NextResponse.json(
-          { error: 'Failed to send the reset email. Please try again later.' },
+          { error: 'Failed to send the reset code. Please try again later.' },
           { status: 503 }
         );
       }
