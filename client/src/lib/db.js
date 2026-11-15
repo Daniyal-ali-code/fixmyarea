@@ -15,11 +15,17 @@ function getPool() {
   if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL is not set');
   }
+  // Supabase's PgBouncer pooler (port 6543) requires SSL; its
+  // connection string carries ?sslmode=require. Pass ssl explicitly:
+  // node-postgres only honours sslmode for direct connections, so
+  // relying on the query string alone fails against the pooler.
+  const needsSsl = /sslmode=require/.test(process.env.DATABASE_URL);
   pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     max: 10,
     connectionTimeoutMillis: 5000,
     query_timeout: 10000,
+    ...(needsSsl ? { ssl: { rejectUnauthorized: false } } : {}),
   });
   pool.on('error', (err) => {
     console.error('PostgreSQL pool error:', err);

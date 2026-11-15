@@ -20,7 +20,14 @@ if (!ADMIN_PASSWORD) {
 }
 
 async function main() {
-  const client = new Client({ connectionString: process.env.DATABASE_URL });
+  // Same SSL rule as src/lib/db.js: the Supabase pooler URL carries
+  // ?sslmode=require, which node-postgres only honours for direct
+  // connections, so pass ssl explicitly for pooler URLs.
+  const needsSsl = /sslmode=require/.test(process.env.DATABASE_URL || '');
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ...(needsSsl ? { ssl: { rejectUnauthorized: false } } : {}),
+  });
   await client.connect();
 
   const existing = await client.query(
