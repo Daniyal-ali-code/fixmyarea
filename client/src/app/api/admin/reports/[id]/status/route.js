@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir, unlink } from 'fs/promises';
-import path from 'path';
 import { randomUUID } from 'crypto';
 import { query, withTransaction } from '@/lib/db';
 import { getUserFromRequest } from '@/lib/auth';
 import { parseIdParam, parseJsonBody, VALID_STATUSES } from '@/lib/http';
+import { deleteFromBucket, uploadToBucket } from '@/lib/storage';
 import {
   ALLOWED_IMAGE_TYPES,
   MAX_IMAGE_BYTES,
@@ -12,7 +11,7 @@ import {
 } from '@/lib/upload';
 
 export async function PATCH(request, { params }) {
-  let resolutionFilepath = null; // written file, deleted if the DB update fails
+  let resolutionStoragePath = null; // uploaded object, deleted if the DB update fails
   try {
     const user = await getUserFromRequest(request);
     if (!user) {
@@ -114,14 +113,12 @@ export async function PATCH(request, { params }) {
         );
       }
 
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'resolutions');
-      await mkdir(uploadDir, { recursive: true });
-
-      const filename = `${reportId}-${randomUUID()}${ext}`;
-      resolutionFilepath = path.join(uploadDir, filename);
-      await writeFile(resolutionFilepath, buffer);
-
-      resolutionImageUrl = `/uploads/resolutions/${filename}`;
+      resolutionStoragePath = `resolutions/${reportId}-${randomUUID()}${ext}`;
+      resolutionImageUrl = await uploadToBucket(
+        resolutionStoragePath,
+        buffer,
+        resolutionImageFile.type
+      );
     }
 
     // Report UPDATE + history INSERT in one transaction. The UPDATE only
@@ -171,25 +168,17 @@ export async function PATCH(request, { params }) {
         return rows[0];
       });
     } catch (txErr) {
-      // The resolution file was already written; remove it so a failed
-      // update leaves no orphan file behind.
-      if (resolutionFilepath) {
-        try {
-          await unlink(resolutionFilepath);
-        } catch (unlinkErr) {
-          console.error('updateStatus: failed to delete orphan resolution file', resolutionFilepath, unlinkErr);
-        }
+      // The resolution image was already uploaded; remove it so a
+      // failed update leaves no orphan object behind.
+      if (resolutionStoragePath) {
+        await deleteFromBucket(resolutionStoragePath);
       }
       throw txErr;
     }
 
     if (!updated) {
-      if (resolutionFilepath) {
-        try {
-          await unlink(resolutionFilepath);
-        } catch (unlinkErr) {
-          console.error('updateStatus: failed to delete orphan resolution file', resolutionFilepath, unlinkErr);
-        }
+      if (resolutionStoragePath) {
+        await deleteFromBucket(resolutionStoragePath);
       }
       return NextResponse.json(
         { error: 'Report status changed concurrently, please reload and retry' },

@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
-import { writeFile, mkdir, unlink } from "fs/promises";
-import path from "path";
 import { randomUUID } from "crypto";
 import { query } from "@/lib/db";
 import { getUserFromRequest } from "@/lib/auth";
 import { parseIdParam } from "@/lib/http";
+import { deleteFromBucket, uploadToBucket } from "@/lib/storage";
 import {
   ALLOWED_IMAGE_TYPES,
   MAX_IMAGE_BYTES,
@@ -14,7 +13,7 @@ import {
 const MAX_FILES_PER_REQUEST = 3;
 
 export async function POST(request, { params }) {
-  const savedFiles = []; // file paths written to disk, for rollback
+  const savedPaths = []; // Storage object paths, for rollback
   const savedRows = []; // report_images ids inserted, for rollback
   try {
     const user = await getUserFromRequest(request);
@@ -63,7 +62,7 @@ export async function POST(request, { params }) {
       );
     }
 
-    // Validate ALL files (type, size, magic bytes) BEFORE writing any,
+    // Validate ALL files (type, size, magic bytes) BEFORE uploading any,
     // so a failure cannot leave earlier files half-applied.
     const buffers = [];
     for (const file of files) {
@@ -87,23 +86,16 @@ export async function POST(request, { params }) {
           { status: 400 }
         );
       }
-      buffers.push({ buffer, ext });
+      buffers.push({ buffer, ext, type: file.type });
     }
-
-    // Ensure upload directory exists
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "reports");
-    await mkdir(uploadDir, { recursive: true });
 
     const savedImages = [];
 
-    for (const { buffer, ext } of buffers) {
-      const filename = `${reportId}-${randomUUID()}${ext}`;
-      const filepath = path.join(uploadDir, filename);
+    for (const { buffer, ext, type } of buffers) {
+      const storagePath = `reports/${reportId}-${randomUUID()}${ext}`;
+      const url = await uploadToBucket(storagePath, buffer, type);
+      savedPaths.push(storagePath);
 
-      await writeFile(filepath, buffer);
-      savedFiles.push(filepath);
-
-      const url = `/uploads/reports/${filename}`;
       const { rows } = await query(
         `INSERT INTO report_images (report_id, url)
          VALUES ($1, $2)
@@ -117,13 +109,10 @@ export async function POST(request, { params }) {
 
     return NextResponse.json({ images: savedImages }, { status: 201 });
   } catch (err) {
-    // Roll back anything already written: delete the files and rows.
-    for (const filepath of savedFiles) {
-      try {
-        await unlink(filepath);
-      } catch (unlinkErr) {
-        console.error("Image upload rollback: failed to delete file", filepath, unlinkErr);
-      }
+    // Roll back anything already uploaded: delete the Storage objects
+    // and the rows.
+    for (const storagePath of savedPaths) {
+      await deleteFromBucket(storagePath);
     }
     if (savedRows.length > 0) {
       try {

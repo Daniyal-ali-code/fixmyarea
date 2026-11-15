@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { unlink } from 'fs/promises';
-import path from 'path';
 import { query } from '@/lib/db';
 import { getUserFromRequest } from '@/lib/auth';
 import { parseIdParam } from '@/lib/http';
+import { deleteByUrl } from '@/lib/storage';
 
 export async function DELETE(request, { params }) {
   try {
@@ -39,16 +38,13 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ error: 'Report not found' }, { status: 404 });
     }
 
-    // Best-effort cleanup of local upload files (report_images rows are
-    // removed by ON DELETE CASCADE).
+    // Best-effort cleanup of uploaded images (report_images rows are
+    // removed by ON DELETE CASCADE). Handles Supabase Storage URLs
+    // and legacy pre-migration /uploads/... files alike.
     for (const row of files.rows) {
       const url = row.resolution_image_url;
-      if (!url || !url.startsWith('/uploads/')) continue;
-      try {
-        await unlink(path.join(process.cwd(), 'public', url));
-      } catch (err) {
-        console.error('deleteReport: failed to delete file', url, err);
-      }
+      if (!url) continue;
+      await deleteByUrl(url);
     }
 
     return NextResponse.json({ deleted: true, id: reportId });
