@@ -62,8 +62,15 @@ export default function ForgotPasswordPage() {
 
           {sent ? (
             <div className="bg-green-50 dark:bg-green-950 border border-green-300 dark:border-green-800 text-green-800 dark:text-green-200 text-sm p-3 rounded-sm">
-              If an account exists for that email, a password reset link has
-              been sent. The link works for 1 hour.
+              If an account exists for that email, a 6-digit code has
+              been sent. The code works for 10 minutes.{" "}
+              <Link
+                href={`/reset-password?email=${encodeURIComponent(email)}`}
+                className="underline underline-offset-2 hover:text-amber-600 transition"
+              >
+                Enter your code
+              </Link>
+              .
             </div>
           ) : (
             <>
@@ -75,7 +82,7 @@ export default function ForgotPasswordPage() {
 
               <p className="text-sm text-stone-600 dark:text-stone-400 mb-5">
                 Enter the email you signed up with and we will send you a
-                link to reset your password.
+                6-digit code to reset your password.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-5">
@@ -103,7 +110,7 @@ export default function ForgotPasswordPage() {
                   disabled={submitting}
                   className="w-full px-6 py-3 text-xs font-semibold uppercase tracking-wider text-stone-900 bg-amber-600 rounded-sm hover:bg-amber-500 shadow-md shadow-amber-600/30 hover:shadow-lg hover:shadow-amber-600/40 transition-all border border-amber-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {submitting ? "Sending..." : "Send Reset Link"}
+                  {submitting ? "Sending..." : "Send Reset Code"}
                 </button>
               </form>
             </>

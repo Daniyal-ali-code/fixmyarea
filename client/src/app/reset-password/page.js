@@ -6,19 +6,24 @@ import Link from "next/link";
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
-  const token = searchParams.get("token") || "";
+  const [email, setEmail] = useState(searchParams.get("email") || "");
+  const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [error, setError] = useState(
-    token ? "" : "This reset link is invalid or incomplete. Request a new one from the forgot password page."
-  );
+  const [error, setError] = useState("");
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [resendMessage, setResendMessage] = useState("");
+  const [resending, setResending] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
 
+    if (!/^\d{6}$/.test(otp.trim())) {
+      setError("Enter the 6-digit code from your email.");
+      return;
+    }
     if (password !== confirm) {
       setError("Passwords do not match.");
       return;
@@ -33,7 +38,7 @@ function ResetPasswordForm() {
       const res = await fetch("/api/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password }),
+        body: JSON.stringify({ email, otp: otp.trim(), password }),
       });
 
       const data = await res.json();
@@ -49,6 +54,36 @@ function ResetPasswordForm() {
       setError("Something went wrong. Try again.");
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleResend() {
+    setError("");
+    setResendMessage("");
+    if (!email.trim()) {
+      setError("Enter your email first, then request a new code.");
+      return;
+    }
+    setResending(true);
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Something went wrong. Try again.");
+        return;
+      }
+      setResendMessage(
+        "If an account exists for that email, a new 6-digit code has been sent."
+      );
+    } catch (err) {
+      console.error("Resend code error:", err);
+      setError("Something went wrong. Try again.");
+    } finally {
+      setResending(false);
     }
   }
 
@@ -83,8 +118,61 @@ function ResetPasswordForm() {
                   {error}
                 </div>
               )}
+              {resendMessage && (
+                <div className="bg-green-50 dark:bg-green-950 border border-green-300 dark:border-green-800 text-green-800 dark:text-green-200 text-sm p-3 rounded-sm mb-4">
+                  {resendMessage}
+                </div>
+              )}
+
+              <p className="text-sm text-stone-600 dark:text-stone-400 mb-5">
+                Enter the 6-digit code we emailed you, then choose a new
+                password. The code works for 10 minutes.
+              </p>
 
               <form onSubmit={handleSubmit} className="space-y-5">
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2"
+                  >
+                    Email
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    autoComplete="email"
+                    className="w-full px-4 py-3 text-base bg-amber-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition"
+                    placeholder="you@example.com"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="otp"
+                    className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2"
+                  >
+                    6-Digit Code
+                  </label>
+                  <input
+                    id="otp"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    value={otp}
+                    onChange={(e) =>
+                      setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                    }
+                    required
+                    minLength={6}
+                    maxLength={6}
+                    className="w-full px-4 py-3 text-base tracking-[0.5em] bg-amber-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition"
+                    placeholder="123456"
+                  />
+                </div>
+
                 <div>
                   <label
                     htmlFor="password"
@@ -127,7 +215,7 @@ function ResetPasswordForm() {
 
                 <button
                   type="submit"
-                  disabled={submitting || !token}
+                  disabled={submitting}
                   className="w-full px-6 py-3 text-xs font-semibold uppercase tracking-wider text-stone-900 bg-amber-600 rounded-sm hover:bg-amber-500 shadow-md shadow-amber-600/30 hover:shadow-lg hover:shadow-amber-600/40 transition-all border border-amber-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {submitting ? "Resetting..." : "Reset Password"}
@@ -138,13 +226,15 @@ function ResetPasswordForm() {
 
           <div className="mt-6 pt-6 border-t border-stone-300 dark:border-stone-700 text-center">
             <p className="font-serif italic text-sm text-stone-600 dark:text-stone-400">
-              Link expired?{" "}
-              <Link
-                href="/forgot-password"
-                className="text-slate-800 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 decoration-amber-600/40 hover:decoration-amber-600 transition"
+              Didn&apos;t get a code?{" "}
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={resending || done}
+                className="text-slate-800 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 decoration-amber-600/40 hover:decoration-amber-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Request a new one
-              </Link>
+                {resending ? "Sending..." : "Resend code"}
+              </button>
             </p>
           </div>
         </div>
