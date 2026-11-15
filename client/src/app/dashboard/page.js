@@ -9,7 +9,7 @@ import { useAuth } from "@/components/AuthProvider";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, token, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,14 +27,14 @@ export default function DashboardPage() {
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (!token || !user || user.role === "admin") return;
+    if (!user || user.role === "admin") return;
     let cancelled = false;
 
     (async () => {
       setLoading(true);
       try {
         const res = await fetch("/api/reports?mine=true", {
-          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
         });
         if (!res.ok) throw new Error("Failed to load your reports");
         const data = await res.json();
@@ -49,7 +49,7 @@ export default function DashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [token, user]);
+  }, [user]);
 
   if (authLoading || (!user && !error)) {
     return (

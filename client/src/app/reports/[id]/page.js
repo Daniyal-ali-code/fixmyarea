@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
 import SupportButton from "@/components/SupportButton";
+import ReportImage from "@/components/ReportImage";
 import ReportDetailMapWrapper from "@/components/ReportDetailMapWrapper";
 import { query } from "@/lib/db";
 
@@ -189,8 +190,7 @@ export default async function ReportDetailPage({ params }) {
                       rel="noopener noreferrer"
                       className="block aspect-square bg-stone-100 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-sm overflow-hidden hover:border-amber-600 dark:hover:border-amber-500 transition"
                     >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      <ReportImage
                         src={img.url}
                         alt="Report photo"
                         className="w-full h-full object-cover"
@@ -249,8 +249,7 @@ export default async function ReportDetailPage({ params }) {
                   rel="noopener noreferrer"
                   className="block bg-stone-100 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-sm overflow-hidden mb-4 hover:border-emerald-600 dark:hover:border-emerald-500 transition"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <ReportImage
                     src={report.resolution_image_url}
                     alt="Proof of fix"
                     className="w-full max-h-96 object-contain"

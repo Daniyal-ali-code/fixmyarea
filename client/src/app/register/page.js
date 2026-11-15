@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
@@ -8,12 +8,18 @@ import { useAuth } from "@/components/AuthProvider";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { user, loading, login } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push(user.role === "admin" ? "/admin" : "/");
+    }
+  }, [loading, user, router]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -24,6 +30,7 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ name, email, password }),
       });
 
@@ -34,7 +41,7 @@ export default function RegisterPage() {
         return;
       }
 
-      login(data.user, data.token);
+      login(data.user);
       router.push("/");
     } catch (err) {
       console.error("Register error:", err);
@@ -117,9 +124,9 @@ export default function RegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="new-password"
-                minLength={6}
+                minLength={8}
                 className="w-full px-4 py-3 text-base bg-amber-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition"
-                placeholder="At least 6 characters"
+                placeholder="At least 8 characters"
               />
             </div>
 

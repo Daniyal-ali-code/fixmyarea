@@ -4,6 +4,8 @@ import Header from "@/components/Header";
 import ReportCard from "@/components/ReportCard";
 import { query } from "@/lib/db";
 
+const STATUS_VALUES = ["reported", "under_review", "in_progress", "resolved"];
+
 const STATUS_OPTIONS = [
   { value: "", label: "All" },
   { value: "reported", label: "Reported" },
@@ -12,14 +14,26 @@ const STATUS_OPTIONS = [
   { value: "resolved", label: "Resolved" },
 ];
 
-const CATEGORY_OPTIONS = [
-  { value: "", label: "All" },
-  { value: "1", label: "Road" },
-  { value: "2", label: "Garbage" },
-  { value: "3", label: "Water" },
-  { value: "4", label: "Streetlight" },
-  { value: "5", label: "Other" },
+// Hardcoded only as a fallback if the categories table cannot be read.
+const FALLBACK_CATEGORIES = [
+  { id: 1, name: "Road" },
+  { id: 2, name: "Garbage" },
+  { id: 3, name: "Water" },
+  { id: 4, name: "Streetlight" },
+  { id: 5, name: "Other" },
 ];
+
+async function getCategories() {
+  try {
+    const { rows } = await query(
+      "SELECT id, name FROM categories ORDER BY id"
+    );
+    if (rows.length > 0) return rows;
+  } catch (err) {
+    console.error("Failed to load categories:", err);
+  }
+  return FALLBACK_CATEGORIES;
+}
 
 async function getReports(status, category_id) {
   try {
@@ -54,19 +68,25 @@ async function getReports(status, category_id) {
        LIMIT 100`,
       params
     );
-    return rows;
+    return { reports: rows, error: false };
   } catch (err) {
     console.error("Failed to load reports:", err);
-    return [];
+    return { reports: [], error: true };
   }
 }
 
-async function ReportsList({ searchParams }) {
-  const params = await searchParams;
-  const status = params.status || "";
-  const category_id = params.category_id || "";
+async function ReportsList({ status, category_id }) {
+  const { reports, error } = await getReports(status, category_id);
 
-  const reports = await getReports(status, category_id);
+  if (error) {
+    return (
+      <div className="bg-red-50 dark:bg-red-950 border border-red-300 dark:border-red-800 rounded-sm p-12 text-center">
+        <p className="font-serif italic text-lg text-red-800 dark:text-red-200">
+          Could not load reports — try again.
+        </p>
+      </div>
+    );
+  }
 
   if (reports.length === 0) {
     return (
@@ -113,8 +133,23 @@ function ReportsSkeleton() {
 
 export default async function ReportsPage({ searchParams }) {
   const params = await searchParams;
-  const status = params.status || "";
-  const category_id = params.category_id || "";
+  const categories = await getCategories();
+
+  // Invalid filter values are ignored (treated as no filter) so the
+  // full list shows instead of a misleading empty state.
+  const rawStatus = params.status || "";
+  const rawCategory = params.category_id || "";
+  const status = STATUS_VALUES.includes(rawStatus) ? rawStatus : "";
+  const category_id =
+    /^\d+$/.test(rawCategory) &&
+    categories.some((c) => String(c.id) === rawCategory)
+      ? rawCategory
+      : "";
+
+  const categoryOptions = [
+    { value: "", label: "All" },
+    ...categories.map((c) => ({ value: String(c.id), label: c.name })),
+  ];
 
   function buildFilterUrl(newStatus, newCategory) {
     const p = new URLSearchParams();
@@ -178,7 +213,7 @@ export default async function ReportsPage({ searchParams }) {
                 Category
               </p>
               <div className="flex flex-wrap gap-2">
-                {CATEGORY_OPTIONS.map((opt) => {
+                {categoryOptions.map((opt) => {
                   const isActive = category_id === opt.value;
                   return (
                     <Link
@@ -214,7 +249,7 @@ export default async function ReportsPage({ searchParams }) {
             key={`${status}-${category_id}`}
             fallback={<ReportsSkeleton />}
           >
-            <ReportsList searchParams={searchParams} />
+            <ReportsList status={status} category_id={category_id} />
           </Suspense>
         </section>
       </main>

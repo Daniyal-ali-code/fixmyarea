@@ -20,7 +20,7 @@ const LocationPicker = dynamic(
   }
 );
 
-const CATEGORIES = [
+const FALLBACK_CATEGORIES = [
   { id: 1, name: "Road" },
   { id: 2, name: "Garbage" },
   { id: 3, name: "Water" },
@@ -46,6 +46,28 @@ export default function NewReportPage() {
   const [duplicates, setDuplicates] = useState(null);
   const [photos, setPhotos] = useState([]);
   const [photoPreviews, setPhotoPreviews] = useState([]);
+  const [categories, setCategories] = useState(FALLBACK_CATEGORIES);
+
+  // Categories come from the API; the hardcoded list is only a fallback
+  // so the form still works if the fetch fails.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/categories", { credentials: "include" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled && Array.isArray(data.categories) && data.categories.length > 0) {
+          setCategories(data.categories);
+        }
+      } catch (err) {
+        console.error("Failed to load categories:", err);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -104,16 +126,27 @@ export default function NewReportPage() {
       return;
     }
 
+    if (lat < -90 || lat > 90) {
+      setError("Latitude must be between -90 and 90.");
+      setSubmitting(false);
+      return;
+    }
+
+    if (lng < -180 || lng > 180) {
+      setError("Longitude must be between -180 and 180.");
+      setSubmitting(false);
+      return;
+    }
+
     try {
-      const token = localStorage.getItem("token");
       const url = force ? "/api/reports?force=true" : "/api/reports";
 
       const res = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
+        credentials: "include",
         body: JSON.stringify({
           title,
           description,
@@ -146,13 +179,28 @@ export default function NewReportPage() {
           const imgForm = new FormData();
           photos.forEach((p) => imgForm.append("images", p));
 
-          await fetch(`/api/reports/${newReportId}/images`, {
+          const imgRes = await fetch(`/api/reports/${newReportId}/images`, {
             method: "POST",
-            headers: { Authorization: `Bearer ${token}` },
+            credentials: "include",
             body: imgForm,
           });
+
+          if (!imgRes.ok) {
+            const imgData = await imgRes.json().catch(() => ({}));
+            setError(
+              imgData.error ||
+                "Report saved, but the photo upload failed. Please add photos from the report page."
+            );
+            setSubmitting(false);
+            return;
+          }
         } catch (imgErr) {
           console.error("Image upload error:", imgErr);
+          setError(
+            "Report saved, but the photo upload failed. Please add photos from the report page."
+          );
+          setSubmitting(false);
+          return;
         }
       }
 
@@ -168,7 +216,20 @@ export default function NewReportPage() {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
-    const combined = [...photos, ...files].slice(0, 3);
+    const valid = files.filter((f) => {
+      if (!["image/jpeg", "image/png", "image/webp"].includes(f.type)) {
+        setError(`"${f.name}" is not a JPEG, PNG, or WEBP image.`);
+        return false;
+      }
+      if (f.size > 5 * 1024 * 1024) {
+        setError(`"${f.name}" is larger than 5 MB.`);
+        return false;
+      }
+      return true;
+    });
+    if (valid.length === 0) return;
+
+    const combined = [...photos, ...valid].slice(0, 3);
     setPhotos(combined);
 
     const previews = combined.map((f) => URL.createObjectURL(f));
@@ -306,11 +367,12 @@ export default function NewReportPage() {
                 Category *
               </label>
               <div className="flex flex-wrap gap-2">
-                {CATEGORIES.map((c) => (
+                {categories.map((c) => (
                   <button
                     key={c.id}
                     type="button"
                     onClick={() => setCategoryId(c.id)}
+                    aria-pressed={categoryId === c.id}
                     className={`px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-sm border transition ${
                       categoryId === c.id
                         ? "bg-amber-600 text-stone-900 border-amber-700 shadow-sm shadow-amber-600/30"
@@ -351,6 +413,8 @@ export default function NewReportPage() {
                     key={n}
                     type="button"
                     onClick={() => setSeverity(n)}
+                    aria-pressed={severity === n}
+                    aria-label={`Severity ${n} of 5`}
                     className={`h-10 w-10 flex items-center justify-center text-sm font-semibold rounded-sm border transition ${
                       n <= severity
                         ? "bg-amber-600 text-stone-900 border-amber-700"

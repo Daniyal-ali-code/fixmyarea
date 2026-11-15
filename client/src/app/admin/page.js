@@ -40,7 +40,7 @@ const SORT_COLUMNS = [
 
 export default function AdminPage() {
   const router = useRouter();
-  const { user, token, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   const [reports, setReports] = useState([]);
   const [stats, setStats] = useState(null);
@@ -69,8 +69,18 @@ export default function AdminPage() {
     }
   }, [user, authLoading, router]);
 
+  async function refreshStats() {
+    try {
+      const res = await fetch("/api/stats", { credentials: "include" });
+      if (!res.ok) return;
+      setStats(await res.json());
+    } catch (err) {
+      console.error("Failed to refresh stats:", err);
+    }
+  }
+
   useEffect(() => {
-    if (!token || user?.role !== "admin") return;
+    if (!user || user?.role !== "admin") return;
     let cancelled = false;
 
     (async () => {
@@ -78,10 +88,8 @@ export default function AdminPage() {
       setError("");
       try {
         const [r1, r2] = await Promise.all([
-          fetch("/api/admin/reports", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch("/api/stats"),
+          fetch("/api/admin/reports", { credentials: "include" }),
+          fetch("/api/stats", { credentials: "include" }),
         ]);
 
         if (!r1.ok) {
@@ -107,7 +115,17 @@ export default function AdminPage() {
     return () => {
       cancelled = true;
     };
-  }, [token, user]);
+  }, [user]);
+
+  // Escape closes the resolve modal.
+  useEffect(() => {
+    if (!resolveTarget) return;
+    function onKeyDown(e) {
+      if (e.key === "Escape") closeResolveModal();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [resolveTarget]);
 
   async function changeStatus(id, status) {
     if (status === "resolved") {
@@ -123,8 +141,8 @@ export default function AdminPage() {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
+        credentials: "include",
         body: JSON.stringify({ status }),
       });
       const data = await res.json();
@@ -132,6 +150,7 @@ export default function AdminPage() {
       setReports((prev) =>
         prev.map((r) => (r.id === id ? { ...r, status: data.new_status } : r))
       );
+      refreshStats();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -210,7 +229,7 @@ export default function AdminPage() {
 
       const res = await fetch(`/api/admin/reports/${resolveTarget.id}/status`, {
         method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
         body: form,
       });
       const data = await res.json();
@@ -221,6 +240,7 @@ export default function AdminPage() {
           r.id === resolveTarget.id ? { ...r, ...data.report } : r
         )
       );
+      refreshStats();
       closeResolveModal();
     } catch (err) {
       setResolutionError(err.message);
@@ -237,11 +257,12 @@ export default function AdminPage() {
     try {
       const res = await fetch(`/api/admin/reports/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Delete failed");
       setReports((prev) => prev.filter((r) => r.id !== id));
+      refreshStats();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -252,24 +273,17 @@ export default function AdminPage() {
   function handleSort(key, shiftKey) {
     setSortStack((prev) => {
       const existingIdx = prev.findIndex((s) => s.key === key);
-
-      if (existingIdx !== -1 && prev.length === 1) {
-        const next = [...prev];
-        next[0] = { key, dir: next[0].dir === "asc" ? "desc" : "asc" };
-        return next;
-      }
-
-      const newEntry = { key, dir: "asc" };
-
+      // Re-adding a column that is already sorted flips its direction
+      // instead of resetting to asc — including Shift+click secondary sorts.
+      const dir =
+        existingIdx !== -1 && prev[existingIdx].dir === "asc"
+          ? "desc"
+          : "asc";
       if (!shiftKey) {
-        if (prev[0]?.key === key) {
-          return [{ key, dir: prev[0].dir === "asc" ? "desc" : "asc" }];
-        }
-        return [newEntry];
+        return [{ key, dir }];
       }
-
       const without = prev.filter((s) => s.key !== key);
-      return [...without, newEntry];
+      return [...without, { key, dir }];
     });
   }
 
@@ -477,6 +491,7 @@ export default function AdminPage() {
                           value={r.status}
                           onChange={(e) => changeStatus(r.id, e.target.value)}
                           disabled={busyId === r.id}
+                          aria-label={`Change status of report ${r.id}: ${r.title}`}
                           className="text-xs bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-600 rounded-sm px-2 py-1 text-stone-800 dark:text-stone-200 disabled:opacity-50"
                         >
                           {STATUS_OPTIONS.map((s) => (

@@ -8,6 +8,7 @@ import { query } from "@/lib/db";
 
 async function RecentReports() {
   let reports = [];
+  let loadError = false;
   try {
     const { rows } = await query(
       `SELECT
@@ -25,6 +26,15 @@ async function RecentReports() {
     reports = rows;
   } catch (err) {
     console.error("Failed to load reports:", err);
+    loadError = true;
+  }
+
+  if (loadError) {
+    return (
+      <div className="bg-red-50 dark:bg-red-950 border border-red-300 dark:border-red-800 rounded-sm p-12 text-center font-serif italic text-red-800 dark:text-red-200">
+        Could not load reports — try again.
+      </div>
+    );
   }
 
   if (reports.length === 0) {

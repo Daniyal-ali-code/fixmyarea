@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
@@ -8,11 +8,17 @@ import { useAuth } from "@/components/AuthProvider";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { user, loading, login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push(user.role === "admin" ? "/admin" : "/");
+    }
+  }, [loading, user, router]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -23,6 +29,7 @@ export default function LoginPage() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
@@ -33,7 +40,7 @@ export default function LoginPage() {
         return;
       }
 
-      login(data.user, data.token);
+      login(data.user);
 
       // Role-based landing
       if (data.user.role === "admin") {
