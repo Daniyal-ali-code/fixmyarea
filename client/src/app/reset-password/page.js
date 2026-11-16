@@ -3,6 +3,7 @@
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Button, Input, Alert, CheckIcon, labelClass, inputClass, eyebrowClass } from "@/components/ui";
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
@@ -141,7 +142,7 @@ function ResetPasswordForm() {
       <main className="min-h-screen bg-amber-50 dark:bg-stone-900 flex items-center justify-center px-4 py-12">
         <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-8 max-w-md w-full">
           <div className="mb-8">
-            <p className="font-serif italic text-xs uppercase tracking-[0.3em] text-stone-600 dark:text-stone-400 mb-2 border-b-2 border-amber-600 pb-1 inline-block">
+            <p className={eyebrowClass}>
               Reset Password
             </p>
             <h1 className="font-serif text-3xl font-bold text-stone-900 dark:text-stone-50 mt-3">
@@ -151,10 +152,15 @@ function ResetPasswordForm() {
                   ? "Enter your code"
                   : "Choose a new password"}
             </h1>
+            {!done && (
+              <p className="font-serif italic text-sm text-stone-600 dark:text-stone-400 mt-2">
+                Step {step} of 2
+              </p>
+            )}
           </div>
 
           {done ? (
-            <div className="bg-green-50 dark:bg-green-950 border border-green-300 dark:border-green-800 text-green-800 dark:text-green-200 text-sm p-3 rounded-sm">
+            <Alert tone="success">
               Your password has been reset.{" "}
               <Link
                 href="/login"
@@ -163,18 +169,14 @@ function ResetPasswordForm() {
                 Sign in with your new password
               </Link>
               .
-            </div>
+            </Alert>
           ) : (
             <>
-              {error && (
-                <div className="bg-red-50 dark:bg-red-950 border border-red-300 dark:border-red-800 text-red-800 dark:text-red-200 text-sm p-3 rounded-sm mb-4">
-                  {error}
-                </div>
-              )}
+              {error && <Alert className="mb-4">{error}</Alert>}
               {resendMessage && (
-                <div className="bg-green-50 dark:bg-green-950 border border-green-300 dark:border-green-800 text-green-800 dark:text-green-200 text-sm p-3 rounded-sm mb-4">
+                <Alert tone="success" className="mb-4">
                   {resendMessage}
-                </div>
+                </Alert>
               )}
 
               {step === 1 ? (
@@ -188,18 +190,18 @@ function ResetPasswordForm() {
                     <div>
                       <label
                         htmlFor="email"
-                        className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2"
+                        className={labelClass}
                       >
                         Email
                       </label>
-                      <input
+                      <Input
                         id="email"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         autoComplete="email"
-                        className="w-full px-4 py-3 text-base bg-amber-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition"
+                        className={inputClass}
                         placeholder="you@example.com"
                       />
                     </div>
@@ -207,11 +209,11 @@ function ResetPasswordForm() {
                     <div>
                       <label
                         htmlFor="otp"
-                        className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2"
+                        className={labelClass}
                       >
                         6-Digit Code
                       </label>
-                      <input
+                      <Input
                         id="otp"
                         type="text"
                         inputMode="numeric"
@@ -223,36 +225,39 @@ function ResetPasswordForm() {
                         required
                         minLength={6}
                         maxLength={6}
-                        className="w-full px-4 py-3 text-base tracking-[0.5em] bg-amber-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition"
+                        className={`${inputClass} tracking-[0.5em]`}
                         placeholder="123456"
                       />
                     </div>
 
-                    <button
+                    <Button
                       type="submit"
                       disabled={submitting}
-                      className="w-full px-6 py-3 text-xs font-semibold uppercase tracking-wider text-stone-900 bg-amber-600 rounded-sm hover:bg-amber-500 shadow-md shadow-amber-600/30 hover:shadow-lg hover:shadow-amber-600/40 transition-all border border-amber-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full"
                     >
                       {submitting ? "Verifying..." : "Verify Code"}
-                    </button>
+                    </Button>
                   </form>
                 </>
               ) : (
                 <>
-                  <div className="bg-green-50 dark:bg-green-950 border border-green-300 dark:border-green-800 text-green-800 dark:text-green-200 text-sm p-3 rounded-sm mb-5">
-                    Code verified ✓ — now choose a new password for{" "}
-                    <span className="font-semibold">{email}</span>.
-                  </div>
+                  <Alert tone="success" className="mb-5 flex items-start gap-2">
+                    <CheckIcon className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <span>
+                      Code verified — now choose a new password for{" "}
+                      <span className="font-semibold">{email}</span>.
+                    </span>
+                  </Alert>
 
                   <form onSubmit={handleResetPassword} className="space-y-5">
                     <div>
                       <label
                         htmlFor="password"
-                        className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2"
+                        className={labelClass}
                       >
                         New Password
                       </label>
-                      <input
+                      <Input
                         id="password"
                         type="password"
                         value={password}
@@ -260,7 +265,7 @@ function ResetPasswordForm() {
                         required
                         autoComplete="new-password"
                         minLength={8}
-                        className="w-full px-4 py-3 text-base bg-amber-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition"
+                        className={inputClass}
                         placeholder="At least 8 characters"
                       />
                     </div>
@@ -268,11 +273,11 @@ function ResetPasswordForm() {
                     <div>
                       <label
                         htmlFor="confirm"
-                        className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2"
+                        className={labelClass}
                       >
                         Confirm New Password
                       </label>
-                      <input
+                      <Input
                         id="confirm"
                         type="password"
                         value={confirm}
@@ -280,18 +285,18 @@ function ResetPasswordForm() {
                         required
                         autoComplete="new-password"
                         minLength={8}
-                        className="w-full px-4 py-3 text-base bg-amber-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition"
+                        className={inputClass}
                         placeholder="Repeat your new password"
                       />
                     </div>
 
-                    <button
+                    <Button
                       type="submit"
                       disabled={submitting}
-                      className="w-full px-6 py-3 text-xs font-semibold uppercase tracking-wider text-stone-900 bg-amber-600 rounded-sm hover:bg-amber-500 shadow-md shadow-amber-600/30 hover:shadow-lg hover:shadow-amber-600/40 transition-all border border-amber-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full"
                     >
                       {submitting ? "Resetting..." : "Reset Password"}
-                    </button>
+                    </Button>
                   </form>
 
                   <p className="mt-4 text-center">
@@ -316,7 +321,7 @@ function ResetPasswordForm() {
                   type="button"
                   onClick={handleResend}
                   disabled={resending}
-                  className="text-slate-800 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 decoration-amber-600/40 hover:decoration-amber-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="text-stone-800 dark:text-stone-300 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 decoration-amber-600/40 hover:decoration-amber-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {resending ? "Sending..." : "Resend code"}
                 </button>

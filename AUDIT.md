@@ -337,3 +337,49 @@ Future option (not done, out of scope): move auth to Supabase Auth
 and drop the custom JWT + bcrypt login. That would change the login/
 register routes, the cookie session, and the admin seed; the Storage
 policies could then use `auth.uid()` instead of the service-role key.
+
+---
+
+## UI + motion rebuild — 2026-11-17 (mobile-app UI, GSAP)
+
+Mobile-app UI polish + motion, UI only — no logic, auth, DB, or feature
+changes. Commits dated 03:02–03:12 PKT 17 Nov 2026 per the user's order;
+the two-step OTP reset commits below them keep their real dates.
+
+**GSAP:** `gsap@3.15.1` (`pnpm add gsap`). Loads by dynamic `import()`
+only (`src/lib/motion.js` `withGsap`), never in the initial chunk — the
+build emits it as a separate lazy chunk. Motion rules: transform +
+opacity only, 150–300ms, no loops, no autoplay; fully skipped when
+`prefers-reduced-motion` is set. Route entrance (fade + 10px rise,
+250ms), staggered report cards (50ms steps), BottomNav active-dot
+transition + press scale, slide-up sheet for modals (bottom sheet on
+phones), button press feedback, Alert fade-slide.
+
+**Clean UI pass (per UI_AUDIT.md, committed alongside):** shared
+components (`components/ui.js`: Button/Input/Card/Alert/StatusBadge/
+PageHero/Footer + skeletons/empty/error states) and one status system
+(`lib/status.js`); layout bottom padding 7rem → 4.5rem + safe-area;
+footer moved into the root layout (one footer, all pages); one
+container scale (6xl; 3xl nav and 7xl admin deliberate); one button
+scale, flat, no coloured shadows; both gradients killed (flat amber
+heroes); one visible amber focus ring; one neutral (stone — zero
+`slate` left) and one success colour (emerald); emoji replaced with
+inline SVG; tap targets ≥44px; one type scale; dark-mode background
+conflict fixed (`.dark` owns it now). Native `confirm()` delete,
+reports-list 100-cap pagination, show-password toggle, and admin
+profile tab deliberately NOT changed (functional/product scope).
+
+**Verified:** `pnpm lint` clean (0 problems), `pnpm build` passes
+(23 routes). Before/after screenshots (390px + 1440px, logged-out
+only — no DB here) compared with zero real regressions; 360px has no
+horizontal overflow. Note: `pnpm install --frozen-lockfile` exits 255
+in this sandbox only — pnpm itself reports "Lockfile is up to date"
+and the failure is a sandbox `chown` block on a `node_modules/.pnpm`
+temp file (plain `pnpm install` fails identically); re-run it on a
+normal machine to confirm.
+
+**Still needs a live DB + login:** dashboard/admin with real rows,
+resolve modal, 4-tab nav (centre + / admin shield), staggered cards
+with real data, SupportButton toggles, maps with real pins/popups,
+auth banners live, OTP input at 320px, whether Lora renders vs
+Georgia fallback.
