@@ -4,12 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-const STATUS_COLORS = {
-  reported: "#2563eb",
-  under_review: "#d97706",
-  in_progress: "#ea580c",
-  resolved: "#475569",
-};
+import { STATUS_COLORS } from "@/lib/status";
 
 function makeIcon(color) {
   return L.divIcon({
@@ -54,11 +49,13 @@ export default function ReportDetailMap({ report }) {
         />
         <Marker position={[lat, lng]} icon={makeIcon(color)}>
           <Popup>
-            <strong>{report.title}</strong>
+            <strong className="text-stone-900">{report.title}</strong>
             {report.address && (
               <>
                 <br />
-                <span style={{ fontSize: 12 }}>📍 {report.address}</span>
+                <span className="text-xs italic text-stone-600">
+                  {report.address}
+                </span>
               </>
             )}
           </Popup>

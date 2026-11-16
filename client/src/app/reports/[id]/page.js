@@ -3,27 +3,14 @@ import Link from "next/link";
 import SupportButton from "@/components/SupportButton";
 import ReportImage from "@/components/ReportImage";
 import ReportDetailMapWrapper from "@/components/ReportDetailMapWrapper";
+import {
+  StatusBadge,
+  PinIcon,
+  CheckIcon,
+  textLinkClass,
+} from "@/components/ui";
+import { STATUS_LABELS, STATUS_ORDER } from "@/lib/status";
 import { query } from "@/lib/db";
-
-const statusLabels = {
-  reported: "Reported",
-  under_review: "Under Review",
-  in_progress: "In Progress",
-  resolved: "Resolved",
-};
-
-const statusStyles = {
-  reported:
-    "bg-blue-50 text-blue-900 border-blue-300 dark:bg-blue-950 dark:text-blue-200 dark:border-blue-800",
-  under_review:
-    "bg-amber-50 text-amber-900 border-amber-300 dark:bg-amber-950 dark:text-amber-200 dark:border-amber-800",
-  in_progress:
-    "bg-orange-50 text-orange-900 border-orange-300 dark:bg-orange-950 dark:text-orange-200 dark:border-orange-800",
-  resolved:
-    "bg-slate-50 text-slate-900 border-slate-300 dark:bg-slate-950 dark:text-slate-200 dark:border-slate-700",
-};
-
-const STATUS_ORDER = ["reported", "under_review", "in_progress", "resolved"];
 
 async function getReport(id) {
   try {
@@ -117,7 +104,7 @@ export default async function ReportDetailPage({ params }) {
     ...history.map((h) => ({
       status: h.new_status,
       at: h.created_at,
-      label: statusLabels[h.new_status] || h.new_status,
+      label: STATUS_LABELS[h.new_status] || h.new_status,
     })),
   ];
 
@@ -127,29 +114,21 @@ export default async function ReportDetailPage({ params }) {
     isResolved && (report.resolution_note || report.resolution_image_url);
 
   return (
-    <>
-
-      <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
+    <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
         <div className="max-w-4xl mx-auto px-4 py-8">
           <Link
             href="/reports"
-            className="font-serif italic text-sm text-slate-800 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 inline-block mb-6"
+            className={`${textLinkClass} inline-block mb-6`}
           >
             ← Back to reports
           </Link>
 
           <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-6 md:p-8 mb-6">
             <div className="flex items-start justify-between gap-4 mb-4 flex-wrap">
-              <span className="font-serif italic text-xs uppercase tracking-[0.2em] text-stone-600 dark:text-stone-400">
+              <span className="font-serif italic text-xs uppercase tracking-[0.3em] text-stone-600 dark:text-stone-400">
                 {report.category_name}
               </span>
-              <span
-                className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider border rounded-sm ${
-                  statusStyles[report.status] || statusStyles.reported
-                }`}
-              >
-                {statusLabels[report.status] || report.status}
-              </span>
+              <StatusBadge status={report.status} large />
             </div>
 
             <h1 className="font-serif text-3xl md:text-4xl font-bold text-stone-900 dark:text-stone-50 mb-4 leading-tight">
@@ -199,7 +178,7 @@ export default async function ReportDetailPage({ params }) {
               </div>
             )}
 
-            <div className="pt-4 border-t border-stone-300 dark:border-stone-700 flex items-center justify-between flex-wrap gap-4">
+            <div className="pt-4 border-t border-stone-300 dark:border-stone-700 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-wider text-stone-500 dark:text-stone-500 font-semibold mb-1">
                   Reported by
@@ -208,7 +187,7 @@ export default async function ReportDetailPage({ params }) {
                   {report.reporter_name}
                 </p>
               </div>
-              <div className="text-right">
+              <div className="text-left sm:text-right">
                 <p className="text-xs uppercase tracking-wider text-stone-500 dark:text-stone-500 font-semibold mb-1">
                   Reported on
                 </p>
@@ -224,8 +203,8 @@ export default async function ReportDetailPage({ params }) {
               Location
             </h2>
             {report.address && (
-              <p className="font-serif italic text-base text-stone-900 dark:text-stone-50 mb-4">
-                📍 {report.address}
+              <p className="font-serif italic text-base text-stone-900 dark:text-stone-50 mb-4 flex items-center gap-1.5">
+                <PinIcon className="w-4 h-4 flex-shrink-0" /> {report.address}
               </p>
             )}
             <ReportDetailMapWrapper report={report} />
@@ -236,8 +215,9 @@ export default async function ReportDetailPage({ params }) {
 
           {hasResolutionProof && (
             <div className="bg-stone-50 dark:bg-stone-800 border-2 border-emerald-600 dark:border-emerald-500 rounded-sm p-6 md:p-8 mb-6">
-              <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50 mb-4 pb-2 border-b-2 border-emerald-600">
-                ✅ Resolution Proof
+              <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50 mb-4 pb-2 border-b-2 border-emerald-600 flex items-center gap-2">
+                <CheckIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
+                Resolution Proof
               </h2>
 
               {report.resolution_image_url && (
@@ -307,7 +287,7 @@ export default async function ReportDetailPage({ params }) {
                             : "text-stone-500 dark:text-stone-500"
                         }`}
                       >
-                        {statusLabels[step]}
+                        {STATUS_LABELS[step]}
                       </p>
                       {date && (
                         <p className="text-xs text-stone-600 dark:text-stone-400 mt-0.5">
@@ -340,14 +320,5 @@ export default async function ReportDetailPage({ params }) {
           )}
         </div>
       </main>
-
-      <footer className="bg-slate-900 dark:bg-slate-950 text-amber-50 py-6 border-t-4 border-amber-600 mt-12">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="font-serif italic text-sm">
-            FixMyArea · Built for communities
-          </p>
-        </div>
-      </footer>
-    </>
   );
 }

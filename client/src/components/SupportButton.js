@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./AuthProvider";
+import { btnPrimary, btnSecondary, CheckIcon, ThumbsUpIcon } from "./ui";
 
 export default function SupportButton({ reportId, initialCount, initialSupported = false }) {
   const router = useRouter();
@@ -75,17 +76,22 @@ export default function SupportButton({ reportId, initialCount, initialSupported
         onClick={handleClick}
         disabled={loading}
         aria-pressed={supported}
-        className={`inline-block px-8 py-3 text-xs font-semibold uppercase tracking-wider rounded-sm transition-all border ${
-          supported
-            ? "text-stone-900 bg-amber-500 hover:bg-amber-400 border-amber-600 shadow-md shadow-amber-600/30"
-            : "text-stone-900 bg-amber-600 hover:bg-amber-500 border-amber-700 shadow-md shadow-amber-600/30 hover:shadow-lg hover:shadow-amber-600/40"
-        } disabled:opacity-50 disabled:cursor-not-allowed`}
+        // Supported = the solid primary (amber-600, like every other
+        // primary); not yet supported = the secondary outline, so the
+        // "owned" state reads as the active one.
+        className={`${supported ? btnPrimary : btnSecondary} gap-2 disabled:opacity-50 disabled:cursor-not-allowed`}
       >
-        {loading
-          ? "Updating..."
-          : supported
-          ? `✓ Supported (${count})`
-          : `👍 Support this report (${count})`}
+        {loading ? (
+          "Updating..."
+        ) : supported ? (
+          <>
+            <CheckIcon className="w-4 h-4" /> Supported ({count})
+          </>
+        ) : (
+          <>
+            <ThumbsUpIcon className="w-4 h-4" /> Support this report ({count})
+          </>
+        )}
       </button>
       {error && (
         <p role="alert" className="mt-2 text-sm text-red-800 dark:text-red-200">

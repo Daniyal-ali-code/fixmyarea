@@ -6,19 +6,7 @@ import Link from "next/link";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-const STATUS_COLORS = {
-  reported: "#2563eb",
-  under_review: "#d97706",
-  in_progress: "#ea580c",
-  resolved: "#475569",
-};
-
-const STATUS_LABELS = {
-  reported: "Reported",
-  under_review: "Under Review",
-  in_progress: "In Progress",
-  resolved: "Resolved",
-};
+import { STATUS_COLORS, STATUS_LABELS } from "@/lib/status";
 
 function makeIcon(color) {
   return L.divIcon({
@@ -58,11 +46,12 @@ export default function ReportsMap({ reports = [] }) {
   );
 
   return (
-    <div className="rounded-sm overflow-hidden border border-stone-300 dark:border-stone-700">
+    <div className="map-home rounded-sm overflow-hidden border border-stone-300 dark:border-stone-700">
       <MapContainer
         center={[24.8607, 67.0011]}
         zoom={12}
-        style={{ height: "520px", width: "100%" }}
+        style={{ height: "100%", width: "100%" }}
+        scrollWheelZoom={false}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -76,40 +65,21 @@ export default function ReportsMap({ reports = [] }) {
             icon={makeIcon(STATUS_COLORS[r.status] || STATUS_COLORS.reported)}
           >
             <Popup>
-              <div style={{ minWidth: 200, fontFamily: "system-ui, sans-serif" }}>
-                <p
-                  style={{
-                    fontWeight: 700,
-                    fontSize: 14,
-                    margin: "0 0 4px",
-                    color: "#1c1917",
-                  }}
-                >
+              <div className="min-w-[200px]">
+                <p className="font-bold text-sm text-stone-900 m-0 mb-1">
                   {r.title}
                 </p>
-                <p style={{ fontSize: 11, color: "#57534e", margin: "0 0 4px" }}>
+                <p className="text-[11px] text-stone-500 m-0 mb-1">
                   {r.category_name} · {STATUS_LABELS[r.status] || r.status}
                 </p>
                 {r.address && (
-                  <p
-                    style={{
-                      fontSize: 11,
-                      fontStyle: "italic",
-                      color: "#44403c",
-                      margin: "0 0 8px",
-                    }}
-                  >
-                    📍 {r.address}
+                  <p className="text-[11px] italic text-stone-700 m-0 mb-2">
+                    {r.address}
                   </p>
                 )}
                 <Link
                   href={`/reports/${r.id}`}
-                  style={{
-                    fontSize: 11,
-                    color: "#d97706",
-                    fontWeight: 600,
-                    textDecoration: "none",
-                  }}
+                  className="text-[11px] font-semibold text-amber-600 no-underline"
                 >
                   View report →
                 </Link>

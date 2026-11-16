@@ -3,6 +3,17 @@ import Link from "next/link";
 import ReportCard from "@/components/ReportCard";
 import AdminRedirectGuard from "@/components/AdminRedirectGuard";
 import HomeMapSection from "@/components/HomeMapSection";
+import { Stagger } from "@/components/Motion";
+import {
+  PageHero,
+  ReportsSkeleton,
+  ErrorState,
+  EmptyState,
+  StatusBadge,
+  btnPrimary,
+  btnSecondary,
+  textLinkClass,
+} from "@/components/ui";
 import { query } from "@/lib/db";
 
 async function RecentReports() {
@@ -29,110 +40,69 @@ async function RecentReports() {
   }
 
   if (loadError) {
-    return (
-      <div className="bg-red-50 dark:bg-red-950 border border-red-300 dark:border-red-800 rounded-sm p-12 text-center font-serif italic text-red-800 dark:text-red-200">
-        Could not load reports — try again.
-      </div>
-    );
+    return <ErrorState>Could not load reports — try again.</ErrorState>;
   }
 
   if (reports.length === 0) {
     return (
-      <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-12 text-center font-serif italic text-stone-600 dark:text-stone-400">
-        No reports yet. Be the first to report an issue!
-      </div>
+      <EmptyState>No reports yet. Be the first to report an issue!</EmptyState>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <Stagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {reports.map((report) => (
         <ReportCard key={report.id} report={report} />
       ))}
-    </div>
-  );
-}
-
-function ReportsSkeleton() {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {[1, 2, 3].map((n) => (
-        <div
-          key={n}
-          className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-5 animate-pulse"
-        >
-          <div className="h-3 w-20 bg-stone-200 dark:bg-stone-700 rounded mb-4" />
-          <div className="h-5 w-full bg-stone-200 dark:bg-stone-700 rounded mb-2" />
-          <div className="h-4 w-3/4 bg-stone-200 dark:bg-stone-700 rounded mb-4" />
-          <div className="h-3 w-1/3 bg-stone-200 dark:bg-stone-700 rounded" />
-        </div>
-      ))}
-    </div>
+    </Stagger>
   );
 }
 
 export default function HomePage() {
   return (
     <AdminRedirectGuard>
-
       <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
-        <section className="bg-gradient-to-br from-[#fef3c7] via-amber-50 to-amber-50 dark:from-stone-800 dark:via-stone-900 dark:to-stone-900 border-b border-stone-400 dark:border-stone-700">
-          <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-            <div className="inline-block mb-6">
-              <span className="font-serif italic text-xs uppercase tracking-[0.3em] text-stone-600 dark:text-stone-400 border-b-2 border-amber-600 pb-1">
-                Established for the Community
-              </span>
-            </div>
-            <h1 className="font-serif text-5xl md:text-6xl font-bold text-stone-900 dark:text-stone-50 mb-6 leading-tight">
+        <PageHero
+          center
+          eyebrow="Established for the Community"
+          title={
+            <>
               Report issues in
               <br />
               <span className="italic">your area</span>
-            </h1>
-            <p className="font-serif italic text-lg text-stone-700 dark:text-stone-300 mb-10 max-w-xl mx-auto leading-relaxed">
-              Help make your community better. Report potholes, broken
-              streetlights, garbage, and other local issues — then track their
-              progress.
-            </p>
-            <div className="flex items-center justify-center gap-4 flex-wrap">
-              <Link
-                href="/reports/new"
-                className="inline-block px-8 py-3 text-xs font-semibold uppercase tracking-wider text-stone-900 bg-amber-600 rounded-sm hover:bg-amber-500 shadow-md shadow-amber-600/30 hover:shadow-lg hover:shadow-amber-600/40 transition-all border border-amber-700"
-              >
-                + Report an Issue
-              </Link>
-              <Link
-                href="/reports"
-                className="inline-block px-8 py-3 text-xs font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-800 rounded-sm hover:bg-amber-100 dark:hover:bg-stone-700 transition border border-stone-400 dark:border-stone-600"
-              >
-                Browse Reports
-              </Link>
-            </div>
+            </>
+          }
+          sub="Help make your community better. Report potholes, broken streetlights, garbage, and other local issues — then track their progress."
+        >
+          <div className="flex items-center justify-center gap-4 flex-wrap mt-10">
+            <Link href="/reports/new" className={btnPrimary}>
+              + Report an Issue
+            </Link>
+            <Link href="/reports" className={btnSecondary}>
+              Browse Reports
+            </Link>
           </div>
-        </section>
+        </PageHero>
 
         <section className="max-w-6xl mx-auto px-4 py-12">
           <div className="flex items-baseline justify-between mb-6 pb-2 border-b-2 border-amber-600">
             <h2 className="font-serif text-3xl font-bold text-stone-900 dark:text-stone-50">
               Issues Near You
             </h2>
-            <Link
-              href="/reports"
-              className="font-serif italic text-sm text-slate-800 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-500 transition"
-            >
+            <Link href="/reports" className={textLinkClass}>
               View all →
             </Link>
           </div>
           <HomeMapSection />
-          <p className="mt-3 text-xs font-serif italic text-stone-500 dark:text-stone-500 text-center">
-            Pin colors:{" "}
-            <span className="text-blue-600 dark:text-blue-400">● Reported</span>
-            {" · "}
-            <span className="text-amber-600 dark:text-amber-500">● Under Review</span>
-            {" · "}
-            <span className="text-orange-600 dark:text-orange-500">● In Progress</span>
-            {" · "}
-            <span className="text-slate-600 dark:text-slate-400">● Resolved</span>
-          </p>
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+            <span className="text-xs font-serif italic text-stone-500 dark:text-stone-500 mr-1">
+              Pin colors:
+            </span>
+            <StatusBadge status="reported" />
+            <StatusBadge status="under_review" />
+            <StatusBadge status="in_progress" />
+            <StatusBadge status="resolved" />
+          </div>
         </section>
 
         <section className="max-w-6xl mx-auto px-4 py-12">
@@ -140,27 +110,16 @@ export default function HomePage() {
             <h2 className="font-serif text-3xl font-bold text-stone-900 dark:text-stone-50">
               Recent Reports
             </h2>
-            <Link
-              href="/reports"
-              className="font-serif italic text-sm text-slate-800 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-500 transition"
-            >
+            <Link href="/reports" className={textLinkClass}>
               View all →
             </Link>
           </div>
 
-          <Suspense fallback={<ReportsSkeleton />}>
+          <Suspense fallback={<ReportsSkeleton count={3} />}>
             <RecentReports />
           </Suspense>
         </section>
       </main>
-
-      <footer className="bg-slate-900 dark:bg-slate-950 text-amber-50 py-6 border-t-4 border-amber-600">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="font-serif italic text-sm">
-            FixMyArea · Built for communities
-          </p>
-        </div>
-      </footer>
     </AdminRedirectGuard>
   );
 }
