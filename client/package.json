@@ -12,6 +12,7 @@
     "@supabase/supabase-js": "^2.119.0",
     "bcrypt": "^6.0.0",
     "dotenv": "^17.2.3",
+    "gsap": "^3.13.0",
     "jsonwebtoken": "^9.0.3",
     "leaflet": "^1.9.4",
     "next": "16.4.5",
