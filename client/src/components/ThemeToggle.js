@@ -10,7 +10,7 @@ export default function ThemeToggle() {
       <button
         aria-label="Toggle theme"
         disabled
-        className="h-9 w-9 border border-stone-400 dark:border-stone-600 rounded-sm"
+        className="h-11 w-11 border border-stone-400 dark:border-stone-600 rounded-sm"
       />
     );
   }
@@ -19,7 +19,7 @@ export default function ThemeToggle() {
     <button
       onClick={toggle}
       aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-      className="h-9 w-9 flex items-center justify-center border border-stone-400 dark:border-stone-600 rounded-sm text-stone-700 dark:text-stone-300 hover:bg-amber-100 dark:hover:bg-stone-800 transition"
+      className="h-11 w-11 flex items-center justify-center border border-stone-400 dark:border-stone-600 rounded-sm text-stone-700 dark:text-stone-300 hover:bg-amber-100 dark:hover:bg-stone-800 transition active:scale-95"
     >
       {theme === "dark" ? (
         <svg

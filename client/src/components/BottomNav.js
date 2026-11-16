@@ -36,7 +36,7 @@ function Tab({ href, label, icon, active }) {
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className={`flex flex-col items-center justify-center gap-1 py-2 text-[11px] leading-none transition ${
+      className={`flex flex-col items-center justify-center gap-1 py-2 min-h-[52px] text-xs leading-none transition active:scale-95 ${
         active
           ? "text-amber-700 dark:text-amber-500 font-semibold"
           : "text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200"
@@ -44,6 +44,14 @@ function Tab({ href, label, icon, active }) {
     >
       <Icon d={ICONS[icon]} className="w-6 h-6" />
       <span>{label}</span>
+      {/* Active-tab indicator: a small amber dot, always the same size
+          so switching tabs never shifts the layout. */}
+      <span
+        aria-hidden="true"
+        className={`h-1 w-1 rounded-full bg-amber-600 dark:bg-amber-500 transition-all duration-200 ${
+          active ? "opacity-100 scale-100" : "opacity-0 scale-50"
+        }`}
+      />
     </Link>
   );
 }
@@ -56,12 +64,12 @@ function CenterAction({ href, label, icon, active }) {
         href={href}
         aria-label={label}
         aria-current={active ? "page" : undefined}
-        className="absolute -top-6 left-1/2 -translate-x-1/2 flex items-center justify-center w-14 h-14 rounded-full bg-amber-600 text-white shadow-lg ring-4 ring-amber-50 dark:ring-stone-900 hover:bg-amber-500 active:scale-95 transition"
+        className="absolute -top-6 left-1/2 -translate-x-1/2 flex items-center justify-center w-14 h-14 rounded-full bg-amber-600 text-stone-900 shadow-lg ring-4 ring-amber-50 dark:ring-stone-900 hover:bg-amber-500 active:scale-95 transition"
       >
         <Icon d={ICONS[icon]} className="w-7 h-7" />
       </Link>
       <span
-        className={`mt-7 text-[11px] leading-none transition ${
+        className={`mt-7 text-xs leading-none transition ${
           active
             ? "text-amber-700 dark:text-amber-500 font-semibold"
             : "text-stone-500 dark:text-stone-400"
@@ -75,7 +83,7 @@ function CenterAction({ href, label, icon, active }) {
 
 export default function BottomNav() {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
   const isHome = pathname === "/";
   const isReports =
@@ -85,13 +93,29 @@ export default function BottomNav() {
   const isAdmin = pathname === "/admin" || pathname.startsWith("/admin");
   const isLogin = pathname === "/login";
 
-  // Signed out (or still loading): the guest tabs.
+  // While auth is still resolving, render the bar shell at full height
+  // with no tabs — otherwise the guest bar flashes, then swaps to the
+  // signed-in bar on every signed-in load.
+  if (loading) {
+    return (
+      <nav
+        aria-label="Primary"
+        className="fixed bottom-0 inset-x-0 z-50 bg-amber-50 dark:bg-stone-900 border-t border-stone-300 dark:border-stone-700 shadow-[0_-2px_12px_rgba(0,0,0,0.08)] pb-[env(safe-area-inset-bottom)]"
+      >
+        <div className="mx-auto max-w-3xl min-h-[56px]" />
+      </nav>
+    );
+  }
+
+  // Signed out: the guest tabs.
   if (!user) {
     return (
       <nav
         aria-label="Primary"
         className="fixed bottom-0 inset-x-0 z-50 bg-amber-50 dark:bg-stone-900 border-t border-stone-300 dark:border-stone-700 shadow-[0_-2px_12px_rgba(0,0,0,0.08)] pb-[env(safe-area-inset-bottom)]"
       >
+        {/* Deliberate phone-width tab bar (max-w-3xl) while the header
+            and content span max-w-6xl — the bar is a phone UI, centred. */}
         <div className="mx-auto max-w-3xl grid grid-cols-3 min-h-[56px]">
           <Tab href="/" label="Home" icon="home" active={isHome} />
           <Tab

@@ -16,7 +16,7 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-40 bg-amber-50 dark:bg-stone-900 border-b border-stone-400 dark:border-stone-700">
+    <header className="sticky top-0 z-40 bg-amber-50 dark:bg-stone-900 border-b border-stone-400 dark:border-stone-700 pt-[env(safe-area-inset-top)]">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
         <Link
           href="/"
@@ -37,7 +37,7 @@ export default function Header() {
               </span>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-800 rounded-sm hover:bg-amber-100 dark:hover:bg-stone-700 transition border border-stone-400 dark:border-stone-600"
+                className="px-4 py-2 min-h-11 text-xs font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-800 rounded-sm hover:bg-amber-100 dark:hover:bg-stone-700 transition border border-stone-400 dark:border-stone-600"
               >
                 Logout
               </button>

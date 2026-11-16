@@ -4,6 +4,8 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/components/AuthProvider";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
+import { PageEnter } from "@/components/Motion";
+import { Footer } from "@/components/ui";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -18,6 +20,16 @@ const lora = Lora({
 export const metadata = {
   title: "FixMyArea — Report Local Issues",
   description: "Report and track community issues in your area.",
+};
+
+// viewportFit cover so the safe-area insets apply; theme-color matches
+// the amber/stone chrome around the bottom nav.
+export const viewport = {
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fffbeb" },
+    { media: "(prefers-color-scheme: dark)", color: "#1c1917" },
+  ],
 };
 
 const themeScript = `
@@ -41,8 +53,13 @@ export default function RootLayout({ children }) {
         <ThemeProvider>
           <AuthProvider>
             <Header />
-            <div className="pb-[calc(7rem+env(safe-area-inset-bottom))]">
-              {children}
+            {/* Bottom padding is 4.5rem + safe area: the nav bar is
+                ~56px, so this clears it without the old 7rem dead band.
+                The footer lives inside this wrapper so it also clears
+                the nav. */}
+            <div className="pb-[calc(4.5rem+env(safe-area-inset-bottom))]">
+              <PageEnter>{children}</PageEnter>
+              <Footer />
             </div>
             <BottomNav />
           </AuthProvider>
