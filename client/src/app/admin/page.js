@@ -4,26 +4,22 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
+import Modal from "@/components/Modal";
+import {
+  Alert,
+  Button,
+  LoadingNote,
+  StatusBadge,
+  CameraIcon,
+  textareaClass,
+  btnDangerSm,
+  textLinkClass,
+  chipActive,
+  chipInactive,
+} from "@/components/ui";
+import { STATUS_LABELS } from "@/lib/status";
 
 const STATUS_OPTIONS = ["reported", "under_review", "in_progress", "resolved"];
-
-const STATUS_LABELS = {
-  reported: "Reported",
-  under_review: "Under Review",
-  in_progress: "In Progress",
-  resolved: "Resolved",
-};
-
-const STATUS_STYLES = {
-  reported:
-    "bg-blue-50 text-blue-900 border-blue-300 dark:bg-blue-950 dark:text-blue-200 dark:border-blue-800",
-  under_review:
-    "bg-amber-50 text-amber-900 border-amber-300 dark:bg-amber-950 dark:text-amber-200 dark:border-amber-800",
-  in_progress:
-    "bg-orange-50 text-orange-900 border-orange-300 dark:bg-orange-950 dark:text-orange-200 dark:border-orange-800",
-  resolved:
-    "bg-slate-50 text-slate-900 border-slate-300 dark:bg-slate-950 dark:text-slate-200 dark:border-slate-700",
-};
 
 const SORT_COLUMNS = [
   { key: "id", label: "ID", get: (r) => r.id },
@@ -307,10 +303,8 @@ export default function AdminPage() {
   if (authLoading) {
     return (
       <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
-        <div className="max-w-6xl mx-auto px-4 py-20 text-center">
-          <p className="font-serif italic text-stone-600 dark:text-stone-400">
-            Loading…
-          </p>
+        <div className="max-w-6xl mx-auto px-4">
+          <LoadingNote>Loading…</LoadingNote>
         </div>
       </main>
     );
@@ -320,6 +314,8 @@ export default function AdminPage() {
 
   return (
     <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
+      {/* Admin keeps max-w-7xl deliberately — the 10-column table
+          needs the width; every other page is max-w-6xl. */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex items-baseline justify-between mb-8 pb-2 border-b-2 border-amber-600">
           <div>
@@ -332,23 +328,15 @@ export default function AdminPage() {
           </div>
           <Link
             href="/"
-            className="font-serif italic text-sm text-slate-800 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-500 transition"
+            className={textLinkClass}
           >
             ← Home
           </Link>
         </div>
 
-        {error && (
-          <div className="mb-6 bg-red-50 dark:bg-red-950 border border-red-300 dark:border-red-800 rounded-sm p-4 text-red-800 dark:text-red-200 font-serif">
-            {error}
-          </div>
-        )}
+        {error && <Alert className="mb-6">{error}</Alert>}
 
-        {loading && !stats && (
-          <p className="font-serif italic text-stone-600 dark:text-stone-400">
-            Loading dashboard…
-          </p>
-        )}
+        {loading && !stats && <LoadingNote>Loading dashboard…</LoadingNote>}
 
         {stats && (
           <>
@@ -391,11 +379,7 @@ export default function AdminPage() {
               <button
                 key={col.key}
                 onClick={(e) => handleSort(col.key, e.shiftKey)}
-                className={`px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-sm border transition ${
-                  active
-                    ? "bg-amber-600 text-stone-900 border-amber-700"
-                    : "bg-amber-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-400 dark:border-stone-600 hover:border-amber-600"
-                }`}
+                className={active ? chipActive : chipInactive}
                 title="Click to sort · Shift+click to add as secondary sort"
               >
                 {col.label}
@@ -476,11 +460,7 @@ export default function AdminPage() {
                     <Td>{r.support_count}</Td>
                     <Td>{Number(r.priority_score).toFixed(1)}</Td>
                     <Td>
-                      <span
-                        className={`inline-block px-2 py-1 rounded-sm text-xs font-sans border ${STATUS_STYLES[r.status]}`}
-                      >
-                        {STATUS_LABELS[r.status]}
-                      </span>
+                      <StatusBadge status={r.status} />
                     </Td>
                     <Td>
                       <div className="flex items-center gap-2">
@@ -489,7 +469,7 @@ export default function AdminPage() {
                           onChange={(e) => changeStatus(r.id, e.target.value)}
                           disabled={busyId === r.id}
                           aria-label={`Change status of report ${r.id}: ${r.title}`}
-                          className="text-xs bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-600 rounded-sm px-2 py-1 text-stone-800 dark:text-stone-200 disabled:opacity-50"
+                          className="text-xs bg-amber-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-600 rounded-sm px-2 py-2 min-h-11 text-stone-800 dark:text-stone-200 disabled:opacity-50"
                         >
                           {STATUS_OPTIONS.map((s) => (
                             <option key={s} value={s}>
@@ -500,7 +480,7 @@ export default function AdminPage() {
                         <button
                           onClick={() => deleteReport(r.id, r.title)}
                           disabled={busyId === r.id}
-                          className="text-xs uppercase tracking-wider px-2 py-1 rounded-sm bg-red-50 dark:bg-red-950 text-red-800 dark:text-red-200 border border-red-300 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900 disabled:opacity-50"
+                          className={btnDangerSm}
                         >
                           Delete
                         </button>
@@ -515,13 +495,7 @@ export default function AdminPage() {
       </div>
 
       {resolveTarget && (
-        <div
-          className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center px-4 py-8 overflow-y-auto"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) closeResolveModal();
-          }}
-        >
-          <div className="bg-amber-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-sm max-w-lg w-full p-6 my-auto">
+        <Modal onClose={closeResolveModal} label="Mark as Resolved">
             <div className="flex items-start justify-between mb-4 pb-2 border-b-2 border-amber-600">
               <div>
                 <h2 className="font-serif text-2xl font-bold text-stone-900 dark:text-stone-50">
@@ -533,7 +507,7 @@ export default function AdminPage() {
               </div>
               <button
                 onClick={closeResolveModal}
-                className="text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 text-2xl leading-none"
+                className="h-11 w-11 -mr-2 -mt-1 flex items-center justify-center flex-shrink-0 text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 text-2xl leading-none transition active:scale-95"
                 aria-label="Close"
               >
                 ×
@@ -544,11 +518,7 @@ export default function AdminPage() {
               Upload a photo showing the fixed issue and write a short note. This proof will be visible to the community.
             </p>
 
-            {resolutionError && (
-              <div className="mb-4 bg-red-50 dark:bg-red-950 border border-red-300 dark:border-red-800 text-red-800 dark:text-red-200 text-sm p-3 rounded-sm">
-                {resolutionError}
-              </div>
-            )}
+            {resolutionError && <Alert className="mb-4">{resolutionError}</Alert>}
 
             <form onSubmit={submitResolution} className="space-y-4">
               <div>
@@ -574,15 +544,15 @@ export default function AdminPage() {
                         setResolutionImage(null);
                         setResolutionImagePreview(null);
                       }}
-                      className="absolute top-2 right-2 h-7 w-7 flex items-center justify-center bg-stone-900/80 text-white text-sm rounded-full hover:bg-red-600 transition"
+                      className="absolute top-2 right-2 h-8 w-8 flex items-center justify-center bg-stone-900/80 text-white text-sm rounded-full hover:bg-red-600 transition active:scale-95"
                       aria-label="Remove photo"
                     >
                       ×
                     </button>
                   </div>
                 ) : (
-                  <label className="block px-4 py-6 text-center text-xs font-semibold uppercase tracking-wider bg-stone-100 dark:bg-stone-800 border-2 border-dashed border-stone-400 dark:border-stone-600 rounded-sm hover:border-amber-600 dark:hover:border-amber-500 transition cursor-pointer">
-                    📷 Click to upload proof photo
+                  <label className="flex items-center justify-center gap-2 px-4 py-6 text-center text-xs font-semibold uppercase tracking-wider bg-stone-100 dark:bg-stone-800 border-2 border-dashed border-stone-400 dark:border-stone-600 rounded-sm hover:border-amber-600 dark:hover:border-amber-500 transition cursor-pointer">
+                    <CameraIcon className="w-4 h-4" /> Click to upload proof photo
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp"
@@ -609,7 +579,7 @@ export default function AdminPage() {
                   onChange={(e) => setResolutionNote(e.target.value)}
                   rows={3}
                   maxLength={500}
-                  className="w-full px-3 py-2 bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition resize-y"
+                  className={textareaClass}
                   placeholder="e.g. Pothole filled and asphalt leveled by the municipal team."
                 />
                 <p className="text-xs text-stone-500 dark:text-stone-500 mt-1">
@@ -618,25 +588,25 @@ export default function AdminPage() {
               </div>
 
               <div className="flex gap-3 pt-2">
-                <button
+                <Button
                   type="button"
+                  variant="secondary"
                   onClick={closeResolveModal}
                   disabled={resolutionSubmitting}
-                  className="flex-1 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 bg-amber-50 dark:bg-stone-800 rounded-sm hover:bg-amber-100 dark:hover:bg-stone-700 border border-stone-400 dark:border-stone-600 transition disabled:opacity-50"
+                  className="flex-1"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
                   disabled={resolutionSubmitting}
-                  className="flex-1 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-stone-900 bg-amber-600 rounded-sm hover:bg-amber-500 shadow-md shadow-amber-600/30 transition border border-amber-700 disabled:opacity-50"
+                  className="flex-1"
                 >
                   {resolutionSubmitting ? "Marking…" : "Mark Resolved"}
-                </button>
+                </Button>
               </div>
             </form>
-          </div>
-        </div>
+        </Modal>
       )}
     </main>
   );

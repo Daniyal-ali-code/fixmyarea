@@ -5,6 +5,22 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useAuth } from "@/components/AuthProvider";
+import {
+  Alert,
+  LoadingNote,
+  PinIcon,
+  CameraIcon,
+  labelClass,
+  helperClass,
+  inputClass,
+  textareaClass,
+  textLinkClass,
+  chipActive,
+  chipInactive,
+  btnPrimary,
+  btnSecondary,
+  eyebrowClass,
+} from "@/components/ui";
 
 const LocationPicker = dynamic(
   () => import("@/components/LocationPicker"),
@@ -251,30 +267,24 @@ export default function NewReportPage() {
 
   if (loading || !user) {
     return (
-      <>
-        <main className="min-h-screen bg-amber-50 dark:bg-stone-900 flex items-center justify-center">
-          <p className="font-serif italic text-stone-600 dark:text-stone-400">
-            Loading...
-          </p>
-        </main>
-      </>
+      <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
+        <LoadingNote>Loading...</LoadingNote>
+      </main>
     );
   }
 
   return (
-    <>
-
-      <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
+    <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
         <div className="max-w-2xl mx-auto px-4 py-8">
           <Link
             href="/reports"
-            className="font-serif italic text-sm text-slate-800 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 inline-block mb-6"
+            className={`${textLinkClass} inline-block mb-6`}
           >
             ← Back to reports
           </Link>
 
           <div className="mb-6">
-            <p className="font-serif italic text-xs uppercase tracking-[0.3em] text-stone-600 dark:text-stone-400 mb-2 border-b-2 border-amber-600 pb-1 inline-block">
+            <p className={eyebrowClass}>
               Report an Issue
             </p>
             <h1 className="font-serif text-3xl md:text-4xl font-bold text-stone-900 dark:text-stone-50 mt-3">
@@ -316,13 +326,13 @@ export default function NewReportPage() {
                 <button
                   onClick={() => submitReport(true)}
                   disabled={submitting}
-                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-stone-900 bg-amber-600 rounded-sm hover:bg-amber-500 border border-amber-700 transition disabled:opacity-50"
+                  className={btnPrimary}
                 >
                   Submit Anyway
                 </button>
                 <button
                   onClick={() => setDuplicates(null)}
-                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-800 rounded-sm hover:bg-amber-100 dark:hover:bg-stone-700 border border-stone-400 dark:border-stone-600 transition"
+                  className={btnSecondary}
                 >
                   Edit My Report
                 </button>
@@ -330,17 +340,13 @@ export default function NewReportPage() {
             </div>
           )}
 
-          {error && (
-            <div className="bg-red-50 dark:bg-red-950 border border-red-300 dark:border-red-800 text-red-800 dark:text-red-200 text-sm p-3 rounded-sm mb-4">
-              {error}
-            </div>
-          )}
+          {error && <Alert className="mb-4">{error}</Alert>}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label
                 htmlFor="title"
-                className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2"
+                className={labelClass}
               >
                 Title *
               </label>
@@ -351,16 +357,16 @@ export default function NewReportPage() {
                 onChange={(e) => setTitle(e.target.value)}
                 required
                 maxLength={150}
-                className="w-full px-4 py-3 text-base bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition"
+                className={inputClass}
                 placeholder="e.g. Pothole on Main Street"
               />
-              <p className="text-xs text-stone-500 dark:text-stone-500 mt-1">
+              <p className={helperClass}>
                 {title.length}/150 characters
               </p>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2">
+              <label className={labelClass}>
                 Category *
               </label>
               <div className="flex flex-wrap gap-2">
@@ -370,11 +376,7 @@ export default function NewReportPage() {
                     type="button"
                     onClick={() => setCategoryId(c.id)}
                     aria-pressed={categoryId === c.id}
-                    className={`px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-sm border transition ${
-                      categoryId === c.id
-                        ? "bg-amber-600 text-stone-900 border-amber-700 shadow-sm shadow-amber-600/30"
-                        : "bg-amber-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-400 dark:border-stone-600 hover:border-amber-600 dark:hover:border-amber-500"
-                    }`}
+                    className={categoryId === c.id ? chipActive : chipInactive}
                   >
                     {c.name}
                   </button>
@@ -385,7 +387,7 @@ export default function NewReportPage() {
             <div>
               <label
                 htmlFor="description"
-                className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2"
+                className={labelClass}
               >
                 Description *
               </label>
@@ -395,13 +397,13 @@ export default function NewReportPage() {
                 onChange={(e) => setDescription(e.target.value)}
                 required
                 rows={4}
-                className="w-full px-4 py-3 text-base bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition resize-y"
+                className={textareaClass}
                 placeholder="Describe the issue in detail. When did you notice it? How bad is it?"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2">
+              <label className={labelClass}>
                 Severity: {severity}/5
               </label>
               <div className="flex items-center gap-2">
@@ -412,7 +414,7 @@ export default function NewReportPage() {
                     onClick={() => setSeverity(n)}
                     aria-pressed={severity === n}
                     aria-label={`Severity ${n} of 5`}
-                    className={`h-10 w-10 flex items-center justify-center text-sm font-semibold rounded-sm border transition ${
+                    className={`h-11 w-11 flex items-center justify-center text-sm font-semibold rounded-sm border transition active:scale-95 ${
                       n <= severity
                         ? "bg-amber-600 text-stone-900 border-amber-700"
                         : "bg-amber-50 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border-stone-400 dark:border-stone-600 hover:border-amber-600"
@@ -422,13 +424,13 @@ export default function NewReportPage() {
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-stone-500 dark:text-stone-500 mt-1">
+              <p className={helperClass}>
                 1 = minor annoyance, 5 = urgent/safety risk
               </p>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2">
+              <label className={labelClass}>
                 Location *
               </label>
               <p className="text-xs text-stone-600 dark:text-stone-400 mb-3 font-serif italic">
@@ -446,9 +448,15 @@ export default function NewReportPage() {
                   type="button"
                   onClick={handleUseLocation}
                   disabled={locating}
-                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-800 rounded-sm hover:bg-amber-100 dark:hover:bg-stone-700 border border-stone-400 dark:border-stone-600 transition disabled:opacity-50"
+                  className={`${btnSecondary} gap-2`}
                 >
-                  {locating ? "Locating..." : "📍 Use my current location"}
+                  {locating ? (
+                    "Locating..."
+                  ) : (
+                    <>
+                      <PinIcon className="w-4 h-4" /> Use my current location
+                    </>
+                  )}
                 </button>
 
                 {latitude && longitude && (
@@ -460,7 +468,7 @@ export default function NewReportPage() {
 
               <details className="mt-3">
                 <summary className="text-xs text-stone-500 dark:text-stone-500 cursor-pointer font-serif italic">
-                  Enter coordinates manually
+                  Enter coordinates manually ▾
                 </summary>
                 <div className="grid grid-cols-2 gap-3 mt-2">
                   <div>
@@ -476,7 +484,7 @@ export default function NewReportPage() {
                       step="any"
                       value={latitude}
                       onChange={(e) => setLatitude(e.target.value)}
-                      className="w-full px-3 py-2 text-sm font-mono bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition"
+                      className="w-full px-3 py-2 text-sm font-mono bg-amber-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 transition"
                       placeholder="24.8607"
                     />
                   </div>
@@ -493,7 +501,7 @@ export default function NewReportPage() {
                       step="any"
                       value={longitude}
                       onChange={(e) => setLongitude(e.target.value)}
-                      className="w-full px-3 py-2 text-sm font-mono bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition"
+                      className="w-full px-3 py-2 text-sm font-mono bg-amber-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 transition"
                       placeholder="67.0011"
                     />
                   </div>
@@ -504,7 +512,7 @@ export default function NewReportPage() {
             <div>
               <label
                 htmlFor="address"
-                className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2"
+                className={labelClass}
               >
                 Address (optional)
               </label>
@@ -514,16 +522,16 @@ export default function NewReportPage() {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 maxLength={250}
-                className="w-full px-4 py-3 text-base bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 focus:outline-none focus:border-slate-800 dark:focus:border-slate-500 transition"
+                className={inputClass}
                 placeholder="e.g. Street 5, Block B, Korangi"
               />
-              <p className="text-xs text-stone-500 dark:text-stone-500 mt-1">
+              <p className={helperClass}>
                 Helps others find the exact spot.
               </p>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2">
+              <label className={labelClass}>
                 Photos (optional, up to 3)
               </label>
 
@@ -543,7 +551,7 @@ export default function NewReportPage() {
                       <button
                         type="button"
                         onClick={() => removePhoto(idx)}
-                        className="absolute top-1 right-1 h-6 w-6 flex items-center justify-center bg-stone-900/80 text-white text-xs rounded-full hover:bg-red-600 transition"
+                        className="absolute top-1 right-1 h-8 w-8 flex items-center justify-center bg-stone-900/80 text-white text-sm rounded-full hover:bg-red-600 transition active:scale-95"
                         aria-label="Remove photo"
                       >
                         ×
@@ -554,8 +562,8 @@ export default function NewReportPage() {
               )}
 
               {photos.length < 3 && (
-                <label className="inline-block px-4 py-2 text-xs font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-800 rounded-sm hover:bg-amber-100 dark:hover:bg-stone-700 border border-stone-400 dark:border-stone-600 transition cursor-pointer">
-                  📷 Add Photo {photos.length > 0 && `(${photos.length}/3)`}
+                <label className="inline-flex items-center gap-2 px-4 py-2.5 min-h-11 text-xs font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-800 rounded-sm hover:bg-amber-100 dark:hover:bg-stone-700 border border-stone-400 dark:border-stone-600 transition cursor-pointer">
+                  <CameraIcon className="w-4 h-4" /> Add Photo {photos.length > 0 && `(${photos.length}/3)`}
                   <input
                     type="file"
                     accept="image/jpeg,image/png,image/webp"
@@ -576,22 +584,13 @@ export default function NewReportPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full px-6 py-4 text-sm font-semibold uppercase tracking-wider text-stone-900 bg-amber-600 rounded-sm hover:bg-amber-500 shadow-md shadow-amber-600/30 hover:shadow-lg hover:shadow-amber-600/40 transition-all border border-amber-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`${btnPrimary} w-full`}
               >
                 {submitting ? "Submitting..." : "Submit Report"}
               </button>
             </div>
           </form>
         </div>
-      </main>
-
-      <footer className="bg-slate-900 dark:bg-slate-950 text-amber-50 py-6 border-t-4 border-amber-600 mt-12">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="font-serif italic text-sm">
-            FixMyArea · Built for communities
-          </p>
-        </div>
-      </footer>
-    </>
+    </main>
   );
 }

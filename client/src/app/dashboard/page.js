@@ -5,6 +5,13 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import ReportCard from "@/components/ReportCard";
 import { useAuth } from "@/components/AuthProvider";
+import { Stagger } from "@/components/Motion";
+import {
+  Alert,
+  LoadingNote,
+  ReportsSkeleton,
+  btnPrimary,
+} from "@/components/ui";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -53,10 +60,8 @@ export default function DashboardPage() {
   if (authLoading || (!user && !error)) {
     return (
       <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
-        <div className="max-w-6xl mx-auto px-4 py-20 text-center">
-          <p className="font-serif italic text-stone-600 dark:text-stone-400">
-            Loading…
-          </p>
+        <div className="max-w-6xl mx-auto px-4">
+          <LoadingNote>Loading…</LoadingNote>
         </div>
       </main>
     );
@@ -80,19 +85,12 @@ export default function DashboardPage() {
               {user.name} · {user.email}
             </p>
           </div>
-          <Link
-            href="/reports/new"
-            className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-stone-900 bg-amber-600 rounded-sm hover:bg-amber-500 transition border border-amber-700"
-          >
+          <Link href="/reports/new" className={btnPrimary}>
             + Report an Issue
           </Link>
         </div>
 
-        {error && (
-          <div className="mb-6 bg-red-50 dark:bg-red-950 border border-red-300 dark:border-red-800 rounded-sm p-4 text-red-800 dark:text-red-200 font-serif">
-            {error}
-          </div>
-        )}
+        {error && <Alert className="mb-6">{error}</Alert>}
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <StatCard label="Total" value={reports.length} />
@@ -102,27 +100,22 @@ export default function DashboardPage() {
         </div>
 
         {loading ? (
-          <p className="font-serif italic text-stone-600 dark:text-stone-400">
-            Loading your reports…
-          </p>
+          <ReportsSkeleton />
         ) : reports.length === 0 ? (
           <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-12 text-center">
             <p className="font-serif italic text-stone-600 dark:text-stone-400 mb-4">
               You haven&apos;t reported any issues yet.
             </p>
-            <Link
-              href="/reports/new"
-              className="inline-block px-6 py-3 text-xs font-semibold uppercase tracking-wider text-stone-900 bg-amber-600 rounded-sm hover:bg-amber-500 transition border border-amber-700"
-            >
+            <Link href="/reports/new" className={btnPrimary}>
               Report your first issue
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Stagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {reports.map((r) => (
               <ReportCard key={r.id} report={r} />
             ))}
-          </div>
+          </Stagger>
         )}
       </div>
     </main>
