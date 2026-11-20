@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { query, withTransaction } from '@/lib/db';
 import { getUserFromRequest } from '@/lib/auth';
+import { createNotification } from '@/lib/notifications.service';
 import { parseIdParam, parseJsonBody, VALID_STATUSES } from '@/lib/http';
 import { deleteFromBucket, uploadToBucket } from '@/lib/storage';
 import {
@@ -184,6 +185,26 @@ export async function PATCH(request, { params }) {
         { error: 'Report status changed concurrently, please reload and retry' },
         { status: 409 }
       );
+    }
+
+    // Best-effort notification for the report's owner. Never break the
+    // status change if this fails.
+    try {
+      const statusLabels = {
+        reported: 'Reported',
+        under_review: 'Under Review',
+        in_progress: 'In Progress',
+        resolved: 'Resolved',
+      };
+      const label = statusLabels[status] || status;
+      await createNotification({
+        userId: updated.user_id,
+        reportId: updated.id,
+        type: `status_${status}`,
+        message: `Your report "${updated.title}" was marked ${label}.`,
+      });
+    } catch (notifErr) {
+      console.error('createNotification after status change failed:', notifErr);
     }
 
     return NextResponse.json({
