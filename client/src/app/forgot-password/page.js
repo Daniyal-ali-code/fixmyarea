@@ -67,7 +67,7 @@ export default function ForgotPasswordPage() {
               been sent. The code works for 10 minutes.{" "}
               <Link
                 href={`/reset-password?email=${encodeURIComponent(email)}`}
-                className="underline underline-offset-2 hover:text-amber-600 transition"
+                className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 underline underline-offset-2 hover:text-amber-600 transition"
               >
                 Enter your code
               </Link>
@@ -118,7 +118,7 @@ export default function ForgotPasswordPage() {
               Remembered your password?{" "}
               <Link
                 href="/login"
-                className="text-stone-800 dark:text-stone-300 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 decoration-amber-600/40 hover:decoration-amber-600 transition"
+                className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 text-stone-800 dark:text-stone-300 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 decoration-amber-600/40 hover:decoration-amber-600 transition"
               >
                 Sign in
               </Link>

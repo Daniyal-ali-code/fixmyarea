@@ -29,7 +29,7 @@ export const cardClass =
 export const eyebrowClass =
   "font-serif italic text-xs uppercase tracking-[0.3em] text-stone-600 dark:text-stone-400 border-b-2 border-amber-600 pb-1 inline-block";
 export const textLinkClass =
-  "font-serif italic text-sm text-stone-800 dark:text-stone-300 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 transition";
+  "inline-flex items-center min-h-11 py-1 px-1 -mx-1 font-serif italic text-sm text-stone-800 dark:text-stone-300 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 transition";
 
 // --- buttons / fields ---
 export function Button({ variant = "primary", className = "", ...props }) {

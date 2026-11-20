@@ -118,7 +118,7 @@ export default async function ReportDetailPage({ params }) {
         <div className="max-w-4xl mx-auto px-4 py-8">
           <Link
             href="/reports"
-            className={`${textLinkClass} inline-block mb-6`}
+            className={`${textLinkClass} mb-6`}
           >
             ← Back to reports
           </Link>

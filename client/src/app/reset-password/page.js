@@ -164,7 +164,7 @@ function ResetPasswordForm() {
               Your password has been reset.{" "}
               <Link
                 href="/login"
-                className="underline underline-offset-2 hover:text-amber-600 transition"
+                className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 underline underline-offset-2 hover:text-amber-600 transition"
               >
                 Sign in with your new password
               </Link>
@@ -303,7 +303,7 @@ function ResetPasswordForm() {
                     <button
                       type="button"
                       onClick={handleBackToCode}
-                      className="font-serif italic text-sm text-stone-600 dark:text-stone-400 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 decoration-amber-600/40 hover:decoration-amber-600 transition"
+                      className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 font-serif italic text-sm text-stone-600 dark:text-stone-400 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 decoration-amber-600/40 hover:decoration-amber-600 transition"
                     >
                       ← Back to code
                     </button>
@@ -321,7 +321,7 @@ function ResetPasswordForm() {
                   type="button"
                   onClick={handleResend}
                   disabled={resending}
-                  className="text-stone-800 dark:text-stone-300 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 decoration-amber-600/40 hover:decoration-amber-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 text-stone-800 dark:text-stone-300 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 decoration-amber-600/40 hover:decoration-amber-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {resending ? "Sending..." : "Resend code"}
                 </button>

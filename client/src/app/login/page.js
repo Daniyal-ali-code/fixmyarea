@@ -113,7 +113,7 @@ export default function LoginPage() {
             <div className="text-right">
               <Link
                 href="/forgot-password"
-                className="font-serif italic text-sm text-stone-600 dark:text-stone-400 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 decoration-amber-600/40 hover:decoration-amber-600 transition"
+                className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 font-serif italic text-sm text-stone-600 dark:text-stone-400 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 decoration-amber-600/40 hover:decoration-amber-600 transition"
               >
                 Forgot password?
               </Link>
@@ -133,7 +133,7 @@ export default function LoginPage() {
               Don&apos;t have an account?{" "}
               <Link
                 href="/register"
-                className="text-stone-800 dark:text-stone-300 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 decoration-amber-600/40 hover:decoration-amber-600 transition"
+                className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 text-stone-800 dark:text-stone-300 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 decoration-amber-600/40 hover:decoration-amber-600 transition"
               >
                 Sign up
               </Link>

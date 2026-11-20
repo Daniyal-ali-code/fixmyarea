@@ -20,7 +20,7 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
         <Link
           href="/"
-          className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50 tracking-tight flex-shrink-0"
+          className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50 tracking-tight flex-shrink-0 inline-flex items-center min-h-11"
         >
           FixMyArea
         </Link>
