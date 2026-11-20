@@ -302,7 +302,7 @@ export default function AdminPage() {
 
   if (authLoading) {
     return (
-      <main className="min-h-screen bg-white dark:bg-slate-900">
+      <main className="min-h-screen bg-[var(--background)]">
         <div className="max-w-6xl mx-auto px-4">
           <LoadingNote>Loading…</LoadingNote>
         </div>
@@ -313,16 +313,16 @@ export default function AdminPage() {
   if (!user || user.role !== "admin") return null;
 
   return (
-    <main className="min-h-screen bg-white dark:bg-slate-900">
+    <main className="min-h-screen bg-[var(--background)]">
       {/* Admin keeps max-w-7xl deliberately — the 10-column table
           needs the width; every other page is max-w-6xl. */}
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="flex items-baseline justify-between mb-8 pb-2 border-b-2 border-indigo-600">
+        <div className="flex items-baseline justify-between mb-8 pb-2 border-b-2 border-[var(--accent)]">
           <div>
-            <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-50">
+            <h1 className="text-4xl font-bold text-[var(--foreground)]">
               Admin Dashboard
             </h1>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+            <p className="text-sm text-[var(--foreground-muted)] mt-1">
               {user.name} · {user.email}
             </p>
           </div>
@@ -348,15 +348,15 @@ export default function AdminPage() {
             </div>
 
             {stats.by_category?.length > 0 && (
-              <div className="mb-8 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-5">
-                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-50 mb-3">
+              <div className="mb-8 bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+                <h2 className="text-xl font-bold text-[var(--foreground)] mb-3">
                   Reports by Category
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {stats.by_category.map((c) => (
                     <span
                       key={c.id}
-                      className="font-sans text-xs uppercase tracking-wider bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-lg px-3 py-1 text-slate-800 dark:text-zinc-200"
+                      className="font-sans text-xs uppercase tracking-wider bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-1 text-[var(--foreground)]"
                     >
                       {c.name}: <strong>{c.count}</strong>
                     </span>
@@ -368,7 +368,7 @@ export default function AdminPage() {
         )}
 
         <div className="mb-4 flex flex-wrap items-center gap-2">
-          <span className="font-sans text-xs uppercase tracking-wider text-slate-600 dark:text-slate-400">
+          <span className="font-sans text-xs uppercase tracking-wider text-[var(--foreground-muted)]">
             Sort by:
           </span>
           {SORT_COLUMNS.map((col) => {
@@ -397,21 +397,21 @@ export default function AdminPage() {
           {sortStack.length > 1 && (
             <button
               onClick={() => setSortStack([{ key: "created_at", dir: "desc" }])}
-              className="ml-2 text-xs text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-slate-500 underline underline-offset-2"
+              className="ml-2 text-xs text-[var(--foreground-muted)] hover:text-[var(--accent)] dark:hover:text-[var(--foreground-muted)] underline underline-offset-2"
             >
               reset
             </button>
           )}
         </div>
-        <p className="mb-4 text-xs text-slate-500 dark:text-zinc-500">
+        <p className="mb-4 text-xs text-[var(--foreground-muted)]">
           Click to sort by one column. Shift+click another column to add a secondary sort. Click the same column again to flip direction.
         </p>
 
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-lg overflow-hidden">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-200 dark:border-zinc-800 bg-white dark:bg-slate-900">
+                <tr className="border-b border-[var(--border)] bg-[var(--background)]">
                   <Th>ID</Th>
                   <Th>Title</Th>
                   <Th>Category</Th>
@@ -429,7 +429,7 @@ export default function AdminPage() {
                   <tr>
                     <td
                       colSpan={10}
-                      className="p-12 text-center text-slate-600 dark:text-slate-400"
+                      className="p-12 text-center text-[var(--foreground-muted)]"
                     >
                       No reports yet.
                     </td>
@@ -438,20 +438,20 @@ export default function AdminPage() {
                 {sortedReports.map((r) => (
                   <tr
                     key={r.id}
-                    className="border-b border-slate-200 dark:border-zinc-800 hover:bg-white/50 dark:hover:bg-slate-900/50"
+                    className="border-b border-[var(--border)] hover:bg-white/50 dark:hover:bg-[var(--background)]/50"
                   >
                     <Td>#{r.id}</Td>
                     <Td>
                       <Link
                         href={`/reports/${r.id}`}
-                        className="font-semibold text-slate-900 dark:text-slate-50 hover:text-indigo-600 dark:hover:text-slate-500"
+                        className="font-semibold text-[var(--foreground)] hover:text-[var(--accent)] dark:hover:text-[var(--foreground-muted)]"
                       >
                         {r.title}
                       </Link>
                     </Td>
                     <Td>{r.category_name}</Td>
                     <Td>
-                      <span className="text-xs text-slate-600 dark:text-slate-400">
+                      <span className="text-xs text-[var(--foreground-muted)]">
                         {r.address || "—"}
                       </span>
                     </Td>
@@ -469,7 +469,7 @@ export default function AdminPage() {
                           onChange={(e) => changeStatus(r.id, e.target.value)}
                           disabled={busyId === r.id}
                           aria-label={`Change status of report ${r.id}: ${r.title}`}
-                          className="text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-zinc-700 rounded-lg px-2 py-2 min-h-11 text-slate-800 dark:text-slate-200 disabled:opacity-50"
+                          className="text-xs bg-[var(--background)] border border-[var(--border)] rounded-lg px-2 py-2 min-h-11 text-[var(--foreground)] disabled:opacity-50"
                         >
                           {STATUS_OPTIONS.map((s) => (
                             <option key={s} value={s}>
@@ -496,25 +496,25 @@ export default function AdminPage() {
 
       {resolveTarget && (
         <Modal onClose={closeResolveModal} label="Mark as Resolved">
-            <div className="flex items-start justify-between mb-4 pb-2 border-b-2 border-indigo-600">
+            <div className="flex items-start justify-between mb-4 pb-2 border-b-2 border-[var(--accent)]">
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-50">
+                <h2 className="text-2xl font-bold text-[var(--foreground)]">
                   Mark as Resolved
                 </h2>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                <p className="text-sm text-[var(--foreground-muted)] mt-1">
                   {resolveTarget.title}
                 </p>
               </div>
               <button
                 onClick={closeResolveModal}
-                className="h-11 w-11 -mr-2 -mt-1 flex items-center justify-center flex-shrink-0 text-slate-500 hover:text-slate-900 dark:hover:text-zinc-100 text-2xl leading-none transition active:scale-95"
+                className="h-11 w-11 -mr-2 -mt-1 flex items-center justify-center flex-shrink-0 text-[var(--foreground-muted)] hover:text-[var(--foreground)] dark:hover:text-[var(--foreground)] text-2xl leading-none transition active:scale-95"
                 aria-label="Close"
               >
                 ×
               </button>
             </div>
 
-            <p className="text-sm text-slate-700 dark:text-slate-300 mb-4">
+            <p className="text-sm text-[var(--foreground)] mb-4">
               Upload a photo showing the fixed issue and write a short note. This proof will be visible to the community.
             </p>
 
@@ -522,12 +522,12 @@ export default function AdminPage() {
 
             <form onSubmit={submitResolution} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--foreground)] mb-2">
                   Proof Photo *
                 </label>
 
                 {resolutionImagePreview ? (
-                  <div className="relative aspect-video bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-lg overflow-hidden">
+                  <div className="relative aspect-video bg-[var(--surface-muted)] border border-[var(--border)] rounded-lg overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={resolutionImagePreview}
@@ -544,14 +544,14 @@ export default function AdminPage() {
                         setResolutionImage(null);
                         setResolutionImagePreview(null);
                       }}
-                      className="absolute top-2 right-2 h-8 w-8 flex items-center justify-center bg-slate-900/80 text-white text-sm rounded-full hover:bg-red-600 transition active:scale-95"
+                      className="absolute top-2 right-2 h-8 w-8 flex items-center justify-center bg-[var(--background)]/80 text-white text-sm rounded-full hover:bg-red-600 transition active:scale-95"
                       aria-label="Remove photo"
                     >
                       ×
                     </button>
                   </div>
                 ) : (
-                  <label className="flex items-center justify-center gap-2 px-4 py-6 text-center text-xs font-semibold uppercase tracking-wider bg-slate-100 dark:bg-zinc-900 border-2 border-dashed border-slate-200 dark:border-zinc-700 rounded-lg hover:border-indigo-600 dark:hover:border-indigo-500 transition cursor-pointer">
+                  <label className="flex items-center justify-center gap-2 px-4 py-6 text-center text-xs font-semibold uppercase tracking-wider bg-[var(--surface-muted)] border-2 border-dashed border-[var(--border)] rounded-lg hover:border-[var(--accent)] dark:hover:border-[var(--accent)] transition cursor-pointer">
                     <CameraIcon className="w-4 h-4" /> Click to upload proof photo
                     <input
                       type="file"
@@ -561,7 +561,7 @@ export default function AdminPage() {
                     />
                   </label>
                 )}
-                <p className="text-xs text-slate-500 dark:text-zinc-500 mt-1">
+                <p className="text-xs text-[var(--foreground-muted)] mt-1">
                   JPEG, PNG, or WEBP · max 5 MB
                 </p>
               </div>
@@ -569,7 +569,7 @@ export default function AdminPage() {
               <div>
                 <label
                   htmlFor="resolutionNote"
-                  className="block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2"
+                  className="block text-xs font-semibold uppercase tracking-wider text-[var(--foreground)] mb-2"
                 >
                   What was fixed? *
                 </label>
@@ -582,7 +582,7 @@ export default function AdminPage() {
                   className={textareaClass}
                   placeholder="e.g. Pothole filled and asphalt leveled by the municipal team."
                 />
-                <p className="text-xs text-slate-500 dark:text-zinc-500 mt-1">
+                <p className="text-xs text-[var(--foreground-muted)] mt-1">
                   {resolutionNote.length}/500 characters
                 </p>
               </div>
@@ -614,11 +614,11 @@ export default function AdminPage() {
 
 function StatCard({ label, value }) {
   return (
-    <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-5">
-      <p className="font-sans text-xs uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-5">
+      <p className="font-sans text-xs uppercase tracking-wider text-[var(--foreground-muted)] mb-1">
         {label}
       </p>
-      <p className="text-3xl font-bold text-slate-900 dark:text-slate-50">
+      <p className="text-3xl font-bold text-[var(--foreground)]">
         {value}
       </p>
     </div>
@@ -627,7 +627,7 @@ function StatCard({ label, value }) {
 
 function Th({ children }) {
   return (
-    <th className="text-left font-sans text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300 px-3 py-3">
+    <th className="text-left font-sans text-xs uppercase tracking-wider text-[var(--foreground)] px-3 py-3">
       {children}
     </th>
   );
@@ -635,7 +635,7 @@ function Th({ children }) {
 
 function Td({ children }) {
   return (
-    <td className="px-3 py-3 font-sans text-slate-800 dark:text-slate-200">
+    <td className="px-3 py-3 font-sans text-[var(--foreground)]">
       {children}
     </td>
   );

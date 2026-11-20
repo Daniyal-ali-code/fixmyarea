@@ -28,7 +28,7 @@ const LocationPicker = dynamic(
     ssr: false,
     loading: () => (
       <div
-        className="rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-900 animate-pulse"
+        className="rounded-lg border border-[var(--border)] bg-[var(--surface-muted)] animate-pulse"
         style={{ height: 320 }}
       />
     ),
@@ -267,14 +267,14 @@ export default function NewReportPage() {
 
   if (loading || !user) {
     return (
-      <main className="min-h-screen bg-white dark:bg-slate-900">
+      <main className="min-h-screen bg-[var(--background)]">
         <LoadingNote>Loading...</LoadingNote>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-white dark:bg-slate-900">
+    <main className="min-h-screen bg-[var(--background)]">
         <div className="max-w-2xl mx-auto px-4 py-8">
           <Link
             href="/reports"
@@ -287,21 +287,21 @@ export default function NewReportPage() {
             <p className={eyebrowClass}>
               Report an Issue
             </p>
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-50 mt-3">
+            <h1 className="text-3xl md:text-4xl font-bold text-[var(--foreground)] mt-3">
               What&apos;s the problem?
             </h1>
-            <p className="text-base text-slate-700 dark:text-slate-300 mt-2">
+            <p className="text-base text-[var(--foreground)] mt-2">
               Help your community by reporting local issues. Take a minute —
               your report might be the one that gets it fixed.
             </p>
           </div>
 
           {duplicates && duplicates.length > 0 && (
-            <div className="bg-white dark:bg-indigo-950/30 border-2 border-indigo-600 dark:border-indigo-700 rounded-xl p-5 mb-6">
-              <p className="text-lg font-bold text-slate-900 dark:text-slate-50 mb-2">
+            <div className="bg-white dark:bg-[var(--accent-soft)] border-2 border-[var(--accent)] dark:border-[var(--accent)] rounded-xl p-5 mb-6">
+              <p className="text-lg font-bold text-[var(--foreground)] mb-2">
                 Similar reports found nearby
               </p>
-              <p className="text-sm text-slate-700 dark:text-slate-300 mb-4">
+              <p className="text-sm text-[var(--foreground)] mb-4">
                 Someone may have already reported this issue. Consider
                 supporting an existing report instead, or submit yours anyway.
               </p>
@@ -310,12 +310,12 @@ export default function NewReportPage() {
                   <Link
                     key={d.id}
                     href={`/reports/${d.id}`}
-                    className="block bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-lg p-3 hover:border-indigo-600 dark:hover:border-indigo-500 transition"
+                    className="block bg-[var(--surface)] border border-[var(--border)] rounded-lg p-3 hover:border-[var(--accent)] dark:hover:border-[var(--accent)] transition"
                   >
-                    <p className="font-semibold text-slate-900 dark:text-slate-50">
+                    <p className="font-semibold text-[var(--foreground)]">
                       {d.title}
                     </p>
-                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                    <p className="text-xs text-[var(--foreground-muted)]">
                       {d.distance_m}m away · {Math.round(d.similarity * 100)}%
                       similar
                     </p>
@@ -416,8 +416,8 @@ export default function NewReportPage() {
                     aria-label={`Severity ${n} of 5`}
                     className={`h-11 w-11 flex items-center justify-center text-sm font-semibold rounded-lg border transition active:scale-95 ${
                       n <= severity
-                        ? "bg-indigo-600 text-slate-900 border-indigo-700"
-                        : "bg-white dark:bg-zinc-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-zinc-700 hover:border-indigo-600"
+                        ? "bg-[var(--accent)] text-[var(--foreground)] border-[var(--accent)]"
+                        : "bg-[var(--surface)] text-[var(--foreground-muted)] border-[var(--border)] hover:border-[var(--accent)]"
                     }`}
                   >
                     {n}
@@ -433,7 +433,7 @@ export default function NewReportPage() {
               <label className={labelClass}>
                 Location *
               </label>
-              <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+              <p className="text-xs text-[var(--foreground-muted)] mb-3">
                 Click anywhere on the map to place a pin, or drag the pin to adjust. You can also use your device&apos;s GPS below.
               </p>
 
@@ -460,21 +460,21 @@ export default function NewReportPage() {
                 </button>
 
                 {latitude && longitude && (
-                  <span className="text-xs font-mono text-slate-600 dark:text-slate-400">
+                  <span className="text-xs font-mono text-[var(--foreground-muted)]">
                     {latitude}, {longitude}
                   </span>
                 )}
               </div>
 
               <details className="mt-3">
-                <summary className="text-xs text-slate-500 dark:text-zinc-500 cursor-pointer">
+                <summary className="text-xs text-[var(--foreground-muted)] cursor-pointer">
                   Enter coordinates manually ▾
                 </summary>
                 <div className="grid grid-cols-2 gap-3 mt-2">
                   <div>
                     <label
                       htmlFor="latitude"
-                      className="block text-xs text-slate-600 dark:text-slate-400 mb-1"
+                      className="block text-xs text-[var(--foreground-muted)] mb-1"
                     >
                       Latitude
                     </label>
@@ -484,14 +484,14 @@ export default function NewReportPage() {
                       step="any"
                       value={latitude}
                       onChange={(e) => setLatitude(e.target.value)}
-                      className="w-full px-3 py-2 text-sm font-mono bg-white dark:bg-slate-900 border border-slate-200 dark:border-zinc-700 rounded-lg text-slate-900 dark:text-slate-50 transition"
+                      className="w-full px-3 py-2 text-sm font-mono bg-[var(--background)] border border-[var(--border)] rounded-lg text-[var(--foreground)] transition"
                       placeholder="24.8607"
                     />
                   </div>
                   <div>
                     <label
                       htmlFor="longitude"
-                      className="block text-xs text-slate-600 dark:text-slate-400 mb-1"
+                      className="block text-xs text-[var(--foreground-muted)] mb-1"
                     >
                       Longitude
                     </label>
@@ -501,7 +501,7 @@ export default function NewReportPage() {
                       step="any"
                       value={longitude}
                       onChange={(e) => setLongitude(e.target.value)}
-                      className="w-full px-3 py-2 text-sm font-mono bg-white dark:bg-slate-900 border border-slate-200 dark:border-zinc-700 rounded-lg text-slate-900 dark:text-slate-50 transition"
+                      className="w-full px-3 py-2 text-sm font-mono bg-[var(--background)] border border-[var(--border)] rounded-lg text-[var(--foreground)] transition"
                       placeholder="67.0011"
                     />
                   </div>
@@ -540,7 +540,7 @@ export default function NewReportPage() {
                   {photoPreviews.map((preview, idx) => (
                     <div
                       key={idx}
-                      className="relative aspect-square bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-lg overflow-hidden"
+                      className="relative aspect-square bg-[var(--surface-muted)] border border-[var(--border)] rounded-lg overflow-hidden"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -551,7 +551,7 @@ export default function NewReportPage() {
                       <button
                         type="button"
                         onClick={() => removePhoto(idx)}
-                        className="absolute top-1 right-1 h-8 w-8 flex items-center justify-center bg-slate-900/80 text-white text-sm rounded-full hover:bg-red-600 transition active:scale-95"
+                        className="absolute top-1 right-1 h-8 w-8 flex items-center justify-center bg-[var(--background)]/80 text-white text-sm rounded-full hover:bg-red-600 transition active:scale-95"
                         aria-label="Remove photo"
                       >
                         ×
@@ -562,7 +562,7 @@ export default function NewReportPage() {
               )}
 
               {photos.length < 3 && (
-                <label className="inline-flex items-center gap-2 px-4 py-2.5 min-h-11 text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-slate-100 bg-white dark:bg-zinc-900 rounded-lg hover:bg-indigo-50 dark:hover:bg-zinc-800 border border-slate-200 dark:border-zinc-700 transition cursor-pointer">
+                <label className="inline-flex items-center gap-2 px-4 py-2.5 min-h-11 text-xs font-semibold uppercase tracking-wider text-[var(--foreground)] bg-[var(--surface)] rounded-lg hover:bg-[var(--accent-soft)] dark:hover:bg-[var(--accent-soft)] border border-[var(--border)] transition cursor-pointer">
                   <CameraIcon className="w-4 h-4" /> Add Photo {photos.length > 0 && `(${photos.length}/3)`}
                   <input
                     type="file"
@@ -575,12 +575,12 @@ export default function NewReportPage() {
                 </label>
               )}
 
-              <p className="text-xs text-slate-500 dark:text-zinc-500 mt-2">
+              <p className="text-xs text-[var(--foreground-muted)] mt-2">
                 On mobile, tap to open your camera or choose from gallery. Max 3 photos, 5 MB each.
               </p>
             </div>
 
-            <div className="pt-4 border-t border-slate-200 dark:border-zinc-800">
+            <div className="pt-4 border-t border-[var(--border)]">
               <button
                 type="submit"
                 disabled={submitting}

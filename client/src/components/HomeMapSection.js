@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 const ReportsMap = dynamic(() => import("./ReportsMap"), {
   ssr: false,
   loading: () => (
-    <div className="map-home rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-900 animate-pulse" />
+    <div className="map-home rounded-lg border border-[var(--border)] bg-[var(--surface-muted)] animate-pulse" />
   ),
 });
 
@@ -41,8 +41,8 @@ export default function HomeMapSection() {
 
   if (reports === null) {
     return (
-      <div className="map-home rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-900 animate-pulse flex items-center justify-center">
-        <span className="text-slate-500 dark:text-zinc-500">
+      <div className="map-home rounded-lg border border-[var(--border)] bg-[var(--surface-muted)] animate-pulse flex items-center justify-center">
+        <span className="text-[var(--foreground-muted)]">
           Loading map…
         </span>
       </div>
@@ -51,12 +51,12 @@ export default function HomeMapSection() {
 
     if (reports.length === 0) {
     return (
-      <div className="map-home rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center justify-center p-8 text-center">
+      <div className="map-home rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center p-8 text-center">
         <div>
-          <p className="text-slate-600 dark:text-slate-400 mb-2">
+          <p className="text-[var(--foreground-muted)] mb-2">
             No issues reported yet in your area.
           </p>
-          <p className="text-sm text-slate-500 dark:text-zinc-500">
+          <p className="text-sm text-[var(--foreground-muted)]">
             Be the first to report something nearby.
           </p>
         </div>

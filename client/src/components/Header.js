@@ -16,11 +16,11 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-300 dark:border-zinc-800 pt-[env(safe-area-inset-top)]">
+    <header className="sticky top-0 z-40 bg-[var(--background)] border-b border-[var(--border)] pt-[env(safe-area-inset-top)]">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
         <Link
           href="/"
-          className="text-xl font-bold text-slate-900 dark:text-slate-50 tracking-tight flex-shrink-0 inline-flex items-center min-h-11"
+          className="text-xl font-bold text-[var(--foreground)] tracking-tight flex-shrink-0 inline-flex items-center min-h-11"
         >
           FixMyArea
         </Link>
@@ -29,15 +29,15 @@ export default function Header() {
           <ThemeToggle />
 
           {loading ? (
-            <div className="h-9 w-24 bg-slate-200 dark:bg-zinc-700 rounded-lg animate-pulse" />
+            <div className="h-9 w-24 bg-[var(--border)] rounded-lg animate-pulse" />
           ) : user ? (
             <>
-              <span className="text-sm text-slate-700 dark:text-slate-300 hidden sm:inline">
+              <span className="text-sm text-[var(--foreground)] hidden sm:inline">
                 {user.name}
               </span>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 min-h-11 text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-slate-100 bg-white dark:bg-zinc-900 rounded-lg hover:bg-indigo-50 dark:hover:bg-zinc-800 transition border border-slate-200 dark:border-zinc-700"
+                className="px-4 py-2 min-h-11 text-xs font-semibold uppercase tracking-wider text-[var(--foreground)] bg-[var(--surface)] rounded-lg hover:bg-[var(--accent-soft)] dark:hover:bg-[var(--accent-soft)] transition border border-[var(--border)]"
               >
                 Logout
               </button>

@@ -43,7 +43,7 @@ export default function Modal({ onClose, label, children }) {
     >
       <div
         ref={panelRef}
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-zinc-800 rounded-lg max-w-lg w-full p-6 mt-auto sm:my-auto max-h-[90vh] overflow-y-auto"
+        className="bg-[var(--background)] border border-[var(--border)] rounded-lg max-w-lg w-full p-6 mt-auto sm:my-auto max-h-[90vh] overflow-y-auto"
       >
         {children}
       </div>

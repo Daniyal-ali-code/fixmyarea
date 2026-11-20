@@ -76,7 +76,7 @@ export default function SupportButton({ reportId, initialCount, initialSupported
         onClick={handleClick}
         disabled={loading}
         aria-pressed={supported}
-        // Supported = the solid primary (indigo-600, like every other
+        // Supported = the solid primary (accent color, like every other
         // primary); not yet supported = the secondary outline, so the
         // "owned" state reads as the active one.
         className={`${supported ? btnPrimary : btnSecondary} gap-2 disabled:opacity-50 disabled:cursor-not-allowed`}

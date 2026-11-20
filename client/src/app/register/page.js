@@ -53,13 +53,13 @@ export default function RegisterPage() {
 
   return (
     <>
-      <main className="min-h-screen bg-white dark:bg-slate-900 flex items-center justify-center px-4 py-12">
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-8 max-w-md w-full">
+      <main className="min-h-screen bg-[var(--background)] flex items-center justify-center px-4 py-12">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-8 max-w-md w-full">
           <div className="mb-8">
             <p className={eyebrowClass}>
               Join the Community
             </p>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50 mt-3">
+            <h1 className="text-3xl font-bold text-[var(--foreground)] mt-3">
               Create an account
             </h1>
           </div>
@@ -135,12 +135,12 @@ export default function RegisterPage() {
             </Button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-slate-200 dark:border-zinc-800 text-center">
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+          <div className="mt-6 pt-6 border-t border-[var(--border)] text-center">
+            <p className="text-sm text-[var(--foreground-muted)]">
               Already have an account?{" "}
               <Link
                 href="/login"
-                className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 text-slate-800 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-slate-500 underline underline-offset-2 decoration-indigo-600/40 hover:decoration-indigo-600 transition"
+                className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 text-[var(--foreground)] dark:text-[var(--foreground-muted)] hover:text-[var(--accent)] dark:hover:text-[var(--foreground-muted)] underline underline-offset-2 decoration-[var(--accent)]/40 hover:decoration-[var(--accent)] transition"
               >
                 Sign in
               </Link>

@@ -1,5 +1,7 @@
-// One status system for the whole app. Rounded pill badges,
-// indigo-consistent palette. Both light and dark tested.
+// One status system for the whole app. Colors tuned to
+// the Aubergine palette — no raw primary blue/green,
+// no grey "resolved" badge. All badges are muted
+// pill styles that feel at home with plum/coral.
 export const STATUS_LABELS = {
   reported: "Reported",
   under_review: "Under Review",
@@ -9,21 +11,21 @@ export const STATUS_LABELS = {
 
 export const STATUS_STYLES = {
   reported:
-    "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
+    "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300",
   under_review:
-    "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300",
+    "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
   in_progress:
-    "bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300",
+    "bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300",
   resolved:
-    "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
+    "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
 };
 
-// Map pin colors — kept hex for Leaflet
+// Map pin colors — kept semantic so users can read the map
 export const STATUS_COLORS = {
-  reported: "#3b82f6",
-  under_review: "#f59e0b",
-  in_progress: "#f97316",
-  resolved: "#10b981",
+  reported: "#0284c7",       // sky-600
+  under_review: "#d97706",   // amber-600
+  in_progress: "#ea580c",    // orange-600
+  resolved: "#059669",       // emerald-600
 };
 
 export const STATUS_ORDER = ["reported", "under_review", "in_progress", "resolved"];

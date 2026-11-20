@@ -1,29 +1,56 @@
 @import "tailwindcss";
 
+/* =============================================
+   AUbergine palette — plum + coral + cream
+   50% backgrounds · 40% surfaces · 10% accents
+   Both light and dark designed together so
+   nothing is neutral grey in either mode.
+   ============================================= */
+
 :root {
-  --background: #f8fafc;       /* slate-50 — soft neutral, not warm */
-  --foreground: #0f172a;       /* slate-900 */
-  --accent: #4f46e5;           /* indigo-600 */
-  --accent-hover: #4338ca;     /* indigo-700 */
-  --accent-light: #eef2ff;     /* indigo-50 */
-  --card: #ffffff;
-  --card-border: #e2e8f0;      /* slate-200 */
+  /* 50% — page background */
+  --background: #fdf4f7;          /* warm cream, slight pink */
+  /* 40% — surfaces (cards) */
+  --surface: #ffffff;
+  --surface-muted: #fbe9f0;       /* for nested surfaces, e.g. tables */
+  /* 10% — accent */
+  --accent: #7c3aed;              /* deep plum */
+  --accent-hover: #6d28d9;
+  --accent-soft: #ede9fe;         /* tint for hover/focus backgrounds */
+  /* Secondary accent — coral */
+  --coral: #f97316;
+  --coral-hover: #ea580c;
+  --coral-soft: #ffedd5;
+  /* Text */
+  --foreground: #2e1065;          /* deep plum, near-black */
+  --foreground-muted: #7c6d7f;    /* muted plum for secondary text */
+  /* Borders */
+  --border: #e9d5f0;              /* soft plum */
+  --border-strong: #d4b8e0;
 }
 
 .dark {
-  --background: #0a0a0a;       /* near-black */
-  --foreground: #f1f5f9;       /* slate-100 */
-  --accent: #818cf8;           /* indigo-400 — brighter in dark */
-  --accent-hover: #a5b4fc;     /* indigo-300 */
-  --accent-light: #1e1b4b;     /* indigo-950 */
-  --card: #18181b;             /* zinc-900 */
-  --card-border: #27272a;      /* zinc-800 */
+  --background: #1a0f1a;          /* deep aubergine */
+  --surface: #2d1b2e;             /* rich plum — NOT grey */
+  --surface-muted: #3d2640;
+  --accent: #a78bfa;              /* bright lavender */
+  --accent-hover: #c4b5fd;
+  --accent-soft: #4c1d95;
+  --coral: #fb923c;
+  --coral-hover: #fdba74;
+  --coral-soft: #431407;
+  --foreground: #faf5ff;          /* near-white */
+  --foreground-muted: #b8a8c4;    /* soft lavender */
+  --border: #3d2640;
+  --border-strong: #4a3250;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
+  --color-coral: var(--coral);
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
@@ -36,13 +63,13 @@ body {
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Focus ring: indigo, consistent everywhere */
+/* Focus ring — accent */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* Fade-in animation */
+/* Fade-in */
 @keyframes fade-slide-in {
   from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }
@@ -54,46 +81,74 @@ body {
   .animate-fade-in { animation: none; }
 }
 
-/* Home map height */
+/* Hero background pattern — subtle SVG texture.
+   Uses an inline SVG so no image file is needed.
+   The pattern is a sparse diamond grid, 5% opacity,
+   tinted with the accent color via currentColor. */
+.hero-pattern {
+  position: relative;
+  isolation: isolate;
+}
+.hero-pattern::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.35;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 20% 20%, var(--accent-soft) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 80% at 80% 80%, var(--coral-soft) 0%, transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='none' stroke='%237c3aed' stroke-width='0.5' opacity='0.4'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: auto, auto, 60px 60px;
+}
+.dark .hero-pattern::before {
+  opacity: 0.5;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 20% 20%, var(--accent-soft) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 80% at 80% 80%, var(--coral-soft) 0%, transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='none' stroke='%23a78bfa' stroke-width='0.5' opacity='0.4'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Map heights */
 .map-home { height: 320px; }
 @media (min-width: 768px) {
   .map-home { height: 520px; }
 }
 
-/* Leaflet popups — clean modern style, both modes */
+/* Leaflet popups — palette matched, both modes */
 .leaflet-popup-content-wrapper {
   border-radius: 12px;
   font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 16px rgba(46, 16, 101, 0.12), 0 0 0 1px rgba(46, 16, 101, 0.06);
   background: #ffffff;
-  color: #0f172a;
+  color: #2e1065;
 }
 .leaflet-popup-content {
   margin: 14px 16px;
   line-height: 1.5;
 }
 .leaflet-popup-content a {
-  color: #4f46e5;
+  color: #7c3aed;
   font-weight: 600;
 }
 .dark .leaflet-popup-content-wrapper {
-  background: #18181b;
-  color: #f1f5f9;
+  background: #2d1b2e;
+  color: #faf5ff;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 .dark .leaflet-popup-tip {
-  background: #18181b;
+  background: #2d1b2e;
 }
 .dark .leaflet-popup-content a {
-  color: #818cf8;
+  color: #a78bfa;
 }
 .leaflet-container a.leaflet-popup-close-button {
-  color: #94a3b8;
+  color: #7c6d7f;
 }
 .dark .leaflet-container a.leaflet-popup-close-button {
-  color: #71717a;
+  color: #b8a8c4;
 }
 
-/* Map tiles: dim in dark mode */
-.dark .leaflet-container { background: #18181b; }
+/* Map tiles dim in dark */
+.dark .leaflet-container { background: #2d1b2e; }
 .dark .leaflet-tile-pane { filter: brightness(0.75) saturate(0.85); }

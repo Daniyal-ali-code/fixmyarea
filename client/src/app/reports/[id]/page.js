@@ -80,8 +80,8 @@ function SeverityDots({ severity }) {
           key={n}
           className={`h-2 w-2 rounded-full ${
             n <= severity
-              ? "bg-indigo-600 dark:bg-indigo-500"
-              : "bg-slate-200 dark:bg-zinc-700"
+              ? "bg-[var(--accent)]"
+              : "bg-[var(--border)]"
           }`}
         />
       ))}
@@ -116,7 +116,7 @@ export default async function ReportDetailPage({ params }) {
     isResolved && (report.resolution_note || report.resolution_image_url);
 
   return (
-    <main className="min-h-screen bg-white dark:bg-slate-900">
+    <main className="min-h-screen bg-[var(--background)]">
         <div className="max-w-4xl mx-auto px-4 py-8">
           <Link
             href="/reports"
@@ -125,39 +125,39 @@ export default async function ReportDetailPage({ params }) {
             ← Back to reports
           </Link>
 
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-6 md:p-8 mb-6">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 md:p-8 mb-6">
             <div className="flex items-start justify-between gap-4 mb-4 flex-wrap">
-              <span className="text-xs uppercase tracking-[0.3em] text-slate-600 dark:text-slate-400">
+              <span className="text-xs uppercase tracking-[0.3em] text-[var(--foreground-muted)]">
                 {report.category_name}
               </span>
               <StatusBadge status={report.status} large />
             </div>
 
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-50 mb-4 leading-tight">
+            <h1 className="text-3xl md:text-4xl font-bold text-[var(--foreground)] mb-4 leading-tight">
               {report.title}
             </h1>
 
             <div className="flex items-center gap-4 flex-wrap mb-6">
               <div className="flex items-center gap-2">
                 <SeverityDots severity={report.severity} />
-                <span className="text-xs text-slate-600 dark:text-slate-400 font-medium uppercase tracking-wider">
+                <span className="text-xs text-[var(--foreground-muted)] font-medium uppercase tracking-wider">
                   Severity {report.severity}/5
                 </span>
               </div>
-              <span className="text-slate-400 dark:text-slate-600">·</span>
-              <span className="text-xs text-slate-600 dark:text-slate-400 font-medium uppercase tracking-wider">
+              <span className="text-[var(--foreground-muted)] dark:text-[var(--foreground-muted)]">·</span>
+              <span className="text-xs text-[var(--foreground-muted)] font-medium uppercase tracking-wider">
                 {report.support_count}{" "}
                 {report.support_count === 1 ? "support" : "supports"}
               </span>
             </div>
 
-            <p className="text-base text-slate-700 dark:text-slate-300 leading-relaxed mb-6 whitespace-pre-wrap">
+            <p className="text-base text-[var(--foreground)] leading-relaxed mb-6 whitespace-pre-wrap">
               {report.description}
             </p>
 
             {images.length > 0 && (
               <div className="mb-6">
-                <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-zinc-500 font-semibold mb-2">
+                <p className="text-xs uppercase tracking-wider text-[var(--foreground-muted)] font-semibold mb-2">
                   Photos ({images.length})
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -167,7 +167,7 @@ export default async function ReportDetailPage({ params }) {
                       href={img.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block aspect-square bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-lg overflow-hidden hover:border-indigo-600 dark:hover:border-indigo-500 transition"
+                      className="block aspect-square bg-[var(--surface-muted)] border border-[var(--border)] rounded-lg overflow-hidden hover:border-[var(--accent)] dark:hover:border-[var(--accent)] transition"
                     >
                       <ReportImage
                         src={img.url}
@@ -180,47 +180,47 @@ export default async function ReportDetailPage({ params }) {
               </div>
             )}
 
-            <div className="pt-4 border-t border-slate-200 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="pt-4 border-t border-[var(--border)] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-zinc-500 font-semibold mb-1">
+                <p className="text-xs uppercase tracking-wider text-[var(--foreground-muted)] font-semibold mb-1">
                   Reported by
                 </p>
                 <Link
                   href={`/users/${report.user_id}`}
-                  className="text-base text-slate-900 dark:text-slate-50 hover:text-indigo-700 dark:hover:text-slate-500 underline underline-offset-2"
+                  className="text-base text-[var(--foreground)] hover:text-[var(--accent)] dark:hover:text-[var(--foreground-muted)] underline underline-offset-2"
                 >
                   {report.reporter_name}
                 </Link>
               </div>
               <div className="text-left sm:text-right">
-                <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-zinc-500 font-semibold mb-1">
+                <p className="text-xs uppercase tracking-wider text-[var(--foreground-muted)] font-semibold mb-1">
                   Reported on
                 </p>
-                <p className="text-base text-slate-900 dark:text-slate-50">
+                <p className="text-base text-[var(--foreground)]">
                   {formatDate(report.created_at)}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-6 md:p-8 mb-6">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-50 mb-4 pb-2 border-b-2 border-indigo-600">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 md:p-8 mb-6">
+            <h2 className="text-xl font-bold text-[var(--foreground)] mb-4 pb-2 border-b-2 border-[var(--accent)]">
               Location
             </h2>
             {report.address && (
-              <p className="text-base text-slate-900 dark:text-slate-50 mb-4 flex items-center gap-1.5">
+              <p className="text-base text-[var(--foreground)] mb-4 flex items-center gap-1.5">
                 <PinIcon className="w-4 h-4 flex-shrink-0" /> {report.address}
               </p>
             )}
             <ReportDetailMapWrapper report={report} />
-            <p className="font-mono text-xs text-slate-600 dark:text-slate-400 mt-3 text-center">
+            <p className="font-mono text-xs text-[var(--foreground-muted)] mt-3 text-center">
               {report.latitude}, {report.longitude}
             </p>
           </div>
 
           {hasResolutionProof && (
-            <div className="bg-white dark:bg-zinc-900 border-2 border-emerald-600 dark:border-emerald-500 rounded-xl p-6 md:p-8 mb-6">
-              <h2 className="text-xl font-bold text-slate-900 dark:text-slate-50 mb-4 pb-2 border-b-2 border-emerald-600 flex items-center gap-2">
+            <div className="bg-[var(--surface)] border-2 border-emerald-600 dark:border-emerald-500 rounded-xl p-6 md:p-8 mb-6">
+              <h2 className="text-xl font-bold text-[var(--foreground)] mb-4 pb-2 border-b-2 border-emerald-600 flex items-center gap-2">
                 <CheckIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
                 Resolution Proof
               </h2>
@@ -230,7 +230,7 @@ export default async function ReportDetailPage({ params }) {
                   href={report.resolution_image_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-lg overflow-hidden mb-4 hover:border-emerald-600 dark:hover:border-emerald-500 transition"
+                  className="block bg-[var(--surface-muted)] border border-[var(--border)] rounded-lg overflow-hidden mb-4 hover:border-emerald-600 dark:hover:border-emerald-500 transition"
                 >
                   <ReportImage
                     src={report.resolution_image_url}
@@ -241,16 +241,16 @@ export default async function ReportDetailPage({ params }) {
               )}
 
               {report.resolution_note && (
-                <blockquote className="text-base text-slate-800 dark:text-slate-200 leading-relaxed mb-4 pl-4 border-l-4 border-emerald-600 dark:border-emerald-500 whitespace-pre-wrap">
+                <blockquote className="text-base text-[var(--foreground)] leading-relaxed mb-4 pl-4 border-l-4 border-emerald-600 dark:border-emerald-500 whitespace-pre-wrap">
                   &ldquo;{report.resolution_note}&rdquo;
                 </blockquote>
               )}
 
-              <div className="pt-3 border-t border-slate-200 dark:border-zinc-800 flex items-center justify-between flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-400">
+              <div className="pt-3 border-t border-[var(--border)] flex items-center justify-between flex-wrap gap-2 text-xs text-[var(--foreground-muted)]">
                 {report.resolver_name && (
                   <span >
                     Fixed by{" "}
-                    <strong className="not-text-slate-900 dark:text-slate-100">
+                    <strong className="not-text-[var(--foreground)]">
                       {report.resolver_name}
                     </strong>
                   </span>
@@ -264,8 +264,8 @@ export default async function ReportDetailPage({ params }) {
             </div>
           )}
 
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-6 md:p-8 mb-6">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-50 mb-6 pb-2 border-b-2 border-indigo-600">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 md:p-8 mb-6">
+            <h2 className="text-xl font-bold text-[var(--foreground)] mb-6 pb-2 border-b-2 border-[var(--accent)]">
               Status Timeline
             </h2>
             <div className="space-y-4">
@@ -280,22 +280,22 @@ export default async function ReportDetailPage({ params }) {
                     <div
                       className={`mt-1 h-3 w-3 rounded-full flex-shrink-0 ${
                         reached
-                          ? "bg-indigo-600 dark:bg-indigo-500"
-                          : "bg-slate-300 dark:bg-zinc-700"
-                      } ${isCurrent ? "ring-4 ring-indigo-500/20" : ""}`}
+                          ? "bg-[var(--accent)]"
+                          : "bg-[var(--border-strong)]"
+                      } ${isCurrent ? "ring-4 ring-[var(--accent)]/20" : ""}`}
                     />
                     <div className="flex-1">
                       <p
                         className={`text-base ${
                           reached
-                            ? "text-slate-900 dark:text-slate-50 font-semibold"
-                            : "text-slate-500 dark:text-zinc-500"
+                            ? "text-[var(--foreground)] font-semibold"
+                            : "text-[var(--foreground-muted)]"
                         }`}
                       >
                         {STATUS_LABELS[step]}
                       </p>
                       {date && (
-                        <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                        <p className="text-xs text-[var(--foreground-muted)] mt-0.5">
                           {date}
                         </p>
                       )}
@@ -307,8 +307,8 @@ export default async function ReportDetailPage({ params }) {
           </div>
 
           {!isResolved ? (
-            <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-6 md:p-8 text-center">
-              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 md:p-8 text-center">
+              <p className="text-sm text-[var(--foreground-muted)] mb-4">
                 Does this issue affect you too?
               </p>
               <SupportButton
@@ -318,22 +318,22 @@ export default async function ReportDetailPage({ params }) {
 
               {supporterTotal > 0 && (
                 <details className="mt-6 text-left">
-                  <summary className="cursor-pointer text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-700 dark:hover:text-slate-500 select-none">
+                  <summary className="cursor-pointer text-sm text-[var(--foreground-muted)] hover:text-[var(--accent)] dark:hover:text-[var(--foreground-muted)] select-none">
                     See who supports this ({supporterTotal})
                   </summary>
-                  <ul className="mt-3 space-y-1.5 pl-4 border-l-2 border-slate-200 dark:border-zinc-800">
+                  <ul className="mt-3 space-y-1.5 pl-4 border-l-2 border-[var(--border)]">
                     {supporters.map((s) => (
                       <li key={s.id}>
                         <Link
                           href={`/users/${s.id}`}
-                          className="text-sm text-slate-700 dark:text-slate-300 hover:text-indigo-700 dark:hover:text-slate-500 underline underline-offset-2"
+                          className="text-sm text-[var(--foreground)] hover:text-[var(--accent)] dark:hover:text-[var(--foreground-muted)] underline underline-offset-2"
                         >
                           {s.name}
                         </Link>
                       </li>
                     ))}
                     {supporterTotal > supporters.length && (
-                      <li className="text-xs text-slate-500 dark:text-zinc-500 pt-1">
+                      <li className="text-xs text-[var(--foreground-muted)] pt-1">
                         and {supporterTotal - supporters.length} more
                       </li>
                     )}

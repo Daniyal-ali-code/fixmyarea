@@ -46,7 +46,7 @@ export default function ReportsMap({ reports = [] }) {
   );
 
   return (
-    <div className="map-home rounded-lg overflow-hidden border border-slate-200 dark:border-zinc-800">
+    <div className="map-home rounded-lg overflow-hidden border border-[var(--border)]">
       <MapContainer
         center={[24.8607, 67.0011]}
         zoom={12}
@@ -66,20 +66,20 @@ export default function ReportsMap({ reports = [] }) {
           >
             <Popup>
               <div className="min-w-[200px]">
-                <p className="font-bold text-sm text-slate-900 dark:text-slate-50 m-0 mb-1">
+                <p className="font-bold text-sm text-[var(--foreground)] m-0 mb-1">
                   {r.title}
                 </p>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 m-0 mb-1">
+                <p className="text-[11px] text-[var(--foreground-muted)] m-0 mb-1">
                   {r.category_name} · {STATUS_LABELS[r.status] || r.status}
                 </p>
                 {r.address && (
-                  <p className="text-[11px] text-slate-700 dark:text-slate-300 m-0 mb-2">
+                  <p className="text-[11px] text-[var(--foreground)] m-0 mb-2">
                     {r.address}
                   </p>
                 )}
                 <Link
                   href={`/reports/${r.id}`}
-                  className="text-[11px] font-semibold text-indigo-600 dark:text-slate-500 no-underline"
+                  className="text-[11px] font-semibold text-[var(--accent)] no-underline"
                 >
                   View report →
                 </Link>

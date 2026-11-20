@@ -29,14 +29,14 @@ export default function ReportDetailMap({ report }) {
 
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     return (
-      <div className="rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 text-center text-slate-600 dark:text-slate-400">
+      <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-8 text-center text-[var(--foreground-muted)]">
         Location unavailable for this report.
       </div>
     );
   }
 
   return (
-    <div className="rounded-lg overflow-hidden border border-slate-200 dark:border-zinc-800">
+    <div className="rounded-lg overflow-hidden border border-[var(--border)]">
       <MapContainer
         center={[lat, lng]}
         zoom={16}
@@ -49,11 +49,11 @@ export default function ReportDetailMap({ report }) {
         />
         <Marker position={[lat, lng]} icon={makeIcon(color)}>
           <Popup>
-            <strong className="text-slate-900 dark:text-slate-50">{report.title}</strong>
+            <strong className="text-[var(--foreground)]">{report.title}</strong>
             {report.address && (
               <>
                 <br />
-                <span className="text-xs text-slate-600 dark:text-slate-400">
+                <span className="text-xs text-[var(--foreground-muted)]">
                   {report.address}
                 </span>
               </>

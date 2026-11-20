@@ -14,11 +14,11 @@ const statusStyles = {
   reported:
     "bg-blue-50 text-blue-900 border-blue-300 dark:bg-blue-950 dark:text-blue-200 dark:border-blue-800",
   under_review:
-    "bg-white text-indigo-900 border-indigo-300 dark:bg-indigo-950/30 dark:text-indigo-200 dark:border-indigo-800",
+    "bg-[var(--accent-soft)] text-[var(--accent)] border-[var(--border)]",
   in_progress:
     "bg-orange-50 text-orange-900 border-orange-300 dark:bg-orange-950 dark:text-orange-200 dark:border-orange-800",
   resolved:
-    "bg-slate-50 text-slate-900 border-slate-300 dark:bg-slate-950 dark:text-slate-200 dark:border-slate-700",
+    "bg-[var(--surface-muted)] text-[var(--foreground-muted)] border-[var(--border)]",
 };
 
 async function getPublicProfile(userId) {
@@ -88,36 +88,36 @@ export default async function PublicProfilePage({ params }) {
 
   return (
     <>
-      <main className="min-h-screen bg-white dark:bg-slate-900">
+      <main className="min-h-screen bg-[var(--background)]">
         <div className="max-w-3xl mx-auto px-4 py-8">
           <Link
             href="/reports"
-            className="text-sm text-slate-800 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-slate-500 underline underline-offset-2 inline-block mb-6"
+            className="text-sm text-[var(--foreground)] dark:text-[var(--foreground-muted)] hover:text-[var(--accent)] dark:hover:text-[var(--foreground-muted)] underline underline-offset-2 inline-block mb-6"
           >
             ← Back to reports
           </Link>
 
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-6 md:p-8 mb-6">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 md:p-8 mb-6">
             <div className="flex items-center gap-4 mb-6">
-              <div className="h-16 w-16 rounded-full bg-indigo-600 dark:bg-indigo-500 flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
+              <div className="h-16 w-16 rounded-full bg-[var(--accent)] flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
                 {initials(user.name)}
               </div>
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-50">
+                <h1 className="text-2xl md:text-3xl font-bold text-[var(--foreground)]">
                   {user.name}
                 </h1>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                <p className="text-sm text-[var(--foreground-muted)] mt-1">
                   Member since {formatDate(user.created_at)}
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-200 dark:border-zinc-800">
+            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-[var(--border)]">
               <div>
-                <p className="text-2xl font-bold text-slate-900 dark:text-slate-50">
+                <p className="text-2xl font-bold text-[var(--foreground)]">
                   {stats.total_reports}
                 </p>
-                <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-zinc-500 font-semibold mt-1">
+                <p className="text-xs uppercase tracking-wider text-[var(--foreground-muted)] font-semibold mt-1">
                   Reports
                 </p>
               </div>
@@ -125,32 +125,32 @@ export default async function PublicProfilePage({ params }) {
                 <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">
                   {stats.resolved_reports}
                 </p>
-                <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-zinc-500 font-semibold mt-1">
+                <p className="text-xs uppercase tracking-wider text-[var(--foreground-muted)] font-semibold mt-1">
                   Resolved
                 </p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-900 dark:text-slate-50">
+                <p className="text-2xl font-bold text-[var(--foreground)]">
                   {stats.total_supports_given}
                 </p>
-                <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-zinc-500 font-semibold mt-1">
+                <p className="text-xs uppercase tracking-wider text-[var(--foreground-muted)] font-semibold mt-1">
                   Supports
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-6 md:p-8">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-50 mb-4 pb-2 border-b-2 border-indigo-600">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 md:p-8">
+            <h2 className="text-xl font-bold text-[var(--foreground)] mb-4 pb-2 border-b-2 border-[var(--accent)]">
               Reported Issues
             </h2>
 
             {reports.length === 0 ? (
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-sm text-[var(--foreground-muted)]">
                 No reports yet.
               </p>
             ) : (
-              <ul className="divide-y divide-slate-200 dark:divide-zinc-800">
+              <ul className="divide-y divide-[var(--border)]">
                 {reports.map((r) => (
                   <li key={r.id} className="py-3">
                     <Link
@@ -158,10 +158,10 @@ export default async function PublicProfilePage({ params }) {
                       className="group flex items-start justify-between gap-4"
                     >
                       <div className="flex-1">
-                        <p className="text-base text-slate-900 dark:text-slate-50 group-hover:text-indigo-700 dark:group-hover:text-slate-500 transition">
+                        <p className="text-base text-[var(--foreground)] group-hover:text-[var(--accent)] dark:group-hover:text-[var(--foreground-muted)] transition">
                           {r.title}
                         </p>
-                        <p className="text-xs text-slate-500 dark:text-zinc-500 mt-1">
+                        <p className="text-xs text-[var(--foreground-muted)] mt-1">
                           {r.category_name} · {formatDate(r.created_at)}
                         </p>
                       </div>
@@ -179,7 +179,7 @@ export default async function PublicProfilePage({ params }) {
             )}
 
             {stats.total_reports > reports.length && (
-              <p className="text-xs text-slate-500 dark:text-zinc-500 mt-4 pt-4 border-t border-slate-200 dark:border-zinc-800">
+              <p className="text-xs text-[var(--foreground-muted)] mt-4 pt-4 border-t border-[var(--border)]">
                 Showing {reports.length} of {stats.total_reports} reports
               </p>
             )}
@@ -187,7 +187,7 @@ export default async function PublicProfilePage({ params }) {
         </div>
       </main>
 
-      <footer className="bg-slate-900 dark:bg-slate-950 text-slate-50 py-6 border-t-4 border-indigo-600 mt-12">
+      <footer className="border-t border-[var(--border)] py-6 mt-12">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <p className="text-sm">
             FixMyArea · Built for communities
