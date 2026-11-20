@@ -156,9 +156,12 @@ export function PageHero({ eyebrow, title, sub, center = false, children }) {
 }
 
 // The one footer, rendered by the root layout on every page.
+// Bottom padding is its own 1.5rem + 4.5rem nav clearance + safe
+// area, so the footer text always clears the fixed bottom nav and
+// no blank band sits below the footer.
 export function Footer() {
   return (
-    <footer className="bg-stone-900 dark:bg-stone-950 text-amber-50 py-6 border-t-4 border-amber-600">
+    <footer className="bg-stone-900 dark:bg-stone-950 text-amber-50 pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] border-t-4 border-amber-600">
       <div className="max-w-6xl mx-auto px-4 text-center">
         <p className="font-serif italic text-sm">
           FixMyArea · Built for communities

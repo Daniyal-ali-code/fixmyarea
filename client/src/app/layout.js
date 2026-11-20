@@ -54,13 +54,12 @@ export default function RootLayout({ children }) {
           <AuthProvider>
             <Header />
             {/* Bottom padding is 4.5rem + safe area: the nav bar is
-                ~56px, so this clears it without the old 7rem dead band.
-                The footer lives inside this wrapper so it also clears
-                the nav. */}
-            <div className="pb-[calc(4.5rem+env(safe-area-inset-bottom))]">
-              <PageEnter>{children}</PageEnter>
-              <Footer />
-            </div>
+                ~56px, so the footer clears it without the old 7rem
+                dead band. The padding lives on the footer itself
+                (ui.js) — it used to sit on this wrapper, which put a
+                blank band *below* the footer on every page. */}
+            <PageEnter>{children}</PageEnter>
+            <Footer />
             <BottomNav />
           </AuthProvider>
         </ThemeProvider>
