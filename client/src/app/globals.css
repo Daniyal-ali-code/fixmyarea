@@ -85,6 +85,11 @@ body {
    Uses an inline SVG so no image file is needed.
    The pattern is a sparse diamond grid, 5% opacity,
    tinted with the accent color via currentColor. */
+/* Hero background pattern — subtle mesh only, no gradients.
+   Light mode is more visible than before; dark mode is a touch softer
+   because the aubergine base is already dark. */
+/* Hero background pattern — subtle mesh only, no gradients.
+   Light mode is more visible; dark mode is softer. */
 .hero-pattern {
   position: relative;
   isolation: isolate;
@@ -94,19 +99,13 @@ body {
   position: absolute;
   inset: 0;
   z-index: -1;
-  opacity: 0.35;
   background-image:
-    radial-gradient(ellipse 80% 60% at 20% 20%, var(--accent-soft) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 80% at 80% 80%, var(--coral-soft) 0%, transparent 60%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='none' stroke='%237c3aed' stroke-width='0.5' opacity='0.4'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: auto, auto, 60px 60px;
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='none' stroke='%237c3aed' stroke-width='0.75' opacity='0.55'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 60px 60px;
 }
 .dark .hero-pattern::before {
-  opacity: 0.5;
   background-image:
-    radial-gradient(ellipse 80% 60% at 20% 20%, var(--accent-soft) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 80% at 80% 80%, var(--coral-soft) 0%, transparent 60%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='none' stroke='%23a78bfa' stroke-width='0.5' opacity='0.4'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3C/g%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='none' stroke='%23a78bfa' stroke-width='0.75' opacity='0.35'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 /* Map heights */

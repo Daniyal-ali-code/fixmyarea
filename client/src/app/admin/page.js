@@ -313,7 +313,7 @@ export default function AdminPage() {
   if (!user || user.role !== "admin") return null;
 
   return (
-    <main className="min-h-screen bg-[var(--background)]">
+    <main className="min-h-screen bg-[var(--background)] hero-pattern">
       {/* Admin keeps max-w-7xl deliberately — the 10-column table
           needs the width; every other page is max-w-6xl. */}
       <div className="max-w-7xl mx-auto px-4 py-12">
