@@ -49,11 +49,11 @@ export default function ReportDetailMap({ report }) {
         />
         <Marker position={[lat, lng]} icon={makeIcon(color)}>
           <Popup>
-            <strong className="text-stone-900">{report.title}</strong>
+            <strong className="text-stone-900 dark:text-stone-50">{report.title}</strong>
             {report.address && (
               <>
                 <br />
-                <span className="text-xs italic text-stone-600">
+                <span className="text-xs italic text-stone-600 dark:text-stone-400">
                   {report.address}
                 </span>
               </>
