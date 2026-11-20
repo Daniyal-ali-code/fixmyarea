@@ -1,44 +1,43 @@
-// Shared UI tokens + components for FixMyArea.
-// One button scale, one input style, one card, one alert, one status
-// badge, one hero, one footer — so pages stop copy-pasting class
-// strings and drifting apart. Flat colours only: stone neutrals +
-// amber accent, no gradients, no glass. Success is emerald, the one
-// neutral is stone (no slate anywhere).
+// Modern design system — clean, rounded, indigo accent.
+// Every page imports from here, so restyling one file restyles the app.
 import { STATUS_LABELS, STATUS_STYLES } from "@/lib/status";
 
-// --- class tokens (import these when a <button>/<a> can't be a <Button>) ---
+// --- tokens ---
 export const btnBase =
-  "inline-flex items-center justify-center px-6 py-3 min-h-11 text-xs font-semibold uppercase tracking-wider rounded-sm border transition active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed";
-export const btnPrimary = `${btnBase} text-stone-900 bg-amber-600 hover:bg-amber-500 border-amber-700`;
-export const btnSecondary = `${btnBase} text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-800 hover:bg-amber-100 dark:hover:bg-stone-700 border-stone-400 dark:border-stone-600`;
-export const btnDanger = `${btnBase} text-red-800 dark:text-red-200 bg-red-50 dark:bg-red-950 hover:bg-red-100 dark:hover:bg-red-900 border-red-300 dark:border-red-800`;
+  "inline-flex items-center justify-center px-5 py-2.5 min-h-11 text-sm font-medium rounded-full transition active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2";
+export const btnPrimary =
+  `${btnBase} text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 shadow-sm shadow-indigo-600/20`;
+export const btnSecondary =
+  `${btnBase} text-slate-700 dark:text-slate-200 bg-white dark:bg-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 shadow-sm`;
+export const btnDanger =
+  `${btnBase} text-white bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-400 shadow-sm`;
 export const btnDangerSm =
-  "inline-flex items-center justify-center px-3 py-2 min-h-11 text-xs uppercase tracking-wider rounded-sm bg-red-50 dark:bg-red-950 text-red-800 dark:text-red-200 border border-red-300 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900 transition active:scale-95 disabled:opacity-50";
+  "inline-flex items-center justify-center px-3 py-2 min-h-11 text-xs font-medium rounded-full bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900 transition active:scale-95 disabled:opacity-50";
 export const chipBase =
-  "inline-flex items-center min-h-11 px-3 py-2.5 text-xs font-semibold uppercase tracking-wider rounded-sm border transition active:scale-95";
-export const chipActive = `${chipBase} bg-amber-600 text-stone-900 border-amber-700`;
-export const chipInactive = `${chipBase} bg-amber-50 dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-400 dark:border-stone-600 hover:border-amber-600 dark:hover:border-amber-500`;
+  "inline-flex items-center min-h-9 px-4 py-1.5 text-sm font-medium rounded-full border transition active:scale-95";
+export const chipActive =
+  `${chipBase} bg-indigo-600 text-white border-indigo-600 dark:bg-indigo-500 dark:border-indigo-500`;
+export const chipInactive =
+  `${chipBase} bg-white dark:bg-zinc-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-zinc-700 hover:border-indigo-400 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400`;
 export const inputClass =
-  "w-full px-4 py-3 min-h-11 text-base bg-amber-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-600 rounded-sm text-stone-900 dark:text-stone-50 transition placeholder:text-stone-400 dark:placeholder:text-stone-500";
+  "w-full px-4 py-3 min-h-11 text-base bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 rounded-lg text-slate-900 dark:text-slate-50 transition placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:border-indigo-500 dark:focus:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 dark:focus:ring-indigo-400/10";
 export const textareaClass = `${inputClass} resize-y`;
 export const labelClass =
-  "block text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2";
-export const helperClass = "text-xs text-stone-500 dark:text-stone-500 mt-1";
+  "block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5";
+export const helperClass = "text-xs text-slate-500 dark:text-zinc-500 mt-1";
 export const cardClass =
-  "bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm";
+  "bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl shadow-sm";
 export const eyebrowClass =
-  "font-serif italic text-xs uppercase tracking-[0.3em] text-stone-600 dark:text-stone-400 border-b-2 border-amber-600 pb-1 inline-block";
+  "text-xs font-semibold uppercase tracking-[0.15em] text-indigo-600 dark:text-indigo-400";
 export const textLinkClass =
-  "inline-flex items-center min-h-11 py-1 px-1 -mx-1 font-serif italic text-sm text-stone-800 dark:text-stone-300 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 transition";
+  "inline-flex items-center min-h-11 py-1 font-medium text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition";
 
 // --- buttons / fields ---
 export function Button({ variant = "primary", className = "", ...props }) {
   const styles =
-    variant === "secondary"
-      ? btnSecondary
-      : variant === "danger"
-        ? btnDanger
-        : btnPrimary;
+    variant === "secondary" ? btnSecondary
+    : variant === "danger" ? btnDanger
+    : btnPrimary;
   return <button className={`${styles} ${className}`} {...props} />;
 }
 
@@ -58,12 +57,12 @@ export function Card({ className = "", ...props }) {
 export function Alert({ tone = "error", className = "", children, ...props }) {
   const styles =
     tone === "success"
-      ? "bg-emerald-50 dark:bg-emerald-950 border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200"
-      : "bg-red-50 dark:bg-red-950 border-red-300 dark:border-red-800 text-red-800 dark:text-red-200";
+      ? "bg-emerald-50 dark:bg-emerald-950/50 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300"
+      : "bg-red-50 dark:bg-red-950/50 border-red-200 dark:border-red-800 text-red-800 dark:text-red-300";
   return (
     <div
       role={tone === "error" ? "alert" : "status"}
-      className={`animate-fade-in border text-sm p-3 rounded-sm ${styles} ${className}`}
+      className={`animate-fade-in border text-sm p-3 rounded-lg ${styles} ${className}`}
       {...props}
     >
       {children}
@@ -74,7 +73,7 @@ export function Alert({ tone = "error", className = "", children, ...props }) {
 export function StatusBadge({ status, large = false }) {
   return (
     <span
-      className={`${large ? "px-3 py-1" : "px-2 py-0.5"} text-xs font-semibold uppercase tracking-wider border rounded-sm ${
+      className={`${large ? "px-3 py-1" : "px-2.5 py-0.5"} text-xs font-semibold rounded-full ${
         STATUS_STYLES[status] || STATUS_STYLES.reported
       }`}
     >
@@ -85,7 +84,7 @@ export function StatusBadge({ status, large = false }) {
 
 export function LoadingNote({ children }) {
   return (
-    <p className="font-serif italic text-stone-600 dark:text-stone-400 text-center py-20">
+    <p className="text-slate-500 dark:text-zinc-500 text-center py-20">
       {children}
     </p>
   );
@@ -94,9 +93,7 @@ export function LoadingNote({ children }) {
 export function EmptyState({ children, action }) {
   return (
     <div className={`${cardClass} p-12 text-center`}>
-      <p className="font-serif italic text-stone-600 dark:text-stone-400 mb-4">
-        {children}
-      </p>
+      <p className="text-slate-600 dark:text-slate-400 mb-4">{children}</p>
       {action}
     </div>
   );
@@ -104,8 +101,8 @@ export function EmptyState({ children, action }) {
 
 export function ErrorState({ children }) {
   return (
-    <div className="bg-red-50 dark:bg-red-950 border border-red-300 dark:border-red-800 rounded-sm p-12 text-center">
-      <p className="font-serif italic text-lg text-red-800 dark:text-red-200">
+    <div className="bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-xl p-12 text-center">
+      <p className="text-lg font-medium text-red-800 dark:text-red-300">
         {children}
       </p>
     </div>
@@ -117,10 +114,10 @@ export function ReportsSkeleton({ count = 6 }) {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {Array.from({ length: count }).map((_, n) => (
         <div key={n} className={`${cardClass} p-5 animate-pulse`}>
-          <div className="h-3 w-20 bg-stone-200 dark:bg-stone-700 rounded mb-4" />
-          <div className="h-5 w-full bg-stone-200 dark:bg-stone-700 rounded mb-2" />
-          <div className="h-4 w-3/4 bg-stone-200 dark:bg-stone-700 rounded mb-4" />
-          <div className="h-3 w-1/3 bg-stone-200 dark:bg-stone-700 rounded" />
+          <div className="h-3 w-20 bg-slate-200 dark:bg-zinc-700 rounded mb-4" />
+          <div className="h-5 w-full bg-slate-200 dark:bg-zinc-700 rounded mb-2" />
+          <div className="h-4 w-3/4 bg-slate-200 dark:bg-zinc-700 rounded mb-4" />
+          <div className="h-3 w-1/3 bg-slate-200 dark:bg-zinc-700 rounded" />
         </div>
       ))}
     </div>
@@ -130,19 +127,19 @@ export function ReportsSkeleton({ count = 6 }) {
 // --- page furniture ---
 export function PageHero({ eyebrow, title, sub, center = false, children }) {
   return (
-    <section className="bg-amber-100 dark:bg-stone-800 border-b border-stone-400 dark:border-stone-700">
+    <section className="bg-gradient-to-b from-indigo-50/60 to-transparent dark:from-indigo-950/20 dark:to-transparent border-b border-slate-200 dark:border-zinc-800">
       <div
         className={`mx-auto px-4 py-12 md:py-16 ${
           center ? "max-w-4xl text-center" : "max-w-6xl"
         }`}
       >
-        {eyebrow && <p className={`${eyebrowClass} mb-2`}>{eyebrow}</p>}
-        <h1 className="font-serif text-4xl md:text-5xl font-bold text-stone-900 dark:text-stone-50 mt-3 mb-4 leading-tight">
+        {eyebrow && <p className={`${eyebrowClass} mb-3`}>{eyebrow}</p>}
+        <h1 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-slate-50 tracking-tight leading-tight mb-4">
           {title}
         </h1>
         {sub && (
           <p
-            className={`font-serif italic text-lg text-stone-700 dark:text-stone-300 max-w-xl ${
+            className={`text-lg text-slate-600 dark:text-slate-400 max-w-xl ${
               center ? "mx-auto" : ""
             }`}
           >
@@ -155,15 +152,11 @@ export function PageHero({ eyebrow, title, sub, center = false, children }) {
   );
 }
 
-// The one footer, rendered by the root layout on every page.
-// Bottom padding is its own 1.5rem + 4.5rem nav clearance + safe
-// area, so the footer text always clears the fixed bottom nav and
-// no blank band sits below the footer.
 export function Footer() {
   return (
-    <footer className="bg-stone-900 dark:bg-stone-950 text-amber-50 pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] border-t-4 border-amber-600">
+    <footer className="bg-white dark:bg-zinc-950 border-t border-slate-200 dark:border-zinc-800 pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))]">
       <div className="max-w-6xl mx-auto px-4 text-center">
-        <p className="font-serif italic text-sm">
+        <p className="text-sm text-slate-500 dark:text-zinc-500">
           FixMyArea · Built for communities
         </p>
       </div>
@@ -171,7 +164,7 @@ export function Footer() {
   );
 }
 
-// --- inline SVG icons (same stroke style as BottomNav; no emoji) ---
+// --- icons ---
 function Svg({ className = "w-4 h-4", children }) {
   return (
     <svg

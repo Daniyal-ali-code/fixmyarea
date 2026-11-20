@@ -1,4 +1,4 @@
-import { Inter, Lora } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/components/AuthProvider";
@@ -12,23 +12,16 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const lora = Lora({
-  variable: "--font-serif",
-  subsets: ["latin"],
-});
-
 export const metadata = {
   title: "FixMyArea — Report Local Issues",
   description: "Report and track community issues in your area.",
 };
 
-// viewportFit cover so the safe-area insets apply; theme-color matches
-// the amber/stone chrome around the bottom nav.
 export const viewport = {
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fffbeb" },
-    { media: "(prefers-color-scheme: dark)", color: "#1c1917" },
+    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
   ],
 };
 
@@ -49,15 +42,10 @@ export default function RootLayout({ children }) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className={`${inter.variable} ${lora.variable} antialiased`}>
+      <body className={`${inter.variable} antialiased`}>
         <ThemeProvider>
           <AuthProvider>
             <Header />
-            {/* Bottom padding is 4.5rem + safe area: the nav bar is
-                ~56px, so the footer clears it without the old 7rem
-                dead band. The padding lives on the footer itself
-                (ui.js) — it used to sit on this wrapper, which put a
-                blank band *below* the footer on every page. */}
             <PageEnter>{children}</PageEnter>
             <Footer />
             <BottomNav />
