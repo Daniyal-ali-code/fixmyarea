@@ -11,6 +11,7 @@ import {
 } from "@/components/ui";
 import { STATUS_LABELS, STATUS_ORDER } from "@/lib/status";
 import { query } from "@/lib/db";
+import { getSupporters } from "@/lib/supporters.service";
 
 async function getReport(id) {
   try {
@@ -98,6 +99,7 @@ export default async function ReportDetailPage({ params }) {
 
   const history = await getStatusHistory(id);
   const images = await getImages(id);
+  const { supporters, total: supporterTotal } = await getSupporters(id);
 
   const timeline = [
     { status: "reported", at: report.created_at, label: "Reported" },
@@ -183,9 +185,12 @@ export default async function ReportDetailPage({ params }) {
                 <p className="text-xs uppercase tracking-wider text-stone-500 dark:text-stone-500 font-semibold mb-1">
                   Reported by
                 </p>
-                <p className="font-serif italic text-base text-stone-900 dark:text-stone-50">
+                <Link
+                  href={`/users/${report.user_id}`}
+                  className="font-serif italic text-base text-stone-900 dark:text-stone-50 hover:text-amber-700 dark:hover:text-amber-500 underline underline-offset-2"
+                >
                   {report.reporter_name}
-                </p>
+                </Link>
               </div>
               <div className="text-left sm:text-right">
                 <p className="text-xs uppercase tracking-wider text-stone-500 dark:text-stone-500 font-semibold mb-1">
@@ -310,6 +315,31 @@ export default async function ReportDetailPage({ params }) {
                 reportId={report.id}
                 initialCount={report.support_count}
               />
+
+              {supporterTotal > 0 && (
+                <details className="mt-6 text-left">
+                  <summary className="cursor-pointer font-serif italic text-sm text-stone-600 dark:text-stone-400 hover:text-amber-700 dark:hover:text-amber-500 select-none">
+                    See who supports this ({supporterTotal})
+                  </summary>
+                  <ul className="mt-3 space-y-1.5 pl-4 border-l-2 border-stone-300 dark:border-stone-700">
+                    {supporters.map((s) => (
+                      <li key={s.id}>
+                        <Link
+                          href={`/users/${s.id}`}
+                          className="font-serif text-sm text-stone-700 dark:text-stone-300 hover:text-amber-700 dark:hover:text-amber-500 underline underline-offset-2"
+                        >
+                          {s.name}
+                        </Link>
+                      </li>
+                    ))}
+                    {supporterTotal > supporters.length && (
+                      <li className="font-serif italic text-xs text-stone-500 dark:text-stone-500 pt-1">
+                        and {supporterTotal - supporters.length} more
+                      </li>
+                    )}
+                  </ul>
+                </details>
+              )}
             </div>
           ) : (
             <div className="bg-emerald-50 dark:bg-emerald-950 border border-emerald-300 dark:border-emerald-800 rounded-sm p-6 md:p-8 text-center">
