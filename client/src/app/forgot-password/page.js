@@ -50,13 +50,13 @@ export default function ForgotPasswordPage() {
 
   return (
     <>
-      <main className="min-h-screen bg-amber-50 dark:bg-stone-900 flex items-center justify-center px-4 py-12">
-        <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-8 max-w-md w-full">
+      <main className="min-h-screen bg-white dark:bg-slate-900 flex items-center justify-center px-4 py-12">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-8 max-w-md w-full">
           <div className="mb-8">
             <p className={eyebrowClass}>
               Reset Password
             </p>
-            <h1 className="font-serif text-3xl font-bold text-stone-900 dark:text-stone-50 mt-3">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50 mt-3">
               Forgot password?
             </h1>
           </div>
@@ -67,7 +67,7 @@ export default function ForgotPasswordPage() {
               been sent. The code works for 10 minutes.{" "}
               <Link
                 href={`/reset-password?email=${encodeURIComponent(email)}`}
-                className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 underline underline-offset-2 hover:text-amber-600 transition"
+                className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 underline underline-offset-2 hover:text-indigo-600 transition"
               >
                 Enter your code
               </Link>
@@ -77,7 +77,7 @@ export default function ForgotPasswordPage() {
             <>
               {error && <Alert className="mb-4">{error}</Alert>}
 
-              <p className="text-sm text-stone-600 dark:text-stone-400 mb-5">
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-5">
                 Enter the email you signed up with and we will send you a
                 6-digit code to reset your password.
               </p>
@@ -113,12 +113,12 @@ export default function ForgotPasswordPage() {
             </>
           )}
 
-          <div className="mt-6 pt-6 border-t border-stone-300 dark:border-stone-700 text-center">
-            <p className="font-serif italic text-sm text-stone-600 dark:text-stone-400">
+          <div className="mt-6 pt-6 border-t border-slate-200 dark:border-zinc-800 text-center">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
               Remembered your password?{" "}
               <Link
                 href="/login"
-                className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 text-stone-800 dark:text-stone-300 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 decoration-amber-600/40 hover:decoration-amber-600 transition"
+                className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 text-slate-800 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-slate-500 underline underline-offset-2 decoration-indigo-600/40 hover:decoration-indigo-600 transition"
               >
                 Sign in
               </Link>

@@ -59,7 +59,7 @@ export default function DashboardPage() {
 
   if (authLoading || (!user && !error)) {
     return (
-      <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
+      <main className="min-h-screen bg-white dark:bg-slate-900">
         <div className="max-w-6xl mx-auto px-4">
           <LoadingNote>Loading…</LoadingNote>
         </div>
@@ -74,14 +74,14 @@ export default function DashboardPage() {
   const open = reports.filter((r) => r.status === "reported" || r.status === "under_review").length;
 
   return (
-    <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
+    <main className="min-h-screen bg-white dark:bg-slate-900">
       <div className="max-w-6xl mx-auto px-4 py-12">
-        <div className="flex items-baseline justify-between mb-8 pb-2 border-b-2 border-amber-600">
+        <div className="flex items-baseline justify-between mb-8 pb-2 border-b-2 border-indigo-600">
           <div>
-            <h1 className="font-serif text-4xl font-bold text-stone-900 dark:text-stone-50">
+            <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-50">
               My Reports
             </h1>
-            <p className="font-serif italic text-sm text-stone-600 dark:text-stone-400 mt-1">
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
               {user.name} · {user.email}
             </p>
           </div>
@@ -102,8 +102,8 @@ export default function DashboardPage() {
         {loading ? (
           <ReportsSkeleton />
         ) : reports.length === 0 ? (
-          <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-12 text-center">
-            <p className="font-serif italic text-stone-600 dark:text-stone-400 mb-4">
+          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-12 text-center">
+            <p className="text-slate-600 dark:text-slate-400 mb-4">
               You haven&apos;t reported any issues yet.
             </p>
             <Link href="/reports/new" className={btnPrimary}>
@@ -124,11 +124,11 @@ export default function DashboardPage() {
 
 function StatCard({ label, value }) {
   return (
-    <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-5">
-      <p className="font-sans text-xs uppercase tracking-wider text-stone-600 dark:text-stone-400 mb-1">
+    <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-5">
+      <p className="font-sans text-xs uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">
         {label}
       </p>
-      <p className="font-serif text-3xl font-bold text-stone-900 dark:text-stone-50">
+      <p className="text-3xl font-bold text-slate-900 dark:text-slate-50">
         {value}
       </p>
     </div>

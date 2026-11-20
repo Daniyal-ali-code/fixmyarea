@@ -16,11 +16,11 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-40 bg-amber-50 dark:bg-stone-900 border-b border-stone-400 dark:border-stone-700 pt-[env(safe-area-inset-top)]">
+    <header className="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-300 dark:border-zinc-800 pt-[env(safe-area-inset-top)]">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
         <Link
           href="/"
-          className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50 tracking-tight flex-shrink-0 inline-flex items-center min-h-11"
+          className="text-xl font-bold text-slate-900 dark:text-slate-50 tracking-tight flex-shrink-0 inline-flex items-center min-h-11"
         >
           FixMyArea
         </Link>
@@ -29,15 +29,15 @@ export default function Header() {
           <ThemeToggle />
 
           {loading ? (
-            <div className="h-9 w-24 bg-stone-200 dark:bg-stone-700 rounded-sm animate-pulse" />
+            <div className="h-9 w-24 bg-slate-200 dark:bg-zinc-700 rounded-lg animate-pulse" />
           ) : user ? (
             <>
-              <span className="font-serif italic text-sm text-stone-700 dark:text-stone-300 hidden sm:inline">
+              <span className="text-sm text-slate-700 dark:text-slate-300 hidden sm:inline">
                 {user.name}
               </span>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 min-h-11 text-xs font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-800 rounded-sm hover:bg-amber-100 dark:hover:bg-stone-700 transition border border-stone-400 dark:border-stone-600"
+                className="px-4 py-2 min-h-11 text-xs font-semibold uppercase tracking-wider text-slate-900 dark:text-slate-100 bg-white dark:bg-zinc-900 rounded-lg hover:bg-indigo-50 dark:hover:bg-zinc-800 transition border border-slate-200 dark:border-zinc-700"
               >
                 Logout
               </button>

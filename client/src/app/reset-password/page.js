@@ -139,13 +139,13 @@ function ResetPasswordForm() {
 
   return (
     <>
-      <main className="min-h-screen bg-amber-50 dark:bg-stone-900 flex items-center justify-center px-4 py-12">
-        <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-8 max-w-md w-full">
+      <main className="min-h-screen bg-white dark:bg-slate-900 flex items-center justify-center px-4 py-12">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-8 max-w-md w-full">
           <div className="mb-8">
             <p className={eyebrowClass}>
               Reset Password
             </p>
-            <h1 className="font-serif text-3xl font-bold text-stone-900 dark:text-stone-50 mt-3">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50 mt-3">
               {done
                 ? "Password reset"
                 : step === 1
@@ -153,7 +153,7 @@ function ResetPasswordForm() {
                   : "Choose a new password"}
             </h1>
             {!done && (
-              <p className="font-serif italic text-sm text-stone-600 dark:text-stone-400 mt-2">
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">
                 Step {step} of 2
               </p>
             )}
@@ -164,7 +164,7 @@ function ResetPasswordForm() {
               Your password has been reset.{" "}
               <Link
                 href="/login"
-                className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 underline underline-offset-2 hover:text-amber-600 transition"
+                className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 underline underline-offset-2 hover:text-indigo-600 transition"
               >
                 Sign in with your new password
               </Link>
@@ -181,7 +181,7 @@ function ResetPasswordForm() {
 
               {step === 1 ? (
                 <>
-                  <p className="text-sm text-stone-600 dark:text-stone-400 mb-5">
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-5">
                     Enter the 6-digit code we emailed you. The code works
                     for 10 minutes.
                   </p>
@@ -303,7 +303,7 @@ function ResetPasswordForm() {
                     <button
                       type="button"
                       onClick={handleBackToCode}
-                      className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 font-serif italic text-sm text-stone-600 dark:text-stone-400 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 decoration-amber-600/40 hover:decoration-amber-600 transition"
+                      className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 text-sm text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-slate-500 underline underline-offset-2 decoration-indigo-600/40 hover:decoration-indigo-600 transition"
                     >
                       ← Back to code
                     </button>
@@ -314,14 +314,14 @@ function ResetPasswordForm() {
           )}
 
           {step === 1 && !done && (
-            <div className="mt-6 pt-6 border-t border-stone-300 dark:border-stone-700 text-center">
-              <p className="font-serif italic text-sm text-stone-600 dark:text-stone-400">
+            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-zinc-800 text-center">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
                 Didn&apos;t get a code?{" "}
                 <button
                   type="button"
                   onClick={handleResend}
                   disabled={resending}
-                  className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 text-stone-800 dark:text-stone-300 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 decoration-amber-600/40 hover:decoration-amber-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center min-h-11 py-1 px-1 -mx-1 text-slate-800 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-slate-500 underline underline-offset-2 decoration-indigo-600/40 hover:decoration-indigo-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {resending ? "Sending..." : "Resend code"}
                 </button>

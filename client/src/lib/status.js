@@ -11,7 +11,7 @@ export const STATUS_STYLES = {
   reported:
     "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
   under_review:
-    "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
+    "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/30 dark:text-indigo-300",
   in_progress:
     "bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300",
   resolved:

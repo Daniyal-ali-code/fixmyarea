@@ -10,7 +10,7 @@ export default function ReportImage({ src, alt, className }) {
   if (failed) {
     return (
       <div
-        className={`flex items-center justify-center bg-stone-100 dark:bg-stone-900 text-stone-500 dark:text-stone-500 text-sm font-serif italic ${className || ""}`}
+        className={`flex items-center justify-center bg-slate-100 dark:bg-zinc-900 text-slate-500 dark:text-zinc-500 text-sm ${className || ""}`}
       >
         Photo unavailable
       </div>

@@ -8,7 +8,7 @@ const ReportDetailMap = dynamic(
     ssr: false,
     loading: () => (
       <div
-        className="rounded-sm border border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 animate-pulse"
+        className="rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-900 animate-pulse"
         style={{ height: 320 }}
       />
     ),

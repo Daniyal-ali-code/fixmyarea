@@ -61,7 +61,7 @@ async function RecentReports() {
 export default function HomePage() {
   return (
     <AdminRedirectGuard>
-      <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
+      <main className="min-h-screen bg-white dark:bg-slate-900">
         <PageHero
           center
           eyebrow="Established for the Community"
@@ -69,7 +69,7 @@ export default function HomePage() {
             <>
               Report issues in
               <br />
-              <span className="italic">your area</span>
+              <span >your area</span>
             </>
           }
           sub="Help make your community better. Report potholes, broken streetlights, garbage, and other local issues — then track their progress."
@@ -85,8 +85,8 @@ export default function HomePage() {
         </PageHero>
 
         <section className="max-w-6xl mx-auto px-4 py-12">
-          <div className="flex items-baseline justify-between mb-6 pb-2 border-b-2 border-amber-600">
-            <h2 className="font-serif text-3xl font-bold text-stone-900 dark:text-stone-50">
+          <div className="flex items-baseline justify-between mb-6 pb-2 border-b-2 border-indigo-600">
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-50">
               Issues Near You
             </h2>
             <Link href="/reports" className={textLinkClass}>
@@ -95,7 +95,7 @@ export default function HomePage() {
           </div>
           <HomeMapSection />
           <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-            <span className="text-xs font-serif italic text-stone-500 dark:text-stone-500 mr-1">
+            <span className="text-xs text-slate-500 dark:text-zinc-500 mr-1">
               Pin colors:
             </span>
             <StatusBadge status="reported" />
@@ -106,8 +106,8 @@ export default function HomePage() {
         </section>
 
         <section className="max-w-6xl mx-auto px-4 py-12">
-          <div className="flex items-baseline justify-between mb-8 pb-2 border-b-2 border-amber-600">
-            <h2 className="font-serif text-3xl font-bold text-stone-900 dark:text-stone-50">
+          <div className="flex items-baseline justify-between mb-8 pb-2 border-b-2 border-indigo-600">
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-50">
               Recent Reports
             </h2>
             <Link href="/reports" className={textLinkClass}>

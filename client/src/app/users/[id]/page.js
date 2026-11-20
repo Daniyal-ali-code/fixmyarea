@@ -14,7 +14,7 @@ const statusStyles = {
   reported:
     "bg-blue-50 text-blue-900 border-blue-300 dark:bg-blue-950 dark:text-blue-200 dark:border-blue-800",
   under_review:
-    "bg-amber-50 text-amber-900 border-amber-300 dark:bg-amber-950 dark:text-amber-200 dark:border-amber-800",
+    "bg-white text-indigo-900 border-indigo-300 dark:bg-indigo-950/30 dark:text-indigo-200 dark:border-indigo-800",
   in_progress:
     "bg-orange-50 text-orange-900 border-orange-300 dark:bg-orange-950 dark:text-orange-200 dark:border-orange-800",
   resolved:
@@ -88,69 +88,69 @@ export default async function PublicProfilePage({ params }) {
 
   return (
     <>
-      <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
+      <main className="min-h-screen bg-white dark:bg-slate-900">
         <div className="max-w-3xl mx-auto px-4 py-8">
           <Link
             href="/reports"
-            className="font-serif italic text-sm text-slate-800 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-500 underline underline-offset-2 inline-block mb-6"
+            className="text-sm text-slate-800 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-slate-500 underline underline-offset-2 inline-block mb-6"
           >
             ← Back to reports
           </Link>
 
-          <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-6 md:p-8 mb-6">
+          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-6 md:p-8 mb-6">
             <div className="flex items-center gap-4 mb-6">
-              <div className="h-16 w-16 rounded-full bg-amber-600 dark:bg-amber-500 flex items-center justify-center text-stone-50 font-serif font-bold text-xl flex-shrink-0">
+              <div className="h-16 w-16 rounded-full bg-indigo-600 dark:bg-indigo-500 flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
                 {initials(user.name)}
               </div>
               <div>
-                <h1 className="font-serif text-2xl md:text-3xl font-bold text-stone-900 dark:text-stone-50">
+                <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-50">
                   {user.name}
                 </h1>
-                <p className="font-serif italic text-sm text-stone-600 dark:text-stone-400 mt-1">
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
                   Member since {formatDate(user.created_at)}
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-stone-300 dark:border-stone-700">
+            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-200 dark:border-zinc-800">
               <div>
-                <p className="font-serif text-2xl font-bold text-stone-900 dark:text-stone-50">
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-50">
                   {stats.total_reports}
                 </p>
-                <p className="text-xs uppercase tracking-wider text-stone-500 dark:text-stone-500 font-semibold mt-1">
+                <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-zinc-500 font-semibold mt-1">
                   Reports
                 </p>
               </div>
               <div>
-                <p className="font-serif text-2xl font-bold text-emerald-700 dark:text-emerald-400">
+                <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">
                   {stats.resolved_reports}
                 </p>
-                <p className="text-xs uppercase tracking-wider text-stone-500 dark:text-stone-500 font-semibold mt-1">
+                <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-zinc-500 font-semibold mt-1">
                   Resolved
                 </p>
               </div>
               <div>
-                <p className="font-serif text-2xl font-bold text-stone-900 dark:text-stone-50">
+                <p className="text-2xl font-bold text-slate-900 dark:text-slate-50">
                   {stats.total_supports_given}
                 </p>
-                <p className="text-xs uppercase tracking-wider text-stone-500 dark:text-stone-500 font-semibold mt-1">
+                <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-zinc-500 font-semibold mt-1">
                   Supports
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-6 md:p-8">
-            <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50 mb-4 pb-2 border-b-2 border-amber-600">
+          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl p-6 md:p-8">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-50 mb-4 pb-2 border-b-2 border-indigo-600">
               Reported Issues
             </h2>
 
             {reports.length === 0 ? (
-              <p className="font-serif italic text-sm text-stone-600 dark:text-stone-400">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
                 No reports yet.
               </p>
             ) : (
-              <ul className="divide-y divide-stone-200 dark:divide-stone-700">
+              <ul className="divide-y divide-slate-200 dark:divide-zinc-800">
                 {reports.map((r) => (
                   <li key={r.id} className="py-3">
                     <Link
@@ -158,15 +158,15 @@ export default async function PublicProfilePage({ params }) {
                       className="group flex items-start justify-between gap-4"
                     >
                       <div className="flex-1">
-                        <p className="font-serif text-base text-stone-900 dark:text-stone-50 group-hover:text-amber-700 dark:group-hover:text-amber-500 transition">
+                        <p className="text-base text-slate-900 dark:text-slate-50 group-hover:text-indigo-700 dark:group-hover:text-slate-500 transition">
                           {r.title}
                         </p>
-                        <p className="text-xs text-stone-500 dark:text-stone-500 mt-1">
+                        <p className="text-xs text-slate-500 dark:text-zinc-500 mt-1">
                           {r.category_name} · {formatDate(r.created_at)}
                         </p>
                       </div>
                       <span
-                        className={`px-2 py-1 text-[10px] font-semibold uppercase tracking-wider border rounded-sm flex-shrink-0 ${
+                        className={`px-2 py-1 text-[10px] font-semibold uppercase tracking-wider border rounded-lg flex-shrink-0 ${
                           statusStyles[r.status] || statusStyles.reported
                         }`}
                       >
@@ -179,7 +179,7 @@ export default async function PublicProfilePage({ params }) {
             )}
 
             {stats.total_reports > reports.length && (
-              <p className="font-serif italic text-xs text-stone-500 dark:text-stone-500 mt-4 pt-4 border-t border-stone-300 dark:border-stone-700">
+              <p className="text-xs text-slate-500 dark:text-zinc-500 mt-4 pt-4 border-t border-slate-200 dark:border-zinc-800">
                 Showing {reports.length} of {stats.total_reports} reports
               </p>
             )}
@@ -187,9 +187,9 @@ export default async function PublicProfilePage({ params }) {
         </div>
       </main>
 
-      <footer className="bg-slate-900 dark:bg-slate-950 text-amber-50 py-6 border-t-4 border-amber-600 mt-12">
+      <footer className="bg-slate-900 dark:bg-slate-950 text-slate-50 py-6 border-t-4 border-indigo-600 mt-12">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="font-serif italic text-sm">
+          <p className="text-sm">
             FixMyArea · Built for communities
           </p>
         </div>

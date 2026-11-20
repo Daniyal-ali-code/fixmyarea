@@ -143,7 +143,7 @@ export default async function ReportsPage({ searchParams }) {
   }
 
   return (
-    <main className="min-h-screen bg-amber-50 dark:bg-stone-900">
+    <main className="min-h-screen bg-white dark:bg-slate-900">
       <PageHero
         eyebrow="Community Reports"
         title="All reports"
@@ -152,10 +152,10 @@ export default async function ReportsPage({ searchParams }) {
 
       <section className="max-w-6xl mx-auto px-4 py-8">
         {/* Filters */}
-        <div className="bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-sm p-4 mb-8 space-y-4">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-lg p-4 mb-8 space-y-4">
           {/* Status filters */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2">
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
               Status
             </p>
             <div className="flex flex-wrap gap-2">
@@ -176,7 +176,7 @@ export default async function ReportsPage({ searchParams }) {
 
           {/* Category filters */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2">
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
               Category
             </p>
             <div className="flex flex-wrap gap-2">
@@ -196,7 +196,7 @@ export default async function ReportsPage({ searchParams }) {
           </div>
 
           {(status || category_id) && (
-            <div className="pt-2 border-t border-stone-300 dark:border-stone-700">
+            <div className="pt-2 border-t border-slate-200 dark:border-zinc-800">
               <Link href="/reports" className={textLinkClass}>
                 Clear all filters
               </Link>
