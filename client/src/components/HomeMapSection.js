@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 const ReportsMap = dynamic(() => import("./ReportsMap"), {
   ssr: false,
   loading: () => (
-    <div className="map-home rounded-lg border border-[var(--border)] bg-[var(--surface-muted)] animate-pulse" />
+    <div className="map-home relative isolate rounded-lg border border-[var(--border)] bg-[var(--surface-muted)] animate-pulse" />
   ),
 });
 
@@ -41,7 +41,7 @@ export default function HomeMapSection() {
 
   if (reports === null) {
     return (
-      <div className="map-home rounded-lg border border-[var(--border)] bg-[var(--surface-muted)] animate-pulse flex items-center justify-center">
+      <div className="map-home relative isolate rounded-lg border border-[var(--border)] bg-[var(--surface-muted)] animate-pulse flex items-center justify-center">
         <span className="text-[var(--foreground-muted)]">
           Loading map…
         </span>
@@ -51,7 +51,7 @@ export default function HomeMapSection() {
 
     if (reports.length === 0) {
     return (
-      <div className="map-home rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center p-8 text-center">
+      <div className="map-home relative isolate rounded-lg border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center p-8 text-center">
         <div>
           <p className="text-[var(--foreground-muted)] mb-2">
             No issues reported yet in your area.

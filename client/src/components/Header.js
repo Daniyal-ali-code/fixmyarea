@@ -16,7 +16,7 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-40 bg-[var(--background)] border-b border-[var(--border)] pt-[env(safe-area-inset-top)]">
+    <header className="sticky top-0 z-40 isolate bg-[var(--background)] border-b border-[var(--border)] pt-[env(safe-area-inset-top)]">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
         <Link
           href="/"

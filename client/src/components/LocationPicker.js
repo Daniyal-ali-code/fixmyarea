@@ -59,7 +59,7 @@ export default function LocationPicker({ latitude, longitude, onPick }) {
   const zoom = hasPin ? 15 : 12;
 
   return (
-    <div className="rounded-lg overflow-hidden border border-[var(--border)]">
+    <div className="relative isolate rounded-lg overflow-hidden border border-[var(--border)]">
       <MapContainer
         center={center}
         zoom={zoom}

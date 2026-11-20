@@ -144,7 +144,7 @@ export default async function ReportsPage({ searchParams }) {
 
   return (
     <main className="min-h-screen bg-[var(--background)]">
-      <PageHero
+      <PageHero leftAlign
         eyebrow="Community Reports"
         title="All reports"
         sub="Every issue reported by your community. Filter by status or category to see what matters to you."

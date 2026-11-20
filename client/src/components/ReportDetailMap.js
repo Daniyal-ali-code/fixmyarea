@@ -36,7 +36,7 @@ export default function ReportDetailMap({ report }) {
   }
 
   return (
-    <div className="rounded-lg overflow-hidden border border-[var(--border)]">
+    <div className="relative isolate rounded-lg overflow-hidden border border-[var(--border)]">
       <MapContainer
         center={[lat, lng]}
         zoom={16}

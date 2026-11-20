@@ -100,7 +100,7 @@ export default function BottomNav() {
     return (
       <nav
         aria-label="Primary"
-        className="fixed bottom-0 inset-x-0 z-50 bg-[var(--background)] border-t border-[var(--border)] shadow-[0_-2px_12px_rgba(0,0,0,0.08)] pb-[env(safe-area-inset-bottom)]"
+        className="fixed bottom-0 inset-x-0 z-50 isolate bg-[var(--background)] border-t border-[var(--border)] shadow-[0_-2px_12px_rgba(0,0,0,0.08)] pb-[env(safe-area-inset-bottom)]"
       >
         <div className="mx-auto max-w-3xl min-h-[56px]" />
       </nav>
@@ -112,7 +112,7 @@ export default function BottomNav() {
     return (
       <nav
         aria-label="Primary"
-        className="fixed bottom-0 inset-x-0 z-50 bg-[var(--background)] border-t border-[var(--border)] shadow-[0_-2px_12px_rgba(0,0,0,0.08)] pb-[env(safe-area-inset-bottom)]"
+        className="fixed bottom-0 inset-x-0 z-50 isolate bg-[var(--background)] border-t border-[var(--border)] shadow-[0_-2px_12px_rgba(0,0,0,0.08)] pb-[env(safe-area-inset-bottom)]"
       >
         {/* Deliberate phone-width tab bar (max-w-3xl) while the header
             and content span max-w-6xl — the bar is a phone UI, centred. */}
@@ -144,7 +144,7 @@ export default function BottomNav() {
   return (
     <nav
       aria-label="Primary"
-      className="fixed bottom-0 inset-x-0 z-50 bg-[var(--background)] border-t border-[var(--border)] shadow-[0_-2px_12px_rgba(0,0,0,0.08)] pb-[env(safe-area-inset-bottom)]"
+      className="fixed bottom-0 inset-x-0 z-50 isolate bg-[var(--background)] border-t border-[var(--border)] shadow-[0_-2px_12px_rgba(0,0,0,0.08)] pb-[env(safe-area-inset-bottom)]"
     >
       <div className="mx-auto max-w-3xl grid grid-cols-4 min-h-[56px]">
         <Tab href="/" label="Home" icon="home" active={isHome} />

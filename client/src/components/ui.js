@@ -111,9 +111,10 @@ export function ReportsSkeleton({ count = 6 }) {
   );
 }
 
-export function PageHero({ eyebrow, title, sub, center = false, children }) {
+export function PageHero({ eyebrow, title, sub, center = false, leftAlign = false, children }) {
+  const patternClass = leftAlign ? "hero-pattern-left" : "hero-pattern";
   return (
-    <section className="hero-pattern bg-[var(--background)] border-b border-[var(--border)]">
+    <section className={`${patternClass} bg-[var(--background)] border-b border-[var(--border)]`}>
       <div className={`mx-auto px-4 py-12 md:py-16 ${center ? "max-w-4xl text-center" : "max-w-6xl"}`}>
         {eyebrow && <p className={`${eyebrowClass} mb-3`}>{eyebrow}</p>}
         <h1 className="text-3xl md:text-5xl font-bold text-[var(--foreground)] tracking-tight leading-tight mb-4">

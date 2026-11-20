@@ -102,8 +102,100 @@ body {
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='none' stroke='%237c3aed' stroke-width='0.75' opacity='0.55'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3C/g%3E%3C/svg%3E");
   background-size: 60px 60px;
+  /* Horizontal fade, stretched — mesh emerges slowly from the
+     left and right edges and is fully hidden in the centre column
+     where the hero text sits. Long, smooth transition on both sides. */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black 0%,
+    black 4%,
+    rgba(0, 0, 0, 0.9) 8%,
+    rgba(0, 0, 0, 0.7) 14%,
+    rgba(0, 0, 0, 0.5) 20%,
+    rgba(0, 0, 0, 0.35) 27%,
+    rgba(0, 0, 0, 0.2) 34%,
+    rgba(0, 0, 0, 0.08) 40%,
+    transparent 46%,
+    transparent 54%,
+    rgba(0, 0, 0, 0.08) 60%,
+    rgba(0, 0, 0, 0.2) 66%,
+    rgba(0, 0, 0, 0.35) 73%,
+    rgba(0, 0, 0, 0.5) 80%,
+    rgba(0, 0, 0, 0.7) 86%,
+    rgba(0, 0, 0, 0.9) 92%,
+    black 96%,
+    black 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    black 0%,
+    black 4%,
+    rgba(0, 0, 0, 0.9) 8%,
+    rgba(0, 0, 0, 0.7) 14%,
+    rgba(0, 0, 0, 0.5) 20%,
+    rgba(0, 0, 0, 0.35) 27%,
+    rgba(0, 0, 0, 0.2) 34%,
+    rgba(0, 0, 0, 0.08) 40%,
+    transparent 46%,
+    transparent 54%,
+    rgba(0, 0, 0, 0.08) 60%,
+    rgba(0, 0, 0, 0.2) 66%,
+    rgba(0, 0, 0, 0.35) 73%,
+    rgba(0, 0, 0, 0.5) 80%,
+    rgba(0, 0, 0, 0.7) 86%,
+    rgba(0, 0, 0, 0.9) 92%,
+    black 96%,
+    black 100%
+  );
 }
 .dark .hero-pattern::before {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='none' stroke='%23a78bfa' stroke-width='0.75' opacity='0.35'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Left-aligned hero variant: mesh visible on the right, hidden
+   behind the left-aligned text. Used on /reports so the mesh
+   doesn't fight the text alignment. */
+.hero-pattern-left {
+  position: relative;
+  isolation: isolate;
+}
+.hero-pattern-left::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='none' stroke='%237c3aed' stroke-width='0.75' opacity='0.55'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 60px 60px;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent 30%,
+    rgba(0, 0, 0, 0.08) 38%,
+    rgba(0, 0, 0, 0.2) 46%,
+    rgba(0, 0, 0, 0.35) 54%,
+    rgba(0, 0, 0, 0.5) 62%,
+    rgba(0, 0, 0, 0.7) 72%,
+    rgba(0, 0, 0, 0.9) 84%,
+    black 94%,
+    black 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent 30%,
+    rgba(0, 0, 0, 0.08) 38%,
+    rgba(0, 0, 0, 0.2) 46%,
+    rgba(0, 0, 0, 0.35) 54%,
+    rgba(0, 0, 0, 0.5) 62%,
+    rgba(0, 0, 0, 0.7) 72%,
+    rgba(0, 0, 0, 0.9) 84%,
+    black 94%,
+    black 100%
+  );
+}
+.dark .hero-pattern-left::before {
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='none' stroke='%23a78bfa' stroke-width='0.75' opacity='0.35'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3C/g%3E%3C/svg%3E");
 }
@@ -151,3 +243,43 @@ body {
 /* Map tiles dim in dark */
 .dark .leaflet-container { background: #2d1b2e; }
 .dark .leaflet-tile-pane { filter: brightness(0.75) saturate(0.85); }
+
+/* =============================================
+   Leaflet scroll fix — prevent map panes from
+   escaping their container during page scroll.
+   ============================================= */
+
+/* Lock every Leaflet container into its own stacking context
+   and clip anything that tries to escape. */
+.leaflet-container {
+  isolation: isolate;
+  overflow: hidden !important;
+  z-index: 0;
+}
+
+/* Override Leaflet's internal pane z-index values (they go up to
+   800 by default, which beats the header's z-40 and bottom nav's
+   z-50). Cap them so nothing escapes the map. */
+.leaflet-pane,
+.leaflet-tile-pane,
+.leaflet-overlay-pane,
+.leaflet-shadow-pane,
+.leaflet-marker-pane,
+.leaflet-tooltip-pane,
+.leaflet-popup-pane {
+  z-index: 1 !important;
+}
+
+/* Controls sit above panes within the map, still under the header. */
+.leaflet-control-container,
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 2 !important;
+  pointer-events: none;
+}
+.leaflet-control-container > *,
+.leaflet-top > *,
+.leaflet-bottom > * {
+  pointer-events: auto;
+}
+

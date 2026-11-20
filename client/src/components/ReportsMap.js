@@ -46,7 +46,7 @@ export default function ReportsMap({ reports = [] }) {
   );
 
   return (
-    <div className="map-home rounded-lg overflow-hidden border border-[var(--border)]">
+    <div className="map-home relative isolate rounded-lg overflow-hidden border border-[var(--border)]">
       <MapContainer
         center={[24.8607, 67.0011]}
         zoom={12}
