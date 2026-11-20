@@ -6,9 +6,9 @@ import { STATUS_LABELS, STATUS_STYLES } from "@/lib/status";
 export const btnBase =
   "inline-flex items-center justify-center px-5 py-2.5 min-h-11 text-sm font-medium rounded-full transition active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed";
 export const btnPrimary =
-  `${btnBase} text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] shadow-md shadow-[var(--accent)]/20`;
+  `${btnBase} text-white bg-[var(--accent)] hover:bg-[var(--accent-hover)] shadow-md shadow-[var(--accent)]/20 btn-lift`;
 export const btnSecondary =
-  `${btnBase} text-[var(--foreground)] bg-[var(--surface)] hover:bg-[var(--accent-soft)] border border-[var(--border)] shadow-sm`;
+  `${btnBase} text-[var(--foreground)] bg-[var(--surface)] hover:bg-[var(--accent-soft)] border border-[var(--border)] shadow-sm btn-lift`;
 export const btnDanger =
   `${btnBase} text-white bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-400 shadow-sm`;
 export const btnDangerSm =
@@ -100,11 +100,11 @@ export function ReportsSkeleton({ count = 6 }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {Array.from({ length: count }).map((_, n) => (
-        <div key={n} className={`${cardClass} p-5 animate-pulse`}>
-          <div className="h-3 w-20 bg-[var(--border)] rounded mb-4" />
-          <div className="h-5 w-full bg-[var(--border)] rounded mb-2" />
-          <div className="h-4 w-3/4 bg-[var(--border)] rounded mb-4" />
-          <div className="h-3 w-1/3 bg-[var(--border)] rounded" />
+        <div key={n} className={`${cardClass} p-5`}>
+          <div className="h-3 w-20 rounded mb-4 skeleton-shimmer" />
+          <div className="h-5 w-full rounded mb-2 skeleton-shimmer" />
+          <div className="h-4 w-3/4 rounded mb-4 skeleton-shimmer" />
+          <div className="h-3 w-1/3 rounded skeleton-shimmer" />
         </div>
       ))}
     </div>

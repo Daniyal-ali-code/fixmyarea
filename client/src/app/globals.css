@@ -55,6 +55,10 @@
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -283,3 +287,76 @@ body {
   pointer-events: auto;
 }
 
+/* Button interactions — subtle lift on hover, press on click. */
+.btn-lift {
+  transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+  will-change: transform;
+}
+.btn-lift:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+}
+.btn-lift:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 1px 4px rgba(124, 58, 237, 0.1);
+}
+.dark .btn-lift:hover {
+  box-shadow: 0 4px 12px rgba(167, 139, 250, 0.25);
+}
+
+/* Shimmer skeleton — replaces the default pulse for a more polished
+   loading feel. Uses a moving highlight across the skeleton block. */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--border) 0%,
+    var(--surface-muted) 50%,
+    var(--border) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+.dark .skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--border) 0%,
+    var(--border-strong) 50%,
+    var(--border) 100%
+  );
+  background-size: 200% 100%;
+}
+
+/* Page content fade-in. Applied to <main> wrappers so every route
+   transition fades in smoothly. */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.page-enter {
+  animation: page-enter 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-enter { animation: none; }
+}
+
+/* Card hover lift — subtle raise on interactive cards. */
+.card-lift {
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.08);
+}
+.dark .card-lift:hover {
+  box-shadow: 0 8px 24px rgba(167, 139, 250, 0.12);
+}

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { query, withTransaction } from '@/lib/db';
 import { getUserFromRequest } from '@/lib/auth';
+import { createNotification } from '@/lib/notifications.service';
 import { computePriority } from '@/lib/priority.service';
 import { parseIdParam } from '@/lib/http';
 import { checkRateLimit } from '@/lib/rate-limit';
@@ -95,6 +96,28 @@ export async function POST(request, { params }) {
       'SELECT COUNT(*)::int AS n FROM supports WHERE report_id = $1',
       [reportId]
     );
+
+    // Notify the report owner when someone NEW supports (not when they
+    // toggle off). Skip if they're the owner (can't happen — self-support
+    // is blocked above) or if this is an unsupport.
+    if (supported) {
+      try {
+        const report = await query(
+          'SELECT user_id, title FROM reports WHERE id = $1',
+          [reportId]
+        );
+        if (report.rows.length > 0 && report.rows[0].user_id !== user.id) {
+          await createNotification({
+            userId: report.rows[0].user_id,
+            reportId,
+            type: 'support',
+            message: `${user.name} supports your report "${report.rows[0].title}".`,
+          });
+        }
+      } catch (notifErr) {
+        console.error('createNotification after support failed:', notifErr);
+      }
+    }
 
     return NextResponse.json({ supported, support_count: count.rows[0].n });
   } catch (err) {

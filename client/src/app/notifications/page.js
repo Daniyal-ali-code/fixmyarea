@@ -11,6 +11,8 @@ const TYPE_LABELS = {
   status_under_review: "Under Review",
   status_in_progress: "In Progress",
   status_resolved: "Resolved",
+  support: "New Support",
+  new_report: "New Report",
 };
 
 function timeAgo(dateString) {
@@ -68,6 +70,7 @@ export default function NotificationsPage() {
       });
       setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
       setUnreadCount(0);
+      window.dispatchEvent(new Event('notifications:refresh'));
     } catch {
       // silent
     }
@@ -83,6 +86,7 @@ export default function NotificationsPage() {
         prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
       );
       setUnreadCount((c) => Math.max(0, c - 1));
+      window.dispatchEvent(new Event('notifications:refresh'));
     } catch {
       // silent
     }

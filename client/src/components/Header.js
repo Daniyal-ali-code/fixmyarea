@@ -33,9 +33,14 @@ export default function Header() {
     load();
     // Poll every 60s so the badge stays fresh without a websocket.
     const interval = setInterval(load, 60_000);
+    // Listen for manual refresh triggers from any page (e.g. after
+    // marking a notification read on /notifications).
+    const onRefresh = () => load();
+    window.addEventListener('notifications:refresh', onRefresh);
     return () => {
       cancelled = true;
       clearInterval(interval);
+      window.removeEventListener('notifications:refresh', onRefresh);
     };
   }, [user]);
 

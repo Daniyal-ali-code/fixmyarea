@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { query, withTransaction } from '@/lib/db';
 import { getUserFromRequest } from '@/lib/auth';
+import { createNotification } from '@/lib/notifications.service';
 import { findDuplicates } from '@/lib/duplicate.service';
 import { computePriority } from '@/lib/priority.service';
 import { parseJsonBody, parsePagination, VALID_STATUSES } from '@/lib/http';
@@ -207,7 +208,32 @@ export async function POST(request) {
       console.error('computePriority after create failed:', priorityErr);
     }
 
-    return NextResponse.json({ report }, { status: 201 });
+    // Notify all admins about the new report (best-effort per admin).
+    try {
+      const admins = await query("SELECT id FROM users WHERE role = 'admin'");
+      for (const admin of admins.rows) {
+        try {
+          await createNotification({
+            userId: admin.id,
+            reportId: report.id,
+            type: 'new_report',
+            message: `${user.name || 'A user'} reported "${report.title}".`,
+          });
+        } catch (notifErr) {
+          console.error(
+            `createNotification for admin ${admin.id} failed:`,
+            notifErr
+          );
+        }
+      }
+    } catch (adminListErr) {
+      console.error('Could not list admins for notification:', adminListErr);
+    }
+
+    return NextResponse.json(
+      { report },
+      { status: 201 }
+    );
   } catch (err) {
     console.error('createReport error:', err);
     return NextResponse.json({ error: 'Failed to create report' }, { status: 500 });
