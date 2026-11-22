@@ -182,23 +182,6 @@ body {
   pointer-events: auto;
 }
 
-/* Button interactions — subtle lift on hover, press on click. */
-.btn-lift {
-  transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
-  will-change: transform;
-}
-.btn-lift:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
-}
-.btn-lift:active {
-  transform: translateY(0) scale(0.98);
-  box-shadow: 0 1px 4px rgba(124, 58, 237, 0.1);
-}
-.dark .btn-lift:hover {
-  box-shadow: 0 4px 12px rgba(167, 139, 250, 0.25);
-}
-
 /* Shimmer skeleton — replaces the default pulse for a more polished
    loading feel. Uses a moving highlight across the skeleton block. */
 @keyframes shimmer {
@@ -330,3 +313,126 @@ body {
   z-index: 1;
 }
 
+/* =============================================
+   MODERN UI ANIMATIONS
+   ============================================= */
+
+/* Page content fade-in on route change */
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-enter { animation: page-fade-in 350ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Card hover lift */
+.card-lift {
+  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  will-change: transform;
+}
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.10);
+}
+.dark .card-lift:hover {
+  box-shadow: 0 8px 24px rgba(167, 139, 250, 0.15);
+}
+.card-lift:active { transform: translateY(0) scale(0.995); }
+
+/* Button press + hover */
+.btn-press {
+  transition: transform 120ms ease, background-color 120ms ease;
+  will-change: transform;
+}
+.btn-press:active { transform: scale(0.97); }
+
+/* Input focus ring glow */
+.input-glow { transition: border-color 200ms ease, box-shadow 200ms ease; }
+.input-glow:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+}
+.dark .input-glow:focus {
+  box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.18);
+}
+
+/* Notification badge pulse */
+@keyframes badge-pulse {
+  0%, 100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.5); }
+  50%      { transform: scale(1.08); box-shadow: 0 0 0 6px rgba(249, 115, 22, 0); }
+}
+.badge-pulse { animation: badge-pulse 2s ease-in-out infinite; }
+
+/* Bell shake when a new notification arrives */
+@keyframes bell-shake {
+  0%, 100%    { transform: rotate(0); }
+  15%, 45%, 75% { transform: rotate(-12deg); }
+  30%, 60%, 90% { transform: rotate(12deg); }
+}
+.bell-shake { animation: bell-shake 600ms ease-in-out; }
+
+/* Stagger list entrance */
+@keyframes stagger-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.stagger-in > * {
+  opacity: 0;
+  animation: stagger-in 400ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.stagger-in > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-in > *:nth-child(2) { animation-delay: 60ms; }
+.stagger-in > *:nth-child(3) { animation-delay: 120ms; }
+.stagger-in > *:nth-child(4) { animation-delay: 180ms; }
+.stagger-in > *:nth-child(5) { animation-delay: 240ms; }
+.stagger-in > *:nth-child(6) { animation-delay: 300ms; }
+.stagger-in > *:nth-child(n+7) { animation-delay: 360ms; }
+
+/* Map pin hover bounce */
+.leaflet-marker-icon {
+  transition: filter 180ms ease;
+}
+.leaflet-marker-icon:hover {
+  filter: brightness(1.2);
+  z-index: 999 !important;
+}
+
+/* Bottom nav active tab slide indicator */
+.nav-tab {
+  transition: color 200ms ease, transform 150ms ease;
+  position: relative;
+}
+.nav-tab:active { transform: scale(0.95); }
+.nav-tab-active::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  animation: nav-indicator 200ms ease-out;
+}
+@keyframes nav-indicator {
+  from { width: 0; opacity: 0; }
+  to   { width: 20px; opacity: 1; }
+}
+
+/* Status badge flash on change */
+@keyframes badge-flash {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+.badge-flash { animation: badge-flash 400ms ease; }
+
+/* Respect reduced motion — but allow the gentle mesh fade */
+@media (prefers-reduced-motion: reduce) {
+  .page-enter, .card-lift, .btn-press, .badge-pulse,
+  .bell-shake, .stagger-in > *, .badge-flash {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}

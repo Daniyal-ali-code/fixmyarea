@@ -87,7 +87,7 @@ export default function Header() {
                   <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
                 </svg>
                 {unread > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-[var(--coral)] text-white text-[10px] font-bold rounded-full">
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-[var(--coral)] text-white text-[10px] font-bold rounded-full badge-pulse">
                     {unread > 9 ? "9+" : unread}
                   </span>
                 )}
